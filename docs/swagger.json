@@ -1,0 +1,845 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/v1/auth/forgot-password": {
+            "post": {
+                "description": "ForgotPassword",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "ForgotPassword",
+                "parameters": [
+                    {
+                        "description": "User registration details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Email sent successfully",
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailRequest"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailRequest"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/login": {
+            "post": {
+                "description": "UserLogin User account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "UserLogin User account",
+                "parameters": [
+                    {
+                        "description": "User login details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Email sent successfully",
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailRequest"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailRequest"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/logout": {
+            "post": {
+                "description": "Register User account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register User account",
+                "parameters": [
+                    {
+                        "description": "User registration details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Email sent successfully",
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailRequest"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailRequest"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/register": {
+            "post": {
+                "description": "Register User account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register User account",
+                "parameters": [
+                    {
+                        "description": "User registration details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Email sent successfully",
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailRequest"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailRequest"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/send-email": {
+            "post": {
+                "description": "Send email to user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "parameters": [
+                    {
+                        "description": "Send email details",
+                        "name": "auth",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Email sent successfully",
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailRequest"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailRequest"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/verify-email": {
+            "post": {
+                "description": "Verify email otp.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "parameters": [
+                    {
+                        "description": "verify email details",
+                        "name": "auth",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.VerifyEmailRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Email sent successfully",
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailRequest"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailRequest"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/chat/messages": {
+            "get": {
+                "description": "Register User account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat-Message"
+                ],
+                "summary": "Register User account",
+                "parameters": [
+                    {
+                        "description": "User registration details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.GetChatMessageRequestBody"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/v1/chat/messages/{room_id}": {
+            "get": {
+                "description": "GetChatMessageByRoomId",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat-Message"
+                ],
+                "summary": "GetChatMessageByRoomId",
+                "parameters": [
+                    {
+                        "description": "User registration details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.GetChatMessageRequestBody"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/v1/chat/room/contact": {
+            "get": {
+                "description": "UserLogin User account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat-Room"
+                ],
+                "summary": "UserLogin User account",
+                "parameters": [
+                    {
+                        "description": "User login details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/v1/chat/room/groups": {
+            "post": {
+                "description": "UserLogin User account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat-Group"
+                ],
+                "summary": "UserLogin User account",
+                "parameters": [
+                    {
+                        "description": "User login details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/v1/chat/rooms": {
+            "get": {
+                "description": "GetChatRooms",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat-Room"
+                ],
+                "summary": "GetChatRooms",
+                "parameters": [
+                    {
+                        "description": "User login details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            },
+            "post": {
+                "description": "CreateChatRoom",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat-Room"
+                ],
+                "summary": "CreateChatRoom",
+                "parameters": [
+                    {
+                        "description": "User login details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.CreateChatRoomBody"
+                        }
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "description": "DeleteChatRoom",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat-Room"
+                ],
+                "summary": "DeleteChatRoom",
+                "parameters": [
+                    {
+                        "description": "User login details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/v1/client/users": {
+            "get": {
+                "description": "GetClientUsers account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client-User"
+                ],
+                "summary": "GetClientUsers account",
+                "responses": {}
+            },
+            "post": {
+                "description": "ClientAddUser account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client-User"
+                ],
+                "summary": "ClientAddUser account",
+                "parameters": [
+                    {
+                        "description": "User registration details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.ClientAddUser"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/v1/clients": {
+            "get": {
+                "description": "GetAllClients User account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client"
+                ],
+                "summary": "GetAllClients User account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Client's company name",
+                        "name": "company_name",
+                        "in": "query"
+                    },
+                    {
+                        "description": "GetAllClients login details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.ClientCreateData"
+                        }
+                    }
+                ],
+                "responses": {}
+            },
+            "post": {
+                "description": "UserLogin User account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client"
+                ],
+                "summary": "UserLogin User account",
+                "parameters": [
+                    {
+                        "description": "User login details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.ClientCreateData"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/v1/clients/{id}": {
+            "get": {
+                "description": "GetClientById User account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client"
+                ],
+                "summary": "GetClientById User account",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Client ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/v1/user/check-email": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "User create",
+                "parameters": [
+                    {
+                        "description": "User create details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.CreateUserData"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/v1/users": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "User create",
+                "parameters": [
+                    {
+                        "description": "User create details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.CreateUserData"
+                        }
+                    }
+                ],
+                "responses": {}
+            },
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "User create",
+                "parameters": [
+                    {
+                        "description": "User create details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.CreateUserData"
+                        }
+                    }
+                ],
+                "responses": {}
+            },
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "User create",
+                "parameters": [
+                    {
+                        "description": "User create details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.CreateUserData"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/v1/users/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "User create",
+                "parameters": [
+                    {
+                        "description": "User create details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.CreateUserData"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        }
+    },
+    "definitions": {
+        "handlers.CreateChatRoomBody": {
+            "type": "object",
+            "properties": {
+                "room_id": {
+                    "type": "string"
+                },
+                "room_users": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "models.Client": {
+            "type": "object",
+            "properties": {
+                "client_user_id": {
+                    "type": "string"
+                },
+                "company_domain": {
+                    "type": "string"
+                },
+                "company_name": {
+                    "type": "string"
+                },
+                "company_size": {
+                    "type": "integer"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.ClientAddUser": {
+            "type": "object",
+            "properties": {
+                "client_id": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "$ref": "#/definitions/models.Client"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "$ref": "#/definitions/models.Client"
+                }
+            }
+        },
+        "types.ClientCreateData": {
+            "type": "object",
+            "properties": {
+                "company_name": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.CreateUserData": {
+            "type": "object",
+            "properties": {
+                "client_id": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "$ref": "#/definitions/models.Client"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "$ref": "#/definitions/models.Client"
+                }
+            }
+        },
+        "types.GetChatMessageRequestBody": {
+            "type": "object",
+            "properties": {
+                "chat_room_id": {
+                    "type": "string"
+                },
+                "current_user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "user_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.RegisterRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.SendEmailRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.SendEmailResponse": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.VerifyEmailRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "otp": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BasicAuth": {
+            "type": "basic"
+        },
+        "OAuth2Application": {
+            "type": "oauth2",
+            "flow": "application",
+            "tokenUrl": "https://example.com/oauth/token",
+            "scopes": {
+                "admin": " Grants read and write access to administrative information",
+                "write": " Grants write access"
+            }
+        }
+    }
+}

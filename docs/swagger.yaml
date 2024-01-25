@@ -1,0 +1,555 @@
+definitions:
+  handlers.CreateChatRoomBody:
+    properties:
+      room_id:
+        type: string
+      room_users:
+        items:
+          type: string
+        type: array
+    type: object
+  models.Client:
+    properties:
+      client_user_id:
+        type: string
+      company_domain:
+        type: string
+      company_name:
+        type: string
+      company_size:
+        type: integer
+      country:
+        type: string
+      id:
+        type: string
+    type: object
+  types.ClientAddUser:
+    properties:
+      client_id:
+        type: string
+      created_by:
+        $ref: '#/definitions/models.Client'
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      updated_by:
+        $ref: '#/definitions/models.Client'
+    type: object
+  types.ClientCreateData:
+    properties:
+      company_name:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+    type: object
+  types.CreateUserData:
+    properties:
+      client_id:
+        type: string
+      created_by:
+        $ref: '#/definitions/models.Client'
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      updated_by:
+        $ref: '#/definitions/models.Client'
+    type: object
+  types.GetChatMessageRequestBody:
+    properties:
+      chat_room_id:
+        type: string
+      current_user_id:
+        type: string
+    type: object
+  types.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      user_type:
+        type: string
+    type: object
+  types.RegisterRequest:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+    type: object
+  types.SendEmailRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  types.SendEmailResponse:
+    properties:
+      email:
+        type: string
+    type: object
+  types.VerifyEmailRequest:
+    properties:
+      email:
+        type: string
+      otp:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /v1/auth/forgot-password:
+    post:
+      description: ForgotPassword
+      parameters:
+      - description: User registration details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Email sent successfully
+          schema:
+            $ref: '#/definitions/types.SendEmailResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/types.SendEmailRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/types.SendEmailRequest'
+      summary: ForgotPassword
+      tags:
+      - Auth
+  /v1/auth/login:
+    post:
+      description: UserLogin User account
+      parameters:
+      - description: User login details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Email sent successfully
+          schema:
+            $ref: '#/definitions/types.SendEmailResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/types.SendEmailRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/types.SendEmailRequest'
+      summary: UserLogin User account
+      tags:
+      - Auth
+  /v1/auth/logout:
+    post:
+      description: Register User account
+      parameters:
+      - description: User registration details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Email sent successfully
+          schema:
+            $ref: '#/definitions/types.SendEmailResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/types.SendEmailRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/types.SendEmailRequest'
+      summary: Register User account
+      tags:
+      - Auth
+  /v1/auth/register:
+    post:
+      description: Register User account
+      parameters:
+      - description: User registration details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Email sent successfully
+          schema:
+            $ref: '#/definitions/types.SendEmailResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/types.SendEmailRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/types.SendEmailRequest'
+      summary: Register User account
+      tags:
+      - Auth
+  /v1/auth/send-email:
+    post:
+      description: Send email to user
+      parameters:
+      - description: Send email details
+        in: body
+        name: auth
+        required: true
+        schema:
+          $ref: '#/definitions/types.SendEmailRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Email sent successfully
+          schema:
+            $ref: '#/definitions/types.SendEmailResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/types.SendEmailRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/types.SendEmailRequest'
+      tags:
+      - Auth
+  /v1/auth/verify-email:
+    post:
+      description: Verify email otp.
+      parameters:
+      - description: verify email details
+        in: body
+        name: auth
+        required: true
+        schema:
+          $ref: '#/definitions/types.VerifyEmailRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Email sent successfully
+          schema:
+            $ref: '#/definitions/types.SendEmailResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/types.SendEmailRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/types.SendEmailRequest'
+      tags:
+      - Auth
+  /v1/chat/messages:
+    get:
+      description: Register User account
+      parameters:
+      - description: User registration details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.GetChatMessageRequestBody'
+      produces:
+      - application/json
+      responses: {}
+      summary: Register User account
+      tags:
+      - Chat-Message
+  /v1/chat/messages/{room_id}:
+    get:
+      description: GetChatMessageByRoomId
+      parameters:
+      - description: User registration details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.GetChatMessageRequestBody'
+      produces:
+      - application/json
+      responses: {}
+      summary: GetChatMessageByRoomId
+      tags:
+      - Chat-Message
+  /v1/chat/room/contact:
+    get:
+      description: UserLogin User account
+      parameters:
+      - description: User login details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.LoginRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: UserLogin User account
+      tags:
+      - Chat-Room
+  /v1/chat/room/groups:
+    post:
+      description: UserLogin User account
+      parameters:
+      - description: User login details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.LoginRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: UserLogin User account
+      tags:
+      - Chat-Group
+  /v1/chat/rooms:
+    delete:
+      description: DeleteChatRoom
+      parameters:
+      - description: User login details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.LoginRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: DeleteChatRoom
+      tags:
+      - Chat-Room
+    get:
+      description: GetChatRooms
+      parameters:
+      - description: User login details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.LoginRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: GetChatRooms
+      tags:
+      - Chat-Room
+    post:
+      description: CreateChatRoom
+      parameters:
+      - description: User login details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateChatRoomBody'
+      produces:
+      - application/json
+      responses: {}
+      summary: CreateChatRoom
+      tags:
+      - Chat-Room
+  /v1/client/users:
+    get:
+      description: GetClientUsers account
+      produces:
+      - application/json
+      responses: {}
+      summary: GetClientUsers account
+      tags:
+      - Client-User
+    post:
+      description: ClientAddUser account
+      parameters:
+      - description: User registration details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.ClientAddUser'
+      produces:
+      - application/json
+      responses: {}
+      summary: ClientAddUser account
+      tags:
+      - Client-User
+  /v1/clients:
+    get:
+      description: GetAllClients User account
+      parameters:
+      - description: Client's company name
+        in: query
+        name: company_name
+        type: string
+      - description: GetAllClients login details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.ClientCreateData'
+      produces:
+      - application/json
+      responses: {}
+      summary: GetAllClients User account
+      tags:
+      - Client
+    post:
+      description: UserLogin User account
+      parameters:
+      - description: User login details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.ClientCreateData'
+      produces:
+      - application/json
+      responses: {}
+      summary: UserLogin User account
+      tags:
+      - Client
+  /v1/clients/{id}:
+    get:
+      description: GetClientById User account
+      parameters:
+      - description: Client ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: GetClientById User account
+      tags:
+      - Client
+  /v1/user/check-email:
+    get:
+      parameters:
+      - description: User create details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.CreateUserData'
+      produces:
+      - application/json
+      responses: {}
+      summary: User create
+      tags:
+      - User
+  /v1/users:
+    get:
+      parameters:
+      - description: User create details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.CreateUserData'
+      produces:
+      - application/json
+      responses: {}
+      summary: User create
+      tags:
+      - User
+    post:
+      parameters:
+      - description: User create details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.CreateUserData'
+      produces:
+      - application/json
+      responses: {}
+      summary: User create
+      tags:
+      - User
+    put:
+      parameters:
+      - description: User create details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.CreateUserData'
+      produces:
+      - application/json
+      responses: {}
+      summary: User create
+      tags:
+      - User
+  /v1/users/{id}:
+    get:
+      parameters:
+      - description: User create details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.CreateUserData'
+      produces:
+      - application/json
+      responses: {}
+      summary: User create
+      tags:
+      - User
+securityDefinitions:
+  BasicAuth:
+    type: basic
+  OAuth2Application:
+    flow: application
+    scopes:
+      admin: ' Grants read and write access to administrative information'
+      write: ' Grants write access'
+    tokenUrl: https://example.com/oauth/token
+    type: oauth2
+swagger: "2.0"
