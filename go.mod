@@ -4,7 +4,6 @@ go 1.21.6
 
 require (
 	github.com/arsmn/fiber-swagger/v2 v2.31.1
-	github.com/gin-contrib/cors v1.5.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-playground/validator/v10 v10.17.0
 	github.com/gofiber/fiber/v2 v2.52.0

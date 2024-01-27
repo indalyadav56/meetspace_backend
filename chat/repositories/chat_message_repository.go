@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"meetspace_backend/chat/models"
-	"meetspace_backend/config"
 
 	"gorm.io/gorm"
 )
@@ -11,9 +10,9 @@ type ChatMessageRepository struct {
 	db *gorm.DB
 }
 
-func NewChatMessageRepository() *ChatMessageRepository {
+func NewChatMessageRepository(db *gorm.DB) *ChatMessageRepository {
 	return &ChatMessageRepository{
-		db:      config.DB,
+		db:      db,
 	}
 }
 

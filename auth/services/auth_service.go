@@ -1,8 +1,6 @@
 package services
 
 import (
-	"fmt"
-	"meetspace_backend/auth/repositories"
 	"meetspace_backend/auth/types"
 	"meetspace_backend/user/models"
 
@@ -10,21 +8,17 @@ import (
 )
 
 type AuthService struct {
-    AuthRepository *repositories.AuthRepository
 }
 
 
 func NewAuthService() *AuthService {
-	fmt.Println("initializing new auth service")
-	authRepo := repositories.NewAuthRepository()
     return &AuthService{
-        AuthRepository: authRepo,
     }
 }
 
 
 func (us *AuthService) Login(reqData types.LoginRequest) (models.User, error) {
-    return us.AuthRepository.Login(reqData.Email, reqData.Password)
+	return models.User{}, nil
 }
 
 
@@ -37,6 +31,6 @@ func (us *AuthService) Register(reqData types.RegisterRequest) (models.User, err
 		Email: reqData.Email,
 		Password: string(hashedPassword),
 	}
-
-    return us.AuthRepository.Register(user)
+	return user, nil
+    // return us.AuthRepository.Register(user)
 }

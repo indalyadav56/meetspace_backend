@@ -3,7 +3,6 @@ package repositories
 import (
 	"errors"
 	authModel "meetspace_backend/auth/models"
-	"meetspace_backend/config"
 	userConstant "meetspace_backend/user/constants"
 	"meetspace_backend/user/models"
 
@@ -15,9 +14,9 @@ type AuthRepository struct {
     db *gorm.DB
 }
 
-func NewAuthRepository() *AuthRepository {
+func NewAuthRepository(db *gorm.DB) *AuthRepository {
 	return &AuthRepository{
-		db:      config.DB,
+		db:     db,
 	}
 }
 
@@ -25,7 +24,7 @@ func (userRepo *AuthRepository) Login(email string, password string) (models.Use
     var user models.User
 	roles := []string{userConstant.ROLE_ADMIN, userConstant.ROLE_USER, userConstant.ROLE_SUPER_ADMIN}
 	
-	result := config.DB.Where("email = ? AND role IN (?)", email, roles).First(&user)
+	result := userRepo.db.Where("email = ? AND role IN (?)", email, roles).First(&user)
 	if result.Error != nil {
         return user, result.Error
     }
@@ -39,11 +38,11 @@ func (userRepo *AuthRepository) Login(email string, password string) (models.Use
 }
 
 func (userRepo *AuthRepository) Register(user models.User) (models.User, error) {
-    config.DB.Create(&user)
+    userRepo.db.Create(&user)
     return user, nil
 }
 
 func (userRepo *AuthRepository) CreateVerificationRecord(data authModel.Verification) (*authModel.Verification, error) {
-	config.DB.Create(&data)
+	userRepo.db.Create(&data)
     return &data, nil
 }

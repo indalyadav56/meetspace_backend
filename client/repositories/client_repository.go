@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"meetspace_backend/client/models"
-	"meetspace_backend/config"
 
 	"gorm.io/gorm"
 )
@@ -18,9 +17,9 @@ type ClientRepository struct{
 }
 
 
-func NewClientRepository() *ClientRepository {
+func NewClientRepository(db *gorm.DB) *ClientRepository {
 	return &ClientRepository{
-		DB: config.DB,
+		DB: db,
 	}
 }
 

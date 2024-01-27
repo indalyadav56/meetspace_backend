@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	authModel "meetspace_backend/auth/models"
-	"meetspace_backend/config"
 	"meetspace_backend/user/models"
 	"meetspace_backend/user/types"
 	"meetspace_backend/utils"
@@ -18,9 +17,9 @@ type UserRepository struct {
 }
 
 
-func NewUserRepository() *UserRepository {
+func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{
-		db:      config.DB,
+		db:      db,
 	}
 }
 

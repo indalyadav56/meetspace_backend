@@ -5,7 +5,6 @@ import (
 	"meetspace_backend/client/models"
 	"meetspace_backend/client/repositories"
 	"meetspace_backend/client/types"
-	"meetspace_backend/config"
 	"meetspace_backend/user/constants"
 	userModel "meetspace_backend/user/models"
 	userService "meetspace_backend/user/services"
@@ -20,9 +19,7 @@ type ClientService struct {
 	UserService  *userService.UserService
 }
 
-func NewClientService() *ClientService {
-	repo := repositories.NewClientRepository()
-	
+func NewClientService(repo *repositories.ClientRepository, userService  *userService.UserService) *ClientService {
 	return &ClientService{
 		ClientRepository: repo,
 		UserService: userService,
@@ -60,7 +57,7 @@ func (cs *ClientService) CreateClient(clientData types.ClientCreateData) (*model
 		return nil, err
 	}
 	clientObj.ClientUserID = userObj.ID.String()
-	config.DB.Save(&clientObj)
+	cs.ClientRepository.DB.Save(&clientObj)
 
 	// send mail to client's given email address
 	bodyData := fmt.Sprintf("<h1>Domain</h1>:- <a href=\"http://%s\" target=\"_blank\" rel=\"noopener noreferrer\">%s</a> and password:- %s", clientObj.CompanyDomain, clientObj.CompanyDomain, clientData.Password)

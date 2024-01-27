@@ -14,11 +14,11 @@ type ChatMessageService struct {
 	ChatRoomService  *ChatRoomService
 }
 
-func NewChatMessageService() *ChatMessageService {
-	repo := repositories.NewChatMessageRepository()
-	newUserService := userService.NewUserService()
-	chatRoomService := NewChatRoomService()
-	
+func NewChatMessageService(
+	repo *repositories.ChatMessageRepository,
+	newUserService *userService.UserService,
+	chatRoomService *ChatRoomService,
+) *ChatMessageService {
 	return &ChatMessageService{
 		ChatMessageRepository: repo,
 		UserService: newUserService,

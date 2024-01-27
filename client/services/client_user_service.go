@@ -14,10 +14,7 @@ type ClientUserService struct {
 	UserService  *userService.UserService
 }
 
-func NewClientUserService() *ClientUserService {
-	repo := repositories.NewClientRepository()
-	userService := service_factory.GetUserService()
-	
+func NewClientUserService(repo *repositories.ClientRepository, userService  *userService.UserService) *ClientUserService {
 	return &ClientUserService{
 		ClientRepository: repo,
 		UserService: userService,

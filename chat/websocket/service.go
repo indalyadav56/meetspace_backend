@@ -6,10 +6,7 @@ import (
 	"meetspace_backend/chat/types"
 	"meetspace_backend/config"
 	"meetspace_backend/utils"
-
 	// userService "meetspace_backend/internal/user/services"
-
-	chatService "meetspace_backend/chat/services"
 )
 
 type WebSocketService struct {}
@@ -46,20 +43,18 @@ func (ws *WebSocketService) HandleUserDisconnected(payload types.Payload, client
 }
 
 func (ws *WebSocketService) HandleChatMessageSent(payload types.Payload, client *Client) {
-	chatRoomService := chatService.NewChatRoomService()
-	currentRoom, err := chatRoomService.GetChatRoomByID(client.GroupName)
+	currentRoom, err := config.ChatRoomService.GetChatRoomByID(client.GroupName)
 	
 	// if chat room not found then create a new chat room for sender and receiver user
 	if err != nil {
 		receiverUserData := payload.Data["receiver_user"].(map[string]interface{})
 		var users []string
 		users = append(users, receiverUserData["id"].(string))
-		chatRoomService.CreateChatRoomRecord("NewChatRoom", client.User.ID.String(), users)
+		config.ChatRoomService.CreateChatRoomRecord("NewChatRoom", client.User.ID.String(), users)
 		CheckMessageNotification(client, payload)
 	}else{
 		senderUserData := payload.Data["sender"].(map[string]interface{})
-		chatMessageService := chatService.NewChatMessageService()
-		chatMessageService.CreateChatMessage("NewChatMessageContent", senderUserData["id"].(string), currentRoom.ID.String())
+		config.ChatMessageService.CreateChatMessage("NewChatMessageContent", senderUserData["id"].(string), currentRoom.ID.String())
 		CheckMessageNotification(client, payload)
 	}
 }

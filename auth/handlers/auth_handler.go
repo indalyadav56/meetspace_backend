@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"meetspace_backend/auth/constants"
 	"meetspace_backend/auth/models"
-	"meetspace_backend/auth/services"
 	"meetspace_backend/auth/types"
 	"meetspace_backend/config"
 	"meetspace_backend/utils"
@@ -12,9 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
 )
-
-var authService = services.NewAuthService()
-var verificationService = services.NewVerificationService()
 
 // 	UserRegister godoc
 //	@Summary		Register User account
@@ -28,7 +24,7 @@ func UserRegister(c *fiber.Ctx) error{
 	if err := c.BodyParser(&req); err != nil {
         return err
     }
-	user, err := authService.Register(req)
+	user, err := config.AuthService.Register(req)
 	if err != nil {
 		return err
 	}
@@ -61,7 +57,7 @@ func UserLogin(c *fiber.Ctx) error {
         return err
     }
 
-	user, err := authService.Login(req)
+	user, err := config.AuthService.Login(req)
 	if err != nil {
 		return err
 	}
@@ -120,7 +116,7 @@ func SendEmailHandler(c *fiber.Ctx) error {
 		Email: reqBody.Email,
 		Otp: otp,
 	}
-	verificationService.Create(data)
+	config.VerificationService.Create(data)
 	
 	resp := utils.SuccessResponse("successfully send email!", gin.H{
 	})
@@ -140,7 +136,7 @@ func VerifyEmailHandler(c *fiber.Ctx)  error{
 		return nil
 	}
 
-	modelObj, _ := verificationService.GetVerificationDataByEmail(reqBody.Email)
+	modelObj, _ := config.VerificationService.GetVerificationDataByEmail(reqBody.Email)
 	if modelObj.Otp == reqBody.OTP{
 		config.DB.Model(&modelObj).Update("is_verified", true)
 		resp := utils.SuccessResponse("successfully send email!", nil)

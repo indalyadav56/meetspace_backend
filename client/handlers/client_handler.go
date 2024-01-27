@@ -1,14 +1,12 @@
 package handlers
 
 import (
-	"meetspace_backend/client/services"
 	"meetspace_backend/client/types"
+	"meetspace_backend/config"
 	"meetspace_backend/utils"
 
 	"github.com/gin-gonic/gin"
 )
-
-var clientService = services.NewClientService()
 
 // RegisterClientHandler godoc
 //	@Summary		UserLogin User account
@@ -25,7 +23,7 @@ func RegisterClientHandler(c *gin.Context){
 		return
 	}
 	reqData.Password = "Indal@123"
-	client, err := clientService.CreateClient(reqData)
+	client, err := config.ClientService.CreateClient(reqData)
 	if err != nil {  
 		utils.HandleError(c, err)
 		return 
@@ -35,7 +33,6 @@ func RegisterClientHandler(c *gin.Context){
 	c.JSON(resp.StatusCode, resp)
 	return
 }
-
 
 // GetClientById godoc
 //	@Summary		GetClientById User account
@@ -47,14 +44,13 @@ func RegisterClientHandler(c *gin.Context){
 func GetClientById(c *gin.Context){
 	clientId := c.Param("clientId")
 
-	client, _ := clientService.GetClientById(clientId)
+	client, _ := config.ClientService.GetClientById(clientId)
 
 	resp := utils.SuccessResponse("success", client)
 	
 	c.JSON(resp.StatusCode, resp)
 	return
 }
-
 
 // GetAllClients godoc
 //	@Summary		GetAllClients User account
@@ -73,7 +69,7 @@ func GetAllClients(c *gin.Context){
 
 	companyName := c.Query("company_name")
 
-	clients, _ := clientService.GetAllClients(companyName)
+	clients, _ := config.ClientService.GetAllClients(companyName)
 
 	resp := utils.SuccessResponse("success", clients)
 	c.JSON(resp.StatusCode, resp)

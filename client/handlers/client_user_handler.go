@@ -1,14 +1,12 @@
 package handlers
 
 import (
-	"meetspace_backend/client/services"
 	"meetspace_backend/client/types"
+	"meetspace_backend/config"
 	"meetspace_backend/utils"
 
 	"github.com/gin-gonic/gin"
 )
-
-var clientUserService = services.NewClientUserService()
 
 // ClientAddUser godoc
 //	@Summary		ClientAddUser account
@@ -24,7 +22,7 @@ func ClientAddUser(c *gin.Context){
     }
 
 
-	currentClient, err  := clientService.GetClientById(currentUser.ClientID.String())
+	currentClient, err  := config.ClientService.GetClientById(currentUser.ClientID.String())
 	if err != nil {
 		utils.HandleError(c, err)
 		return
@@ -39,7 +37,7 @@ func ClientAddUser(c *gin.Context){
 	reqData.CreatedBy = &currentClient
 	reqData.UpdatedBy = &currentClient
 
-	user, err := clientUserService.AddClientUser(reqData)
+	user, err := config.ClientUserService.AddClientUser(reqData)
 	if err != nil {  
 		utils.HandleError(c, err)
 		return 
@@ -59,7 +57,7 @@ func ClientAddUser(c *gin.Context){
 func GetClientUsers(c *gin.Context){
 	currentUser, _ := utils.GetUserFromContext(c)
 
-	users , _  := clientUserService.GetClientUsers(currentUser.ClientID.String())
+	users , _  := config.ClientUserService.GetClientUsers(currentUser.ClientID.String())
 	resp := utils.SuccessResponse("success", users)
 	c.JSON(resp.StatusCode, resp)
 	return

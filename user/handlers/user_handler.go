@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"errors"
-	"meetspace_backend/user/services"
+	"meetspace_backend/config"
 	"meetspace_backend/user/types"
 	"meetspace_backend/utils"
 	"net/http"
@@ -10,8 +10,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
-
-var userService = services.NewUserService()
 
 // CreateUserHandler godoc
 //	@Summary		User create
@@ -22,9 +20,7 @@ var userService = services.NewUserService()
 func CreateUserHandler(c *fiber.Ctx) error {
 	var reqBody types.CreateUserData
 
-	resp, _ := userService.CreateUser(reqBody)
-	
-	c.JSON(resp)
+	c.JSON(reqBody)
 	return nil
 }
 
@@ -37,7 +33,7 @@ func CreateUserHandler(c *fiber.Ctx) error {
 func GetUserByID(c *fiber.Ctx) error{
 	userId := c.Query("userId")
 	
-	resp := userService.GetUserByID(userId)
+	resp := config.UserService.GetUserByID(userId)
 	
 	c.JSON(resp)
 	return nil
@@ -51,7 +47,7 @@ func GetUserByID(c *fiber.Ctx) error{
 //	@Router			/v1/users [get]
 func GetAllUsers(c *fiber.Ctx) error{
 	email := c.Query("email")
-	users, err := userService.GetAllUsers(email)
+	users, err := config.UserService.GetAllUsers(email)
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -84,7 +80,7 @@ func UpdateUser(c *fiber.Ctx) error {
 
 	reqBody.ProfilePic = file
 	
-	response := userService.UpdateUser("currentUser.ID.String()", reqBody)
+	response := config.UserService.UpdateUser("currentUser.ID.String()", reqBody)
 	
 	c.JSON(response)
 	return nil
@@ -99,7 +95,7 @@ func UpdateUser(c *fiber.Ctx) error {
 func CheckUserEmail(c *fiber.Ctx) error {
 	email := c.Query("email")
 	
-	user, err := userService.GetUserByEmail(email)
+	user, err := config.UserService.GetUserByEmail(email)
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

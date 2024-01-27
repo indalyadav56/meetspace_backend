@@ -12,13 +12,10 @@ type ChatRoomService struct {
 	UserService  *userService.UserService
 }
 
-func NewChatRoomService() *ChatRoomService {
-	repo := repositories.NewChatRoomRepository()
-	newUserService := userService.NewUserService()
-	
+func NewChatRoomService(repo *repositories.ChatRoomRepository, userService *userService.UserService) *ChatRoomService {
 	return &ChatRoomService{
 		ChatRoomRepository: repo,
-		UserService: newUserService,
+		UserService: userService,
 	}
 }
 

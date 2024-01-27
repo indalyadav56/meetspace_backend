@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"meetspace_backend/chat/models"
-	"meetspace_backend/chat/service_factory"
 	"meetspace_backend/chat/types"
+	"meetspace_backend/config"
 	userModel "meetspace_backend/user/models"
 	"meetspace_backend/utils"
 	"net/http"
@@ -27,8 +27,6 @@ func AddChatGroup(ctx *gin.Context){
 
 	utils.BindJsonData(ctx, &reqData)
 	
-	chatGroupService := service_factory.GetChatGroupService()
-
 	var chatRoom models.ChatRoom
 	var roomUsers []*userModel.User
 
@@ -36,7 +34,7 @@ func AddChatGroup(ctx *gin.Context){
 	chatRoom.RoomName = reqData.Title
 
 	for _, userId := range reqData.UserIds {
-		user, err := chatGroupService.UserService.UserRepository.GetUserByID(userId)
+		user, err := config.ChatGroupService.UserService.UserRepository.GetUserByID(userId)
 		if err == nil {
 			roomUsers = append(roomUsers, &user)
 		}
@@ -46,7 +44,7 @@ func AddChatGroup(ctx *gin.Context){
 	chatRoom.RoomUsers = roomUsers
 	chatRoom.RoomOwner = currentUser
 
-	chatGroup, _ := chatGroupService.CreateChatGroup(chatRoom)
+	chatGroup, _ := config.ChatGroupService.CreateChatGroup(chatRoom)
 	ctx.JSON(http.StatusOK, utils.SuccessResponse("success", chatGroup))
 	return
 }

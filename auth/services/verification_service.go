@@ -10,9 +10,8 @@ type VerificationService struct {
     VerificationRepository *repositories.VerificationRepository
 }
 
-func NewVerificationService() *VerificationService {
+func NewVerificationService(repo *repositories.VerificationRepository) *VerificationService {
 	fmt.Println("initializing new auth service")
-	repo := repositories.NewVerificationRepository()
     return &VerificationService{
         VerificationRepository: repo,
     }

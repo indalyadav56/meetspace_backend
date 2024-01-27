@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"meetspace_backend/auth/models"
-	"meetspace_backend/config"
 
 	"gorm.io/gorm"
 )
@@ -11,14 +10,14 @@ type VerificationRepository struct {
     db *gorm.DB
 }
 
-func NewVerificationRepository() *VerificationRepository {
+func NewVerificationRepository(db *gorm.DB) *VerificationRepository {
 	return &VerificationRepository{
-		db:      config.DB,
+		db:      db,
 	}
 }
 
 func (repo *VerificationRepository) CreateRecord(v models.Verification) (*models.Verification, error) {
-	result := config.DB.Create(&v)
+	result := repo.db.Create(&v)
 	if result.Error != nil {
         return nil, result.Error
     }
@@ -28,7 +27,7 @@ func (repo *VerificationRepository) CreateRecord(v models.Verification) (*models
 func (repo *VerificationRepository) GetRecordByEmail(email string) (models.Verification, error) {
 	var model models.Verification
 	
-	result := config.DB.Where("email = ?", email).Order("updated_at DESC").First(&model)
+	result := repo.db.Where("email = ?", email).Order("updated_at DESC").First(&model)
 	
 	if result.Error != nil {
         return model, result.Error
