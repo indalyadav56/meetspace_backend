@@ -1,7 +1,7 @@
 package websocket
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
 // gets or create WebSocket pool based on the groupName
@@ -15,17 +15,19 @@ func getOrCreatePool(groupName string) *Pool {
 	return pool
 }
 
-func handleWebSocketConnection(groupName string) gin.HandlerFunc {
-	return func(c *gin.Context) {
+func handleWebSocketConnection(groupName string) fiber.Handler {
+	return func(c *fiber.Ctx) error{
 		currentPool := getOrCreatePool(groupName)
 		WebSocketServer(currentPool, c)
+		return nil
 	}
 }
 
-func handleWebSocketConnectionFromParam() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		groupName := c.Param("groupName")
+func handleWebSocketConnectionFromParam() fiber.Handler {
+	return func(c *fiber.Ctx) error{
+		groupName := c.Query("groupName")
 		currentPool := getOrCreatePool(groupName)
 		WebSocketServer(currentPool, c)
+		return nil
 	}
 }

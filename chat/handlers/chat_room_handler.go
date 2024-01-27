@@ -1,15 +1,11 @@
 package handlers
 
 import (
-	"fmt"
 	"meetspace_backend/chat/models"
-	"meetspace_backend/chat/types"
 	"meetspace_backend/config"
-	userModel "meetspace_backend/user/models"
 	"meetspace_backend/utils"
-	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
@@ -25,61 +21,59 @@ type CreateChatRoomBody struct {
 //	@Produce		json
 // @Param user body types.LoginRequest true "User login details"
 //	@Router			/v1/chat/room/contact [get]
-func GetChatRoomContact(ctx *gin.Context){
-    currentUser, exists := utils.GetUserFromContext(ctx)
-    if !exists{
-        return 
-    }
-    currentUserID := currentUser.ID
+func GetChatRoomContact(ctx *fiber.Ctx) error{
+    // currentUser, exists := utils.GetUserFromContext(ctx)
+    // if !exists{
+    //     return 
+    // }
+    // currentUserID := currentUser.ID
 
-	var rooms []models.ChatRoom
-
+	// var rooms []models.ChatRoom
     
+	// config.DB.Model(&models.ChatRoom{}).
+	// Select("id", "room_name", "is_group", "CreatedAt", "UpdatedAt").
+	// Preload("RoomUsers").
+	// Where("id IN (?)", 
+	// config.DB.Table("room_users").Select("chat_room_id").Where("user_id = ?", "currentUserID")).
+	// Order("chat_rooms.updated_at DESC").Find(&rooms)
 
-	config.DB.Model(&models.ChatRoom{}).
-	Select("id", "room_name", "is_group", "CreatedAt", "UpdatedAt").
-	Preload("RoomUsers").
-	Where("id IN (?)", 
-	config.DB.Table("room_users").Select("chat_room_id").Where("user_id = ?", currentUserID)).
-	Order("chat_rooms.updated_at DESC").Find(&rooms)
+	// var respData []types.ChatContactResponse
+	// var chatMessage models.ChatMessage
 
-	var respData []types.ChatContactResponse
-	var chatMessage models.ChatMessage
-
-    fmt.Println("currentUserID", currentUserID)
-    fmt.Println("chatrooms", rooms)
-	for _, room := range rooms{
-		config.DB.Where("chat_room_id = ?", room.ID).Find(&chatMessage).Order("updated_at DESC").Limit(1)
-		if !room.IsGroup{
-			for _, user := range room.RoomUsers{
-				if user.ID != currentUserID{
-					respData = append(respData, types.ChatContactResponse{
-						RoomId: room.ID,
-						IsGroup: room.IsGroup,
-						UserId: &user.ID,
-						Email: user.Email,
-						FirstName: user.FirstName,
-						LastName: user.LastName,
-						IsActive: user.IsActive,
-						LastMessage: chatMessage.Content,
-						MessageUnSeenCount: 0,
-					})
-				}
-			}
-			}else{
-				respData = append(respData, types.ChatContactResponse{
-					RoomId: room.ID,
-					IsGroup: room.IsGroup,
-					RoomName: room.RoomName,
-					LastMessage: chatMessage.Content,
-					MessageUnSeenCount: 0,
-			})
-		}
+    // fmt.Println("currentUserID", "currentUserID")
+    // fmt.Println("chatrooms", rooms)
+	// for _, room := range rooms{
+	// 	config.DB.Where("chat_room_id = ?", room.ID).Find(&chatMessage).Order("updated_at DESC").Limit(1)
+	// 	if !room.IsGroup{
+	// 		for _, user := range room.RoomUsers{
+	// 			if user.ID != "currentUserID"{
+	// 				respData = append(respData, types.ChatContactResponse{
+	// 					RoomId: room.ID,
+	// 					IsGroup: room.IsGroup,
+	// 					UserId: &user.ID,
+	// 					Email: user.Email,
+	// 					FirstName: user.FirstName,
+	// 					LastName: user.LastName,
+	// 					IsActive: user.IsActive,
+	// 					LastMessage: chatMessage.Content,
+	// 					MessageUnSeenCount: 0,
+	// 				})
+	// 			}
+	// 		}
+	// 		}else{
+	// 			respData = append(respData, types.ChatContactResponse{
+	// 				RoomId: room.ID,
+	// 				IsGroup: room.IsGroup,
+	// 				RoomName: room.RoomName,
+	// 				LastMessage: chatMessage.Content,
+	// 				MessageUnSeenCount: 0,
+	// 		})
+	// 	}
 		
-	}
+	// }
 	
-	ctx.JSON(http.StatusOK, utils.SuccessResponse("aeraeraewr", respData))
-	return
+	// ctx.JSON(http.StatusOK, utils.SuccessResponse("aeraeraewr", respData))
+	return nil
 }
 
 
@@ -90,63 +84,63 @@ func GetChatRoomContact(ctx *gin.Context){
 //	@Produce		json
 // @Param user body CreateChatRoomBody true "User login details"
 //	@Router			/v1/chat/rooms [post]
-func CreateChatRoom (ctx *gin.Context){
-    user, _ := utils.GetUserFromContext(ctx)
-    currentUserID := user.ID
-    var reqBody CreateChatRoomBody
+func CreateChatRoom (ctx *fiber.Ctx) error{
+    // user, _ := utils.GetUserFromContext(ctx)
+    // currentUserID := user.ID
+    // var reqBody CreateChatRoomBody
     
-    if err := ctx.ShouldBindJSON(&reqBody); err != nil {
-        ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
+    // if err := ctx.ShouldBindJSON(&reqBody); err != nil {
+    //     ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+    //     return
+    // }
    
-    var user1 userModel.User
-    var user2 userModel.User
+    // var user1 userModel.User
+    // var user2 userModel.User
 
-    fmt.Println("indal", reqBody)
+    // fmt.Println("indal", reqBody)
     
-    config.DB.Where("id = ?", currentUserID).Find(&user1)
-    config.DB.Where("id = ?", reqBody.RoomUsers[0]).Find(&user2)
+    // config.DB.Where("id = ?", currentUserID).Find(&user1)
+    // config.DB.Where("id = ?", reqBody.RoomUsers[0]).Find(&user2)
 
-    var result []struct {
-        ChatRoomID string `gorm:"column:chat_room_id" json:"chat_room_id"`
-    }
+    // var result []struct {
+    //     ChatRoomID string `gorm:"column:chat_room_id" json:"chat_room_id"`
+    // }
 
-    config.DB.Table("room_users").
-            Select("chat_room_id").
-            Where("user_id IN (?,?)", currentUserID, user2.ID).
-            Group("chat_room_id").
-            Having("COUNT(DISTINCT user_id) = ?", 2).
-            Find(&result)
-    fmt.Println("config", result)
-    if(len(result) <= 0) {
-        chatRoomData := models.ChatRoom{
-            ID: reqBody.RoomId,
-            RoomName: "NewChatRoom",
-            RoomOwnerID: user1.ID,
-            RoomOwner: &user1,
-            RoomUsers: []*userModel.User{
-                &user1,
-                &user2,
-            },
-        }
-        if err := config.DB.Create(&chatRoomData).Error; err != nil {
-            fmt.Println("create room error", err)
-        }
-        fmt.Println("chatRoomData", chatRoomData)
-        ctx.JSON(http.StatusOK, utils.SuccessResponse("aeraer",chatRoomData))
+    // config.DB.Table("room_users").
+    //         Select("chat_room_id").
+    //         Where("user_id IN (?,?)", currentUserID, user2.ID).
+    //         Group("chat_room_id").
+    //         Having("COUNT(DISTINCT user_id) = ?", 2).
+    //         Find(&result)
+    // fmt.Println("config", result)
+    // if(len(result) <= 0) {
+    //     chatRoomData := models.ChatRoom{
+    //         ID: reqBody.RoomId,
+    //         RoomName: "NewChatRoom",
+    //         RoomOwnerID: user1.ID,
+    //         RoomOwner: &user1,
+    //         RoomUsers: []*userModel.User{
+    //             &user1,
+    //             &user2,
+    //         },
+    //     }
+    //     if err := config.DB.Create(&chatRoomData).Error; err != nil {
+    //         fmt.Println("create room error", err)
+    //     }
+    //     fmt.Println("chatRoomData", chatRoomData)
+    //     ctx.JSON(http.StatusOK, utils.SuccessResponse("aeraer",chatRoomData))
         
-        return
-    }else{
-        ctx.JSON(http.StatusOK, utils.ErrorResponse(
-			"Room Already Created!!",
-            result,
-		))
+    //     return
+    // }else{
+    //     ctx.JSON(http.StatusOK, utils.ErrorResponse(
+	// 		"Room Already Created!!",
+    //         result,
+	// 	))
         
-        return
+    //     return
 
-    }
-
+    // }
+    return nil
 }
 // DeleteChatRoom godoc
 //	@Summary		DeleteChatRoom 
@@ -155,8 +149,8 @@ func CreateChatRoom (ctx *gin.Context){
 //	@Produce		json
 // @Param user body types.LoginRequest true "User login details"
 //	@Router			/v1/chat/rooms [delete]
-func DeleteChatRoom (ctx *gin.Context){
-
+func DeleteChatRoom (ctx *fiber.Ctx) error{
+    return nil
 }
 
 
@@ -167,12 +161,12 @@ func DeleteChatRoom (ctx *gin.Context){
 //	@Produce		json
 // @Param user body types.LoginRequest true "User login details"
 //	@Router			/v1/chat/rooms [get]
-func GetChatRooms(ctx *gin.Context){
-    currentUser, exists := utils.GetUserFromContext(ctx)
-    if !exists{
-        return 
-    }
-    currentUserID := currentUser.ID
+func GetChatRooms(ctx *fiber.Ctx) error{
+    // currentUser, exists := utils.GetUserFromContext(ctx)
+    // if !exists{
+    //     return 
+    // }
+    // currentUserID := currentUser.ID
 
     roomUserId := ctx.Query("user_id")
 
@@ -184,27 +178,27 @@ func GetChatRooms(ctx *gin.Context){
         
         config.DB.Table("room_users").
             Select("chat_room_id").
-            Where("user_id IN (?,?)", currentUserID, roomUserId).
+            Where("user_id IN (?,?)", "currentUserID", roomUserId).
             Group("chat_room_id").
             Having("COUNT(DISTINCT user_id) = ?", 2).
             Find(&result)
 
-		ctx.JSON(http.StatusOK, utils.SuccessResponse(
+		ctx.JSON(utils.SuccessResponse(
 			"success",
             result,
 		))
-        return
+        return nil
         
     }else{
         var rooms []models.ChatRoom
 
-        config.DB.Model(&models.ChatRoom{}).Preload("RoomUsers").Preload("RoomOwner").Where("id IN (?)", config.DB.Table("room_users").Select("chat_room_id").Where("user_id = ?", currentUserID)).Find(&rooms).Order("CreatedAt DESC")
+        config.DB.Model(&models.ChatRoom{}).Preload("RoomUsers").Preload("RoomOwner").Where("id IN (?)", config.DB.Table("room_users").Select("chat_room_id").Where("user_id = ?", "currentUserID")).Find(&rooms).Order("CreatedAt DESC")
         
-        ctx.JSON(http.StatusOK, utils.SuccessResponse(
+        ctx.JSON(utils.SuccessResponse(
 			"aeraer",
             rooms,
 		))
         
-        return
+        return nil
     }
 }

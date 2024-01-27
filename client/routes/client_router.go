@@ -3,21 +3,20 @@ package routes
 import (
 	"meetspace_backend/client/handlers"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
 
-func ClientRouter(e *gin.Engine){
+func ClientRouter(e *fiber.App){
 	v1 := e.Group("/v1")
 	
 	clientRouter := v1.Group("/clients")
 	clientUserRouter := v1.Group("/client/users")
 
-	clientRouter.POST("", handlers.RegisterClientHandler)
-	clientRouter.GET("/:clientId", handlers.GetClientById)
-	clientRouter.GET("", handlers.GetAllClients)
+	clientRouter.Post("", handlers.RegisterClientHandler)
+	clientRouter.Get("/:clientId", handlers.GetClientById)
+	clientRouter.Get("", handlers.GetAllClients)
 	
-	
-	clientUserRouter.POST("", handlers.ClientAddUser)
-	clientUserRouter.GET("", handlers.GetClientUsers)
+	clientUserRouter.Post("", handlers.ClientAddUser)
+	clientUserRouter.Get("", handlers.GetClientUsers)
 }

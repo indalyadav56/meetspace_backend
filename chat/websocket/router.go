@@ -1,13 +1,15 @@
 package websocket
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
 var groupPools = make(map[string]*Pool)
 
-func WebSocketRouter(r *gin.Engine) {
-	socketRouter := r.Group("/v1/chat")
-	socketRouter.GET("", handleWebSocketConnection("new pool"))
-	socketRouter.GET("/:groupName", handleWebSocketConnectionFromParam())
+func WebSocketRouter(app *fiber.App) {
+	socketRouter := app.Group("/v1/chat")
+
+
+	socketRouter.Get("", handleWebSocketConnection("new pool"))
+	socketRouter.Get("/:groupName", handleWebSocketConnectionFromParam())
 }

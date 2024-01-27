@@ -6,9 +6,8 @@ import (
 	"meetspace_backend/config"
 	userModel "meetspace_backend/user/models"
 	"meetspace_backend/utils"
-	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
 // AddChatGroup godoc
@@ -18,15 +17,13 @@ import (
 //	@Produce		json
 // @Param user body types.LoginRequest true "User login details"
 //	@Router			/v1/chat/room/groups [post]
-func AddChatGroup(ctx *gin.Context){
-    currentUser, exists := utils.GetUserFromContext(ctx)
-    if !exists{
-        return 
-    }
+func AddChatGroup(ctx *fiber.Ctx) error{
+    // currentUser, exists := utils.GetUserFromContext(ctx)
+    // if !exists{
+    //     return nil
+    // }
 	var reqData types.AddChatGroup
 
-	utils.BindJsonData(ctx, &reqData)
-	
 	var chatRoom models.ChatRoom
 	var roomUsers []*userModel.User
 
@@ -40,11 +37,11 @@ func AddChatGroup(ctx *gin.Context){
 		}
 	}
 
-	roomUsers = append(roomUsers, currentUser)
-	chatRoom.RoomUsers = roomUsers
-	chatRoom.RoomOwner = currentUser
+	// roomUsers = append(roomUsers, currentUser)
+	// chatRoom.RoomUsers = roomUsers
+	// chatRoom.RoomOwner = currentUser
 
 	chatGroup, _ := config.ChatGroupService.CreateChatGroup(chatRoom)
-	ctx.JSON(http.StatusOK, utils.SuccessResponse("success", chatGroup))
-	return
+	ctx.JSON(utils.SuccessResponse("success", chatGroup))
+	return nil
 }
