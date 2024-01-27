@@ -99,108 +99,34 @@ definitions:
       password:
         type: string
     type: object
-  types.SendEmailRequest:
-    properties:
-      email:
-        type: string
-    type: object
-  types.SendEmailResponse:
-    properties:
-      email:
-        type: string
-    type: object
-  types.VerifyEmailRequest:
-    properties:
-      email:
-        type: string
-      otp:
-        type: string
-    type: object
 info:
   contact: {}
 paths:
   /v1/auth/forgot-password:
     post:
       description: ForgotPassword
-      parameters:
-      - description: User registration details
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/types.RegisterRequest'
       produces:
       - application/json
-      responses:
-        "200":
-          description: Email sent successfully
-          schema:
-            $ref: '#/definitions/types.SendEmailResponse'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/types.SendEmailRequest'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/types.SendEmailRequest'
+      responses: {}
       summary: ForgotPassword
       tags:
       - Auth
   /v1/auth/login:
     post:
       description: UserLogin User account
-      parameters:
-      - description: User login details
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/types.LoginRequest'
       produces:
       - application/json
-      responses:
-        "200":
-          description: Email sent successfully
-          schema:
-            $ref: '#/definitions/types.SendEmailResponse'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/types.SendEmailRequest'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/types.SendEmailRequest'
+      responses: {}
       summary: UserLogin User account
       tags:
       - Auth
   /v1/auth/logout:
     post:
-      description: Register User account
-      parameters:
-      - description: User registration details
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/types.RegisterRequest'
+      description: UserLogout User account
       produces:
       - application/json
-      responses:
-        "200":
-          description: Email sent successfully
-          schema:
-            $ref: '#/definitions/types.SendEmailResponse'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/types.SendEmailRequest'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/types.SendEmailRequest'
-      summary: Register User account
+      responses: {}
+      summary: UserLogout User account
       tags:
       - Auth
   /v1/auth/register:
@@ -215,74 +141,24 @@ paths:
           $ref: '#/definitions/types.RegisterRequest'
       produces:
       - application/json
-      responses:
-        "200":
-          description: Email sent successfully
-          schema:
-            $ref: '#/definitions/types.SendEmailResponse'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/types.SendEmailRequest'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/types.SendEmailRequest'
+      responses: {}
       summary: Register User account
       tags:
       - Auth
   /v1/auth/send-email:
     post:
       description: Send email to user
-      parameters:
-      - description: Send email details
-        in: body
-        name: auth
-        required: true
-        schema:
-          $ref: '#/definitions/types.SendEmailRequest'
       produces:
       - application/json
-      responses:
-        "200":
-          description: Email sent successfully
-          schema:
-            $ref: '#/definitions/types.SendEmailResponse'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/types.SendEmailRequest'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/types.SendEmailRequest'
+      responses: {}
       tags:
       - Auth
   /v1/auth/verify-email:
     post:
       description: Verify email otp.
-      parameters:
-      - description: verify email details
-        in: body
-        name: auth
-        required: true
-        schema:
-          $ref: '#/definitions/types.VerifyEmailRequest'
       produces:
       - application/json
-      responses:
-        "200":
-          description: Email sent successfully
-          schema:
-            $ref: '#/definitions/types.SendEmailResponse'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/types.SendEmailRequest'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/types.SendEmailRequest'
+      responses: {}
       tags:
       - Auth
   /v1/chat/messages:

@@ -1,12 +1,14 @@
 package handlers
 
 import (
-	"meetspace_backend/client/service_factory"
+	"meetspace_backend/client/services"
 	"meetspace_backend/client/types"
 	"meetspace_backend/utils"
 
 	"github.com/gin-gonic/gin"
 )
+
+var clientUserService = services.NewClientUserService()
 
 // ClientAddUser godoc
 //	@Summary		ClientAddUser account
@@ -21,8 +23,6 @@ func ClientAddUser(c *gin.Context){
         return 
     }
 
-	clientService := service_factory.GetClientService()
-	clientUserService := service_factory.GetClientUserService()
 
 	currentClient, err  := clientService.GetClientById(currentUser.ClientID.String())
 	if err != nil {
@@ -58,8 +58,6 @@ func ClientAddUser(c *gin.Context){
 //	@Router			/v1/client/users [get]
 func GetClientUsers(c *gin.Context){
 	currentUser, _ := utils.GetUserFromContext(c)
-
-	clientUserService := service_factory.GetClientUserService()
 
 	users , _  := clientUserService.GetClientUsers(currentUser.ClientID.String())
 	resp := utils.SuccessResponse("success", users)

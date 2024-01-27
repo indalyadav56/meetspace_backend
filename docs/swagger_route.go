@@ -1,14 +1,14 @@
 package docs
 
 import (
-	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/gofiber/fiber/v2"
+	// swaggerFiles "github.com/swaggo/files"
+	// ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 
-func SwaggerRouter(e *gin.Engine){
-	protectedGroup := e.Group("/docs")
+func SwaggerRouter(app *fiber.App){
+	// protectedGroup := app.Group("/docs")
 
 	
 	SwaggerInfo.Title = "MeetSpace API"
@@ -31,6 +31,6 @@ func SwaggerRouter(e *gin.Engine){
 	// 	"foo": "bar",
 	// }))
 
-	protectedGroup.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, 
-	ginSwagger.DefaultModelsExpandDepth(-1)))
+	// protectedGroup.Get("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, 
+	// ginSwagger.DefaultModelsExpandDepth(-1)))
 }

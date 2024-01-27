@@ -4,7 +4,6 @@ import (
 	"meetspace_backend/client/repositories"
 	"meetspace_backend/client/types"
 	userModel "meetspace_backend/user/models"
-	"meetspace_backend/user/service_factory"
 	userService "meetspace_backend/user/services"
 	"meetspace_backend/utils"
 )

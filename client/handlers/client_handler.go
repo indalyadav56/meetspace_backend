@@ -1,12 +1,14 @@
 package handlers
 
 import (
-	"meetspace_backend/client/service_factory"
+	"meetspace_backend/client/services"
 	"meetspace_backend/client/types"
 	"meetspace_backend/utils"
 
 	"github.com/gin-gonic/gin"
 )
+
+var clientService = services.NewClientService()
 
 // RegisterClientHandler godoc
 //	@Summary		UserLogin User account
@@ -16,7 +18,6 @@ import (
 // @Param user body types.ClientCreateData true "User login details"
 //	@Router			/v1/clients [post]
 func RegisterClientHandler(c *gin.Context){
-	clientService := service_factory.GetClientService()
 
 	var reqData types.ClientCreateData
 	if err := utils.BindJsonData(c, &reqData); err != nil {
@@ -45,7 +46,6 @@ func RegisterClientHandler(c *gin.Context){
 //	@Router			/v1/clients/{id} [get]
 func GetClientById(c *gin.Context){
 	clientId := c.Param("clientId")
-	clientService := service_factory.GetClientService()
 
 	client, _ := clientService.GetClientById(clientId)
 
@@ -73,7 +73,6 @@ func GetAllClients(c *gin.Context){
 
 	companyName := c.Query("company_name")
 
-	clientService := service_factory.GetClientService()
 	clients, _ := clientService.GetAllClients(companyName)
 
 	resp := utils.SuccessResponse("success", clients)

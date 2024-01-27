@@ -25,37 +25,7 @@ const docTemplate = `{
                     "Auth"
                 ],
                 "summary": "ForgotPassword",
-                "parameters": [
-                    {
-                        "description": "User registration details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.RegisterRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Email sent successfully",
-                        "schema": {
-                            "$ref": "#/definitions/types.SendEmailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/types.SendEmailRequest"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/types.SendEmailRequest"
-                        }
-                    }
-                }
+                "responses": {}
             }
         },
         "/v1/auth/login": {
@@ -68,80 +38,20 @@ const docTemplate = `{
                     "Auth"
                 ],
                 "summary": "UserLogin User account",
-                "parameters": [
-                    {
-                        "description": "User login details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.LoginRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Email sent successfully",
-                        "schema": {
-                            "$ref": "#/definitions/types.SendEmailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/types.SendEmailRequest"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/types.SendEmailRequest"
-                        }
-                    }
-                }
+                "responses": {}
             }
         },
         "/v1/auth/logout": {
             "post": {
-                "description": "Register User account",
+                "description": "UserLogout User account",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Register User account",
-                "parameters": [
-                    {
-                        "description": "User registration details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.RegisterRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Email sent successfully",
-                        "schema": {
-                            "$ref": "#/definitions/types.SendEmailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/types.SendEmailRequest"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/types.SendEmailRequest"
-                        }
-                    }
-                }
+                "summary": "UserLogout User account",
+                "responses": {}
             }
         },
         "/v1/auth/register": {
@@ -165,26 +75,7 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "Email sent successfully",
-                        "schema": {
-                            "$ref": "#/definitions/types.SendEmailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/types.SendEmailRequest"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/types.SendEmailRequest"
-                        }
-                    }
-                }
+                "responses": {}
             }
         },
         "/v1/auth/send-email": {
@@ -196,37 +87,7 @@ const docTemplate = `{
                 "tags": [
                     "Auth"
                 ],
-                "parameters": [
-                    {
-                        "description": "Send email details",
-                        "name": "auth",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.SendEmailRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Email sent successfully",
-                        "schema": {
-                            "$ref": "#/definitions/types.SendEmailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/types.SendEmailRequest"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/types.SendEmailRequest"
-                        }
-                    }
-                }
+                "responses": {}
             }
         },
         "/v1/auth/verify-email": {
@@ -238,37 +99,7 @@ const docTemplate = `{
                 "tags": [
                     "Auth"
                 ],
-                "parameters": [
-                    {
-                        "description": "verify email details",
-                        "name": "auth",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.VerifyEmailRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Email sent successfully",
-                        "schema": {
-                            "$ref": "#/definitions/types.SendEmailResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/types.SendEmailRequest"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/types.SendEmailRequest"
-                        }
-                    }
-                }
+                "responses": {}
             }
         },
         "/v1/chat/messages": {
@@ -807,33 +638,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.SendEmailRequest": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.SendEmailResponse": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.VerifyEmailRequest": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "otp": {
                     "type": "string"
                 }
             }

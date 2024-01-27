@@ -8,7 +8,6 @@ import (
 	"meetspace_backend/config"
 	"meetspace_backend/user/constants"
 	userModel "meetspace_backend/user/models"
-	"meetspace_backend/user/service_factory"
 	userService "meetspace_backend/user/services"
 	"meetspace_backend/utils"
 
@@ -23,7 +22,6 @@ type ClientService struct {
 
 func NewClientService() *ClientService {
 	repo := repositories.NewClientRepository()
-	userService := service_factory.GetUserService()
 	
 	return &ClientService{
 		ClientRepository: repo,
