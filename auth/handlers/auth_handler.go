@@ -1,15 +1,35 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"meetspace_backend/auth/constants"
 	"meetspace_backend/auth/models"
 	"meetspace_backend/auth/types"
 	"meetspace_backend/config"
 	"meetspace_backend/utils"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
+
+type ErrorMsg struct {
+    Field string `json:"field"`
+    Message   string `json:"message"`
+}
+
+func getErrorMsg(fe validator.FieldError) string {
+    switch fe.Tag() {
+        case "required":
+            return "This field is required"
+        case "lte":
+            return "Should be less than " + fe.Param()
+        case "gte":
+            return "Should be greater than " + fe.Param()
+    }
+    return "Unknown error"
+}
 
 // 	UserRegister godoc
 //	@Summary		Register User account
@@ -21,8 +41,26 @@ import (
 func UserRegister(c *gin.Context){
 	var req types.RegisterRequest
 	if err := utils.BindJsonData(c, &req); err != nil {
+		resp:= utils.ErrorResponse("Invalid JSON", err.Error())
+		c.JSON(resp.StatusCode, resp)
         return 
     }
+
+	validate := validator.New()
+    if err := validate.Struct(req); err != nil {
+		var ve validator.ValidationErrors
+        if errors.As(err, &ve) {
+            out := make([]ErrorMsg, len(ve))
+            for i, fe := range ve {
+                out[i] = ErrorMsg{fe.Field(), getErrorMsg(fe)}
+            }
+			resp := utils.ErrorResponse("Invalid Data", out)
+			c.JSON(http.StatusBadRequest, resp)
+			return
+        }
+		
+    }
+
 	user, err := config.AuthService.Register(req)
 	if err != nil {
 		return 

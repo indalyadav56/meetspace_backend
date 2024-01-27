@@ -237,7 +237,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.CreateChatRoomBody"
+                            "$ref": "#/definitions/types.LoginRequest"
                         }
                     }
                 ],
@@ -488,20 +488,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "handlers.CreateChatRoomBody": {
-            "type": "object",
-            "properties": {
-                "room_id": {
-                    "type": "string"
-                },
-                "room_users": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
         "models.Client": {
             "type": "object",
             "properties": {

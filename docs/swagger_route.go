@@ -24,7 +24,6 @@ func SwaggerRouter(e *gin.Engine){
 	// 		"in":   "header",
 	// 	},
 	// }
-
 	
 	// protectedGroup.Use(gin.BasicAuth(gin.Accounts{
 	// 	"foo": "bar",

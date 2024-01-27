@@ -33,9 +33,9 @@ func main() {
 	r.StaticFS("/uploads", http.Dir("./uploads"))
 	
 	// middlewares
+	r.Use(middlewares.LoggerMiddleware())
 	r.Use(middlewares.CorsMiddleware())
 	r.Use(middlewares.AuthMiddleware())
-	r.Use(middlewares.LoggerMiddleware())
 	
 	// routes
 	authRoutes.AuthRouter(r)

@@ -54,6 +54,7 @@ func AuthMiddleware() gin.HandlerFunc  {
 				"/v1/auth/send-email",
 				"/v1/auth/verify-email",
 				"/v1/user/check-email",
+				"/",
 			}
 		requestPath := c.Request.URL.Path
 

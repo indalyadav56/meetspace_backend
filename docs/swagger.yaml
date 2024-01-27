@@ -1,13 +1,4 @@
 definitions:
-  handlers.CreateChatRoomBody:
-    properties:
-      room_id:
-        type: string
-      room_users:
-        items:
-          type: string
-        type: array
-    type: object
   models.Client:
     properties:
       client_user_id:
@@ -264,7 +255,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/handlers.CreateChatRoomBody'
+          $ref: '#/definitions/types.LoginRequest'
       produces:
       - application/json
       responses: {}
