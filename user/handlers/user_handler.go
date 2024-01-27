@@ -7,7 +7,7 @@ import (
 	"meetspace_backend/utils"
 	"net/http"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
@@ -17,11 +17,14 @@ import (
 //	@Produce		json
 // @Param user body types.CreateUserData true "User create details"
 //	@Router			/v1/users [post]
-func CreateUserHandler(c *fiber.Ctx) error {
+func CreateUserHandler(c *gin.Context) {
 	var reqBody types.CreateUserData
+	utils.BindJsonData(c, &reqBody)
 
-	c.JSON(reqBody)
-	return nil
+	resp, _ := config.UserService.CreateUser(reqBody)
+	
+	c.JSON(200, resp)
+	return
 }
 
 // GetUserByID godoc
@@ -30,13 +33,13 @@ func CreateUserHandler(c *fiber.Ctx) error {
 //	@Produce		json
 // @Param user body types.CreateUserData true "User create details"
 //	@Router			/v1/users/{id} [get]
-func GetUserByID(c *fiber.Ctx) error{
-	userId := c.Query("userId")
+func GetUserByID(c *gin.Context) {
+	userId := c.Param("userId")
 	
 	resp := config.UserService.GetUserByID(userId)
 	
-	c.JSON(resp)
-	return nil
+	c.JSON(resp.StatusCode, resp)
+	return
 }
 
 // GetUserByID godoc
@@ -45,23 +48,24 @@ func GetUserByID(c *fiber.Ctx) error{
 //	@Produce		json
 // @Param user body types.CreateUserData true "User create details"
 //	@Router			/v1/users [get]
-func GetAllUsers(c *fiber.Ctx) error{
+func GetAllUsers(c *gin.Context) {
 	email := c.Query("email")
+
 	users, err := config.UserService.GetAllUsers(email)
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.Status(http.StatusNotFound).JSON(utils.NotFoundErrorResponse("not found", "user not found"))
-			return nil
+			c.JSON(http.StatusNotFound, utils.NotFoundErrorResponse("not found", "user not found"))
+			return
 		}
 		resp := utils.ErrorResponse("error", err.Error())
-		c.JSON(resp)
-		return nil
+		c.JSON(resp.StatusCode, resp)
+		return
 	}
 	
 	resp := utils.SuccessResponse("success", users)
-	c.JSON(resp)
-	return nil
+	c.JSON(resp.StatusCode, resp)
+	return
 }
 
 // GetUserByID godoc
@@ -70,20 +74,31 @@ func GetAllUsers(c *fiber.Ctx) error{
 //	@Produce		json
 // @Param user body types.CreateUserData true "User create details"
 //	@Router			/v1/users [put]
-func UpdateUser(c *fiber.Ctx) error {
+func UpdateUser(c *gin.Context) {
+	currentUser, exists := utils.GetUserFromContext(c)
 	
+	if !exists{
+		resp := utils.ErrorResponse("invalid user!", nil)
+		c.JSON(resp.StatusCode, resp)
+		return
+	}
 
 	var reqBody types.UpdateUserData
 	
+	if err := utils.BindJsonData(c, &reqBody); err != nil {
+		resp:= utils.ErrorResponse("Invalid JSON", nil)
+		c.JSON(resp.StatusCode, resp)
+		return
+	}
 
 	file, _ := c.FormFile("profile_pic")
 
 	reqBody.ProfilePic = file
 	
-	response := config.UserService.UpdateUser("currentUser.ID.String()", reqBody)
+	response := config.UserService.UpdateUser(currentUser.ID.String(), reqBody)
 	
-	c.JSON(response)
-	return nil
+	c.JSON(response.StatusCode, response)
+	return
 }
 
 // CheckUserEmail godoc
@@ -92,23 +107,23 @@ func UpdateUser(c *fiber.Ctx) error {
 //	@Produce		json
 // @Param user body types.CreateUserData true "User create details"
 //	@Router			/v1/user/check-email [get]
-func CheckUserEmail(c *fiber.Ctx) error {
+func CheckUserEmail(c *gin.Context) {
 	email := c.Query("email")
 	
 	user, err := config.UserService.GetUserByEmail(email)
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.JSON(utils.NotFoundErrorResponse("not found", "user not found"))
-			return nil
+			c.JSON(http.StatusNotFound, utils.NotFoundErrorResponse("not found", "user not found"))
+			return
 		}
 		resp := utils.ErrorResponse("error", err.Error())
-		c.JSON(resp)
-		return nil
+		c.JSON(resp.StatusCode, resp)
+		return
 	}
 	
 	resp := utils.SuccessResponse("success", user)
 	
-	c.JSON(resp)
-	return nil
+	c.JSON(resp.StatusCode, resp)
+	return
 }

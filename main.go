@@ -2,23 +2,21 @@ package main
 
 import (
 	"fmt"
-
-	"meetspace_backend/config"
-	"meetspace_backend/middlewares"
-
-	swagger "github.com/arsmn/fiber-swagger/v2"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
-
-	authRoute "meetspace_backend/auth/routes"
-	chatRoute "meetspace_backend/chat/routes"
+	authRoutes "meetspace_backend/auth/routes"
+	chatRoutes "meetspace_backend/chat/routes"
 	websocketRoute "meetspace_backend/chat/websocket"
-	clientRoute "meetspace_backend/client/routes"
-	_ "meetspace_backend/docs"
-	userRoute "meetspace_backend/user/routes"
+	clientRoutes "meetspace_backend/client/routes"
+	"meetspace_backend/config"
+	docs "meetspace_backend/docs"
+	"meetspace_backend/middlewares"
+	userRoutes "meetspace_backend/user/routes"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 // @securityDefinitions.basic BasicAuth
+
 // @securitydefinitions.oauth2.application OAuth2Application
 // @tokenUrl https://example.com/oauth/token
 // @scope.write Grants write access
@@ -30,25 +28,23 @@ func main() {
 	// initialize database connection
 	config.InitDB()
 	
-	app := fiber.New()
+	r := gin.Default()
 
-	app.Static("/uploads","./uploads")
+	r.StaticFS("/uploads", http.Dir("./uploads"))
 	
 	// middlewares
-    app.Use(logger.New())
-	app.Use(middlewares.LoggerMiddleware())
-	app.Use(middlewares.CorsMiddleware())
-	// r.Use(middlewares.AuthMiddleware())
+	r.Use(middlewares.CorsMiddleware())
+	r.Use(middlewares.AuthMiddleware())
+	r.Use(middlewares.LoggerMiddleware())
 	
 	// routes
-	app.Get("/*", swagger.HandlerDefault)
-	
-	authRoute.AuthRouter(app)
-	userRoute.UserRouter(app)
-	chatRoute.ChatRouter(app)
-	clientRoute.ClientRouter(app)
-	websocketRoute.WebSocketRouter(app)
+	authRoutes.AuthRouter(r)
+	userRoutes.UserRouter(r)
+	chatRoutes.ChatRouter(r)
+	websocketRoute.WebSocketRouter(r)
+	clientRoutes.ClientRouter(r)
+	docs.SwaggerRouter(r)
 
 	fmt.Println("server:->", "http://localhost:8080")
-    app.Listen(":8080")
+	r.Run()
 }

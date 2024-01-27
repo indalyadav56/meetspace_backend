@@ -1,7 +1,11 @@
 package handlers
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"meetspace_backend/client/types"
+	"meetspace_backend/config"
+	"meetspace_backend/utils"
+
+	"github.com/gin-gonic/gin"
 )
 
 // ClientAddUser godoc
@@ -11,36 +15,37 @@ import (
 //	@Produce		json
 // @Param user body types.ClientAddUser true "User registration details"
 //	@Router			/v1/client/users [post]
-func ClientAddUser(c *fiber.Ctx) error{
-	// currentUser, exists := utils.GetUserFromContext(c)
-    // if !exists{
-    //     return 
-    // }
+func ClientAddUser(c *gin.Context){
+	currentUser, exists := utils.GetUserFromContext(c)
+    if !exists{
+        return 
+    }
 
-	// currentClient, err  := config.ClientService.GetClientById(currentUser.ClientID.String())
-	// if err != nil {
-	// 	utils.HandleError(c, err)
-	// 	return
-	// }
 
-	// var reqData types.ClientAddUser
-	// if err := utils.BindJsonData(c, &reqData); err != nil {
-	// 	utils.HandleError(c, err)
-	// 	return
-	// }
-	// reqData.ClientID = currentUser.ClientID
-	// reqData.CreatedBy = &currentClient
-	// reqData.UpdatedBy = &currentClient
+	currentClient, err  := config.ClientService.GetClientById(currentUser.ClientID.String())
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
 
-	// user, err := config.ClientUserService.AddClientUser(reqData)
-	// if err != nil {  
-	// 	utils.HandleError(c, err)
-	// 	return 
-	// }
+	var reqData types.ClientAddUser
+	if err := utils.BindJsonData(c, &reqData); err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+	reqData.ClientID = currentUser.ClientID
+	reqData.CreatedBy = &currentClient
+	reqData.UpdatedBy = &currentClient
 
-	// resp := utils.SuccessResponse("success", user)
-	// c.JSON(resp.StatusCode, resp)
-	return nil
+	user, err := config.ClientUserService.AddClientUser(reqData)
+	if err != nil {  
+		utils.HandleError(c, err)
+		return 
+	}
+
+	resp := utils.SuccessResponse("success", user)
+	c.JSON(resp.StatusCode, resp)
+	return
 }
 
 // GetClientUsers godoc
@@ -49,11 +54,11 @@ func ClientAddUser(c *fiber.Ctx) error{
 //	@Tags			Client-User
 //	@Produce		json
 //	@Router			/v1/client/users [get]
-func GetClientUsers(c *fiber.Ctx) error{
-	// currentUser, _ := utils.GetUserFromContext(c)
-	// users , _  := config.ClientUserService.GetClientUsers(currentUser.ClientID.String())
-	// resp := utils.SuccessResponse("success", users)
-	// c.JSON(resp)
-	return nil
-}
+func GetClientUsers(c *gin.Context){
+	currentUser, _ := utils.GetUserFromContext(c)
 
+	users , _  := config.ClientUserService.GetClientUsers(currentUser.ClientID.String())
+	resp := utils.SuccessResponse("success", users)
+	c.JSON(resp.StatusCode, resp)
+	return
+}

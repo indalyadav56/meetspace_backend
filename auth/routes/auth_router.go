@@ -3,18 +3,18 @@ package routes
 import (
 	"meetspace_backend/auth/handlers"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 )
 
 
-func AuthRouter(app *fiber.App){
-	authRouter := app.Group("/v1/auth")
+func AuthRouter(e *gin.Engine){
+	authRouter := e.Group("/v1/auth")
 
-	authRouter.Post("/register", handlers.UserRegister)
-	authRouter.Post("/login", handlers.UserLogin)
-	authRouter.Post("/logout", handlers.UserLogout)
-	authRouter.Post("/forgot-password", handlers.ForgotPassword)
+	authRouter.POST("/register", handlers.UserRegister)
+	authRouter.POST("/login", handlers.UserLogin)
+	authRouter.POST("/logout", handlers.UserLogout)
 	
-	authRouter.Post("/send-email", handlers.SendEmailHandler)
-	authRouter.Post("/verify-email", handlers.VerifyEmailHandler)
+	authRouter.POST("/send-email", handlers.SendEmailHandler)
+	authRouter.POST("/verify-email", handlers.VerifyEmailHandler)
+
 }

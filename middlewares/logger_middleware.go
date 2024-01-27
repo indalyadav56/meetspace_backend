@@ -4,14 +4,14 @@ import (
 	"os"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
 
-func LoggerMiddleware() fiber.Handler {
-    log.SetFormatter(&log.JSONFormatter{})
+func LoggerMiddleware() gin.HandlerFunc {
+    log.SetFormatter(&log.JSONFormatter{}) // Use JSON format for logs
 
-    return func(c *fiber.Ctx) error {
+    return func(c *gin.Context) {
         start := time.Now()
 
         fileName := "logs/app-" + time.Now().Format("2006-01-02") + ".log"
@@ -24,23 +24,22 @@ func LoggerMiddleware() fiber.Handler {
 
         // Log request details
         log.WithFields(log.Fields{
-            "request_id": c.Get("X-Request-ID"),
-            "method":     c.Method(),
-            "path":       c.Path(),
-            "client_ip":  c.IP(),
-            "user_agent": c.Get("User-Agent"),
-            "user_id":    c.Locals("user_id"), // Assuming user_id is set in the middleware
+            "request_id": c.GetHeader("X-Request-ID"),
+            "method":     c.Request.Method,
+            "path":       c.Request.URL.Path,
+            "client_ip":  c.ClientIP(),
+            "user_agent": c.Request.UserAgent(),
+            "user_id":    c.GetString("user_id"), // Assuming user_id is set in the middleware
         }).Info("Incoming request")
 
-        err = c.Next()
+        c.Next()
 
         // Log response details
         log.WithFields(log.Fields{
-            "request_id": c.Get("X-Request-ID"),
-            "status":     c.Response().StatusCode(),
+            "request_id": c.GetHeader("X-Request-ID"),
+            "status":     c.Writer.Status(),
             "duration":   time.Since(start).Seconds(),
         }).Info("Request processed")
-
-        return err
     }
+   
 }

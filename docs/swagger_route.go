@@ -1,16 +1,15 @@
 package docs
 
 import (
-	"github.com/gofiber/fiber/v2"
-	// swaggerFiles "github.com/swaggo/files"
-	// ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 
-func SwaggerRouter(app *fiber.App){
-	// protectedGroup := app.Group("/docs")
+func SwaggerRouter(e *gin.Engine){
+	protectedGroup := e.Group("/docs")
 
-	
 	SwaggerInfo.Title = "MeetSpace API"
 	SwaggerInfo.Description = "This is a sample server Petstore server."
 	SwaggerInfo.Version = "1.0"
@@ -31,6 +30,6 @@ func SwaggerRouter(app *fiber.App){
 	// 	"foo": "bar",
 	// }))
 
-	// protectedGroup.Get("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, 
-	// ginSwagger.DefaultModelsExpandDepth(-1)))
+	protectedGroup.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, 
+	ginSwagger.DefaultModelsExpandDepth(-1)))
 }

@@ -6,9 +6,10 @@ import (
 	"meetspace_backend/chat/types"
 	"meetspace_backend/config"
 	"meetspace_backend/utils"
+	"net/http"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 )
 
 // GetChatMessageAPI godoc
@@ -18,14 +19,17 @@ import (
 //	@Produce		json
 // @Param user body types.GetChatMessageRequestBody true "User registration details"
 //	@Router			/v1/chat/messages [get]
-func GetChatMessageAPI(ctx *fiber.Ctx) error{
-    chatRoomID := ctx.Query("chatRoomId")
+func GetChatMessageAPI(ctx *gin.Context){
+    chatRoomID := ctx.Param("chatRoomId")
     
     var reqBody types.GetChatMessageRequestBody
+
     reqBody.ChatRoomId = chatRoomID
+   
 	msg, _ := GetChatMessageByRoomId(reqBody)
-    ctx.JSON(utils.SuccessResponse("success", msg))
-    return nil
+    
+    ctx.JSON(http.StatusOK, utils.SuccessResponse("success", msg))
+    return
 }
 
 
@@ -94,4 +98,3 @@ func GetChatMessageByRoomId(inputData types.GetChatMessageRequestBody) ([]types.
     }
     return resp, nil
 }
-

@@ -3,27 +3,25 @@ package http
 import (
 	"meetspace_backend/chat/handlers"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 )
 
 
-func ChatRouter(app *fiber.App){
-	chatRouter := app.Group("/v1/chat")
-	chatRoom := app.Group("/v1/chat/rooms")
+func ChatRouter(e *gin.Engine){
+	chatRouter := e.Group("/v1/chat")
 
 	// rooms
-	chatRouter.Get("/room/contact", handlers.GetChatRoomContact)
-	
-	chatRoom.Get("/", handlers.GetChatRooms)
-	chatRoom.Post("/rooms", handlers.CreateChatRoom)
-	chatRoom.Delete("/rooms", handlers.DeleteChatRoom)
+	chatRouter.GET("/room/contact", handlers.GetChatRoomContact)
+	chatRouter.GET("/rooms", handlers.GetChatRooms)
+	chatRouter.POST("/rooms", handlers.CreateChatRoom)
+	chatRouter.DELETE("/rooms", handlers.DeleteChatRoom)
 
 	// groups
-	chatRouter.Post("/groups", handlers.AddChatGroup)
-	// chatGroup.GET("/group/members/:roomId", handlers.GetGroupMembers)
+	// chatGroup.POST("/groups", services.AddChatGroup)
+	// chatGroup.GET("/group/members/:roomId", services.GetGroupMembers)
 
 	// messages
 	// chatGroup.POST("/messages", handlers.CreateChatMessageAPI)
 	// chatGroup.PATCH("/messages", handlers.UpdateChatMessage)
-	chatRouter.Get("/messages/:chatRoomId", handlers.GetChatMessageAPI)
+	chatRouter.GET("/messages/:chatRoomId", handlers.GetChatMessageAPI)
 }

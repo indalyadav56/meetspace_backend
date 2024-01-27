@@ -9,7 +9,6 @@ import (
 	"meetspace_backend/utils"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gofiber/fiber/v2"
 )
 
 // 	UserRegister godoc
@@ -19,14 +18,14 @@ import (
 //	@Produce		json
 // 	@Param user body types.RegisterRequest true "User registration details"
 //	@Router			/v1/auth/register [post]
-func UserRegister(c *fiber.Ctx) error{
+func UserRegister(c *gin.Context){
 	var req types.RegisterRequest
-	if err := c.BodyParser(&req); err != nil {
-        return err
+	if err := utils.BindJsonData(c, &req); err != nil {
+        return 
     }
 	user, err := config.AuthService.Register(req)
 	if err != nil {
-		return err
+		return 
 	}
 
 	accessToken, refreshToken, _ := utils.GenerateTokenPair(user.ID.String())
@@ -41,8 +40,8 @@ func UserRegister(c *fiber.Ctx) error{
 		Token: tokenData,
 	}
 	successResponse := utils.SuccessResponse("Successfully logged in!!", resData)
-	c.Status(successResponse.StatusCode).JSON(successResponse)
-	return nil
+	c.JSON(200, successResponse)
+	return
 }
 
 // 	UserLogin godoc
@@ -51,15 +50,15 @@ func UserRegister(c *fiber.Ctx) error{
 //	@Tags			Auth
 //	@Produce		json
 //	@Router			/v1/auth/login [post]
-func UserLogin(c *fiber.Ctx) error {
+func UserLogin(c *gin.Context) {
 	var req types.LoginRequest
-	if err := c.BodyParser(&req); err != nil {
-        return err
+	if err := utils.BindJsonData(c, &req); err != nil {
+        return 
     }
 
 	user, err := config.AuthService.Login(req)
 	if err != nil {
-		return err
+		return 
 	}
 
 	tokenData, _ := utils.GenerateUserToken(user.ID.String())
@@ -68,8 +67,8 @@ func UserLogin(c *fiber.Ctx) error {
 		Token: tokenData,
 	}
 	successResponse := utils.SuccessResponse(constants.USER_LOGIN_MSG, resData)
-	c.Status(successResponse.StatusCode).JSON(successResponse)
-	return nil
+	c.JSON(200, successResponse)
+	return 
 }
 
 // UserLogout godoc
@@ -78,10 +77,10 @@ func UserLogin(c *fiber.Ctx) error {
 //	@Tags			Auth
 //	@Produce		json
 //	@Router			/v1/auth/logout [post]
-func UserLogout(c *fiber.Ctx) error {
+func UserLogout(c *gin.Context) {
 	successResponse := utils.SuccessResponse("Successfully logged in!!", "test")
-	c.Status(successResponse.StatusCode).JSON(successResponse)
-	return nil
+	c.JSON(200, successResponse)
+	return
 }
 
 // ForgotPassword godoc
@@ -90,10 +89,10 @@ func UserLogout(c *fiber.Ctx) error {
 //	@Tags			Auth
 //	@Produce		json
 //	@Router			/v1/auth/forgot-password [post]
-func ForgotPassword(c *fiber.Ctx) error{
+func ForgotPassword(c *gin.Context){
 	successResponse := utils.SuccessResponse("Successfully logged in!!", "test")
-	c.Status(200).Status(successResponse.StatusCode).JSON(successResponse)
-	return nil
+	c.JSON(200, successResponse)
+	return
 }
 
 // SendEmail godoc
@@ -101,11 +100,11 @@ func ForgotPassword(c *fiber.Ctx) error{
 //	@Tags			Auth
 //	@Produce		json
 //	@Router			/v1/auth/send-email [post]
-func SendEmailHandler(c *fiber.Ctx) error {
+func SendEmailHandler(c *gin.Context) {
 	var reqBody types.SendEmailRequest
-	err := c.BodyParser(&reqBody)
+	err := c.ShouldBindJSON(&reqBody)
 	if err != nil {
-		return nil
+		return
 	}
 	otp := utils.GenerateOTP()
 
@@ -120,8 +119,8 @@ func SendEmailHandler(c *fiber.Ctx) error {
 	
 	resp := utils.SuccessResponse("successfully send email!", gin.H{
 	})
-	c.JSON(resp)
-	return nil
+	c.JSON(200, resp)
+	return
 }
 
 // VerifyEmailHandler godoc
@@ -129,22 +128,22 @@ func SendEmailHandler(c *fiber.Ctx) error {
 //	@Tags			Auth
 //	@Produce		json
 //	@Router			/v1/auth/verify-email [post]
-func VerifyEmailHandler(c *fiber.Ctx)  error{
+func VerifyEmailHandler(c *gin.Context) {
 	var reqBody types.VerifyEmailRequest
-	err := c.BodyParser(&reqBody)
+	err := c.ShouldBindJSON(&reqBody)
 	if err != nil {
-		return nil
+		return
 	}
 
 	modelObj, _ := config.VerificationService.GetVerificationDataByEmail(reqBody.Email)
 	if modelObj.Otp == reqBody.OTP{
 		config.DB.Model(&modelObj).Update("is_verified", true)
 		resp := utils.SuccessResponse("successfully send email!", nil)
-		c.Status(resp.StatusCode).JSON(resp)
-		return nil
+		c.JSON(200, resp)
+		return
 	}
 	
 	resp := utils.ErrorResponse("error", nil)
-	c.JSON(resp)
-	return nil
+	c.JSON(200, resp)
+	return 
 }

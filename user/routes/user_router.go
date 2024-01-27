@@ -3,18 +3,18 @@ package routes
 import (
 	"meetspace_backend/user/handlers"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 )
 
 
-func UserRouter(app *fiber.App){
-	userRouter := app.Group("/v1/user")
-	usersRouter := app.Group("/v1/users")
+func UserRouter(e *gin.Engine){
+	userRouter := e.Group("/v1/user")
+	usersRouter := e.Group("/v1/users")
 
-	usersRouter.Post("", handlers.CreateUserHandler)
-	usersRouter.Get("", handlers.GetAllUsers)
-	usersRouter.Get("/:userId", handlers.GetUserByID)
-	usersRouter.Patch("", handlers.UpdateUser)
+	usersRouter.POST("", handlers.CreateUserHandler)
+	usersRouter.GET("", handlers.GetAllUsers)
+	usersRouter.GET("/:userId", handlers.GetUserByID)
+	usersRouter.PATCH("", handlers.UpdateUser)
 
-	userRouter.Get("/check-email", handlers.CheckUserEmail)
+	userRouter.GET("/check-email", handlers.CheckUserEmail)
 }
