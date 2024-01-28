@@ -24,25 +24,26 @@ var g = galidator.New()
 //	@Router			/v1/auth/register [post]
 func UserRegister(c *gin.Context){
 	var req types.RegisterRequest
-
-	err := utils.BindJsonData(c, &req)
-	if err != nil {
-		c.JSON(400, "invalid request data, it should be json only.")
-        return 
-	}
-
-	// if err := utils.BindJsonData(c, &req); err != nil {
-	// 	resp:= utils.ErrorResponse("Invalid JSON", err.Error())
-	// 	var validator = g.Validator(req)
-	// 	c.JSON(resp.StatusCode, validator.DecryptErrors(err))
-    //     return 
-    // }
+	
+	if err := utils.BindJsonData(c, &req); err != nil {
+		resp:= utils.ErrorResponse(constants.REQUEST_BODY_ERROR_MSG, nil)
+		c.JSON(resp.StatusCode, resp)
+        return
+    }
 	
 	if err := utils.GetValidator().Struct(req); err != nil {
-		data := utils.HandleValidationError(err, req)
-		c.JSON(400, data)
+		data := utils.ParseError(err, req)
+		resp := utils.ErrorResponse(constants.REQUEST_BODY_ERROR_MSG, data)
+		c.JSON(resp.StatusCode, resp)
 		return
     }
+	
+	// err := req.Validate()
+	// fmt.Println("error", err)
+	// if err != nil {
+	// 	c.JSON(400, err.Error())
+	// 	return
+	// }
 
 	// user, err := config.AuthService.Register(req)
 	// if err != nil {
@@ -60,8 +61,8 @@ func UserRegister(c *gin.Context){
 	// 	User: user,
 	// 	Token: tokenData,
 	// }
-	successResponse := utils.SuccessResponse("Successfully logged in!!", "resData")
-	c.JSON(200, successResponse)
+	respData := utils.SuccessResponse(constants.USER_REGISTER_MSG, "resData")
+	c.JSON(respData.StatusCode, respData)
 	return
 }
 

@@ -29,6 +29,7 @@ func ValidateStruct(s interface{}) error {
     }
     return nil
 }
+
 func getErrorMsg(fe validator.FieldError) string {
     switch fe.Tag() {
         case "required":
@@ -41,7 +42,7 @@ func getErrorMsg(fe validator.FieldError) string {
     return "Unknown error"
 }
 
-func HandleValidationError(err error, structToValidate interface{}) []map[string]interface{} {
+func ParseError(err error, structToValidate interface{}) []map[string]interface{} {
     var errorList []map[string]interface{}
     
     if validationErrors, ok := err.(validator.ValidationErrors); ok {
