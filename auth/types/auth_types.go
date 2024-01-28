@@ -3,8 +3,8 @@ package types
 import "meetspace_backend/user/models"
 
 type RegisterRequest struct {
-	FistName string `json:"first_name" binding:"required"`
-	LastName string `json:"last_name" binding:"required"`
+	FistName string `json:"first_name" validate:"required"`
+	LastName string `json:"last_name" validate:"required"`
 	Email string `json:"email" validate:"required,email"`
     Password  string `json:"password" validate:"required,min=6"`
 }
