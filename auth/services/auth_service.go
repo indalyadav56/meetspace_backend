@@ -26,7 +26,7 @@ func (us *AuthService) Register(reqData types.RegisterRequest) (models.User, err
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(reqData.Password), bcrypt.DefaultCost)
 
 	user := models.User{
-		FirstName: reqData.FistName,
+		FirstName: reqData.FirstName,
 		LastName: reqData.LastName,
 		Email: reqData.Email,
 		Password: string(hashedPassword),

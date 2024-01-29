@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"errors"
 	"reflect"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -11,8 +13,12 @@ type ErrorMsg struct {
     Message   string `json:"message"`
 }
 
-
 var validate *validator.Validate
+
+func init() {
+    validate  =  validator.New()
+    validate.RegisterValidation("not_blank", NotBlank)
+}
 
 // GetValidator ensures a single validator instance is created and used throughout the application
 func GetValidator() *validator.Validate {
@@ -22,12 +28,20 @@ func GetValidator() *validator.Validate {
     return validate
 }
 
-// ValidateStruct validates a struct using the singleton validator
-func ValidateStruct(s interface{}) error {
-    if err := GetValidator().Struct(s); err != nil {
-        return err
-    }
-    return nil
+
+func NotBlank(fl validator.FieldLevel) bool {
+	field := fl.Field()
+
+	switch field.Kind() {
+	case reflect.String:
+		return len(strings.TrimSpace(field.String())) > 0
+	case reflect.Chan, reflect.Map, reflect.Slice, reflect.Array:
+		return field.Len() > 0
+	case reflect.Ptr, reflect.Interface, reflect.Func:
+		return !field.IsNil()
+	default:
+		return field.IsValid() && field.Interface() != reflect.Zero(field.Type()).Interface()
+	}
 }
 
 func getErrorMsg(fe validator.FieldError) string {
@@ -38,42 +52,32 @@ func getErrorMsg(fe validator.FieldError) string {
             return "Should be less than " + fe.Param()
         case "gte":
             return "Should be greater than " + fe.Param()
+        case "min":
+            return "Should be greater than " + fe.Param()
+        case "email":
+            return "Email is not valid."
+        case "not_blank":
+            return "This field should not be blank" + fe.Param()
     }
     return "Unknown error"
 }
 
-func ParseError(err error, structToValidate interface{}) []map[string]interface{} {
-    var errorList []map[string]interface{}
+func ParseError(err error, structToValidate interface{}) interface{} {
+    var ve validator.ValidationErrors
+    t := reflect.TypeOf(structToValidate)
     
-    if validationErrors, ok := err.(validator.ValidationErrors); ok {
-        t := reflect.TypeOf(structToValidate)
+    if errors.As(err, &ve) {
+        errData := make([]ErrorMsg, len(ve))
         
-        for _, e := range validationErrors {
-            field, _ := t.FieldByName(e.Field())
+        for i, fe := range ve {
+            field, _ := t.FieldByName(fe.Field())
             jsonTag := field.Tag.Get("json")
-            errorList = append(errorList, map[string]interface{}{
-                "field": jsonTag,
-                "message": "this field is " + e.Tag(),
-            })
+            errData[i] = ErrorMsg{
+                Field: jsonTag, 
+                Message: getErrorMsg(fe),
+            }
         }
+    	return errData
     }
-    
-    return errorList
+    return nil
 }
-
-
-// if err := validate.Struct(req); err != nil {
-//     data := utils.HandleValidationError(err, req)
-//     // var ve validator.ValidationErrors
-//     // if errors.As(err, &ve) {
-//     //     out := make([]ErrorMsg, len(ve))
-//     //     for i, fe := range ve {
-//     //         out[i] = ErrorMsg{fe.Field(), getErrorMsg(fe)}
-//     //     }
-//     // 	// resp := utils.ErrorResponse("Invalid Data", out)
-//     // 	c.JSON(http.StatusBadRequest, out)
-//     // 	return
-//     // }
-//     c.JSON(400, data)
-//     return
-// }

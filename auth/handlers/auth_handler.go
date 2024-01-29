@@ -9,11 +9,7 @@ import (
 	"meetspace_backend/utils"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golodash/galidator"
 )
-
-
-var g = galidator.New()
 
 // 	UserRegister godoc
 //	@Summary		Register User account
@@ -33,35 +29,25 @@ func UserRegister(c *gin.Context){
 	
 	if err := utils.GetValidator().Struct(req); err != nil {
 		data := utils.ParseError(err, req)
-		resp := utils.ErrorResponse(constants.REQUEST_BODY_ERROR_MSG, data)
+		resp := utils.ErrorResponse(constants.AUTH_REQUEST_VALIDATION_ERROR_MSG, data)
 		c.JSON(resp.StatusCode, resp)
 		return
     }
-	
-	// err := req.Validate()
-	// fmt.Println("error", err)
-	// if err != nil {
-	// 	c.JSON(400, err.Error())
-	// 	return
-	// }
 
-	// user, err := config.AuthService.Register(req)
-	// if err != nil {
-	// 	return 
-	// }
-
-	// accessToken, refreshToken, _ := utils.GenerateTokenPair(user.ID.String())
-
-	// tokenData := map[string]interface{}{
-	// 	"access": accessToken,
-	// 	"refresh": refreshToken,
-	// }
-
-	// resData := types.AuthResponse{
-	// 	User: user,
-	// 	Token: tokenData,
-	// }
-	respData := utils.SuccessResponse(constants.USER_REGISTER_MSG, "resData")
+	user, err := config.AuthService.Register(req)
+	if err != nil {
+		return 
+	}
+	accessToken, refreshToken, _ := utils.GenerateTokenPair(user.ID.String())
+	tokenData := map[string]interface{}{
+		"access": accessToken,
+		"refresh": refreshToken,
+	}
+	resData := types.AuthResponse{
+		User: user,
+		Token: tokenData,
+	}
+	respData := utils.SuccessResponse(constants.USER_REGISTER_MSG, resData)
 	c.JSON(respData.StatusCode, respData)
 	return
 }
