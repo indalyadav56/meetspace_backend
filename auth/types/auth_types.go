@@ -15,6 +15,11 @@ type LoginRequest struct {
 	UserType string `json:"user_type,omitempty"`
 }
 
+type RegisterResponse struct {
+	RegisterRequest 
+	Token map[string]string `json:"token"`
+}
+
 type AuthResponse struct {
 	models.User
 	Token map[string]interface{} `json:"token"`

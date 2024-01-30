@@ -27,6 +27,9 @@ func main() {
 	
 	// initialize database connection
 	config.InitDB()
+
+	// initializing services
+	config.StartService()
 	
 	r := gin.Default()
 

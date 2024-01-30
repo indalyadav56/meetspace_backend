@@ -90,10 +90,10 @@ func VerifyToken(tokenString string) (string, error) {
 
 
 // generate tokens for user
-func GenerateUserToken(userId string) (map[string]interface{}, error) {
+func GenerateUserToken(userId string) (map[string]string, error) {
 	accessToken, refreshToken, _ := GenerateTokenPair(userId)
 
-	tokenData := map[string]interface{}{
+	tokenData := map[string]string{
 		"access": accessToken,
 		"refresh": refreshToken,
 	}

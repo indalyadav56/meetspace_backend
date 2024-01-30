@@ -2,14 +2,27 @@ package repositories
 
 import (
 	"errors"
-	"fmt"
-	authModel "meetspace_backend/auth/models"
+	"meetspace_backend/auth/constants"
 	"meetspace_backend/user/models"
 	"meetspace_backend/user/types"
 	"meetspace_backend/utils"
 
+	"github.com/jackc/pgx/v5/pgconn"
 	"gorm.io/gorm"
 )
+
+// isDuplicateKeyError checks if the error is due to a duplicate key violation
+func isDuplicateKeyError(err error) bool {
+    // Check the error code or error message to identify duplicate key violation
+    // This check may vary depending on the database driver used
+    // For PostgreSQL, check if the error code is 23505
+    // Example: PostgreSQL error code for duplicate key violation is 23505
+    pgError, ok := err.(*pgconn.PgError)
+    if ok && pgError.Code == "23505" {
+        return true
+    }
+    return false
+}
 
 
 type UserRepository struct {
@@ -25,20 +38,21 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 
 
 func (userRepo *UserRepository) CreateRecord(user models.User) (*models.User, error) {
-    if err := userRepo.db.Create(&user).Error; err != nil {
-        fmt.Println("User create repos error", err)
-        return nil, err
+    result := userRepo.db.Create(&user)
+    if result.Error != nil {
+        if isDuplicateKeyError(result.Error) {
+            return nil, errors.New(constants.EMAIL_ALREADY_EXISTS_MSG)
+        }
     }
 
     // update user_id in verification
-    var verification authModel.Verification
-	userRepo.db.Where("email = ? OR phone_number = ? AND is_verified = ?", user.Email, user.PhoneNumber, true).First(&verification)
+    // var verification authModel.Verification
+	// userRepo.db.Where("email = ? OR phone_number = ? AND is_verified = ?", user.Email, user.PhoneNumber, true).First(&verification)
 	
-	if verification.Email != "" {
-		verification.UserID = user.ID
-		userRepo.db.Save(&verification) 
-	}
-  
+	// if verification.Email != "" {
+	// 	verification.UserID = user.ID
+	// 	userRepo.db.Save(&verification) 
+	// }
 
     return &user, nil
 }

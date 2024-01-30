@@ -23,9 +23,9 @@ var (
 )
 
 func StartService(){
-	AuthService = authServices.NewAuthService()
-	VerificationService = authServices.NewVerificationService(authRepo.NewVerificationRepository(GetDB()))
 	UserService = userServices.NewUserService(userRepo.NewUserRepository(GetDB()))
+	AuthService = authServices.NewAuthService(userServices.NewUserService(userRepo.NewUserRepository(GetDB())))
+	VerificationService = authServices.NewVerificationService(authRepo.NewVerificationRepository(GetDB()))
 	ClientService = clientServices.NewClientService(clientRepo.NewClientRepository(GetDB()), UserService)
 	ClientUserService = clientServices.NewClientUserService(clientRepo.NewClientRepository(GetDB()), UserService)
 	ChatRoomService = chatServices.NewChatRoomService(chatRepo.NewChatRoomRepository(GetDB()), UserService)

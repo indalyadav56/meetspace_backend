@@ -2,11 +2,9 @@ package services
 
 import (
 	"encoding/json"
-	"fmt"
 	"meetspace_backend/user/models"
 	"meetspace_backend/user/repositories"
 	"meetspace_backend/user/types"
-	"meetspace_backend/user/validators"
 	"meetspace_backend/utils"
 	"mime/multipart"
 )
@@ -28,13 +26,16 @@ func (us *UserService) CreateUser(userData types.CreateUserData) (*models.User, 
 		LastName: userData.LastName,
 		Email: userData.Email,
 		Password: userData.Password,
-		Role: userData.Role,
 	}
+
+	if userData.Role != ""{
+		userObj.Role = userData.Role
+	}
+
     user, err :=  us.UserRepository.CreateRecord(userObj)
 	
-	fmt.Println("user created Error:-", err)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create user: %w", err)
+		return nil, err
 	}
 
 	return user, nil
@@ -68,27 +69,27 @@ func (us *UserService) GetAllUsers(email string) ([]models.User, error) {
 }
 
 func (us *UserService) UpdateUser(userId string, updateData types.UpdateUserData) utils.Response{
-	err := validators.ValidateUpdateUserData(&updateData)
+	// err := validators.ValidateUpdateUserData(&updateData)
 
-	if err != nil {
-		return utils.ErrorResponse("error", []interface{}{})
-	}
+	// if err != nil {
+	// 	return utils.ErrorResponse("error", []interface{}{})
+	// }
 
 	mapData := map[string]interface{}{
 		"first_name": updateData.FirstName,
 		"last_name": updateData.LastName,
 	}
 
-	if err != nil {
-		return utils.ErrorResponse("error while updating user.", nil)
-	}
+	// if err != nil {
+	// 	return utils.ErrorResponse("error while updating user.", nil)
+	// }
 	
 	if updateData.ProfilePic != nil{
 		profilePicData := us.UploadUserProfilePic(updateData.ProfilePic, userId)
 		mapData["profile_pic"] = profilePicData
 	}
 	
-	userData, err:= us.UserRepository.UpdateUser(userId, mapData)
+	userData, _:= us.UserRepository.UpdateUser(userId, mapData)
 
 	userResponse := types.UserResponse{
 		ID: userData.ID,

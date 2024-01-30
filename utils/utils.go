@@ -139,7 +139,7 @@ func StructToMap(s interface{}) (map[string]interface{}, error) {
     result := make(map[string]interface{})
     decoder, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
         Result:  &result,
-        TagName: "json", // Use "json" tag for field names
+        TagName: "json",
     })
     if err != nil {
         return nil, err

@@ -36,15 +36,19 @@ func UserRegister(c *gin.Context){
 
 	user, err := config.AuthService.Register(req)
 	if err != nil {
+		var errData []utils.ErrorMsg
+		errData = append(errData, utils.ErrorMsg{
+			Field: "email",
+			Message: err.Error(),
+		})
+		resp := utils.ErrorResponse(err.Error(), errData)
+		c.JSON(resp.StatusCode, resp)
 		return 
 	}
-	accessToken, refreshToken, _ := utils.GenerateTokenPair(user.ID.String())
-	tokenData := map[string]interface{}{
-		"access": accessToken,
-		"refresh": refreshToken,
-	}
-	resData := types.AuthResponse{
-		User: user,
+	
+	tokenData, _ := utils.GenerateUserToken(user.ID.String())
+	resData := types.RegisterResponse{
+		RegisterRequest: req,
 		Token: tokenData,
 	}
 	respData := utils.SuccessResponse(constants.USER_REGISTER_MSG, resData)
@@ -70,9 +74,9 @@ func UserLogin(c *gin.Context) {
 	}
 
 	tokenData, _ := utils.GenerateUserToken(user.ID.String())
+	fmt.Println(tokenData)
 	resData := types.AuthResponse{
-		User: user,
-		Token: tokenData,
+		// Token: tokenData,
 	}
 	successResponse := utils.SuccessResponse(constants.USER_LOGIN_MSG, resData)
 	c.JSON(200, successResponse)
