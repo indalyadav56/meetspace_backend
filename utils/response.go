@@ -29,14 +29,14 @@ type Response struct {
 }
 
 // SuccessResponse creates a success response with optional message and data
-func SuccessResponse(message string, data interface{}) Response {
+func SuccessResponse(message string, data interface{}) *Response {
     metadata := Metadata{
         ApiVersion: "v1",
         ServerInfo: ServerInfo{
             Hostname: "localhost",
         },
     }
-    return Response{
+    return &Response{
         Status: "success",
         StatusCode: http.StatusOK,
         Message: message,
@@ -46,14 +46,14 @@ func SuccessResponse(message string, data interface{}) Response {
 }
 
 // ErrorResponse creates an error response with an optional message and errors
-func ErrorResponse(message string, errorData interface{}) Response {
+func ErrorResponse(message string, errorData interface{}) *Response {
     metadata := Metadata{
         ApiVersion: "v1",
         ServerInfo: ServerInfo{
             Hostname: "localhost",
         },
     }
-    return Response{
+    return &Response{
         Status: "error",
         StatusCode: http.StatusBadRequest,
         Message: message,
@@ -63,14 +63,14 @@ func ErrorResponse(message string, errorData interface{}) Response {
 }
 
 // ErrorResponse creates an error response with an optional message and errors
-func NotFoundErrorResponse(message string, errorData interface{}) Response {
+func NotFoundErrorResponse(message string, errorData interface{}) *Response {
     metadata := Metadata{
         ApiVersion: "v1",
         ServerInfo: ServerInfo{
             Hostname: "localhost",
         },
     }
-    return Response{
+    return &Response{
         Status: "error",
         StatusCode: http.StatusNotFound,
         Message: message,
@@ -80,14 +80,14 @@ func NotFoundErrorResponse(message string, errorData interface{}) Response {
 }
 
 
-func InternalError(message string, data []interface{}) Response {
+func InternalError(message string, data []interface{}) *Response {
     metadata := Metadata{
         ApiVersion: "v1",
         ServerInfo: ServerInfo{
             Hostname: "localhost",
         },
     }
-    return Response{
+    return &Response{
       StatusCode: http.StatusInternalServerError,
       Message: message, 
       Error: data,

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"math/big"
+	"meetspace_backend/auth/constants"
 	"meetspace_backend/user/models"
 	"mime/multipart"
 	"os"
@@ -70,9 +71,9 @@ func StringToStruct(str string, result interface{}) error {
 	return nil
 }
 
-func BindJsonData(c *gin.Context, target interface{}) error {
+func BindJsonData(c *gin.Context, target interface{}) *Response {
     if err := c.ShouldBind(&target); err != nil {
-        return err
+        return ErrorResponse(constants.REQUEST_BODY_ERROR_MSG, nil)
     }
     return nil
 }

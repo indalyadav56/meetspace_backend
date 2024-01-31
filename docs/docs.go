@@ -17,17 +17,28 @@ const docTemplate = `{
     "paths": {
         "/v1/auth/forgot-password": {
             "post": {
-                "description": "ForgotPassword",
+                "description": "Forgot password",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Auth"
                 ],
-                "summary": "ForgotPassword",
+                "summary": "forgot-password",
+                "parameters": [
+                    {
+                        "description": "forgot password request body",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.ForgotPasswordRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Login user successfully"
+                        "description": "Success"
                     },
                     "400": {
                         "description": "Bad request"
@@ -74,17 +85,28 @@ const docTemplate = `{
         },
         "/v1/auth/logout": {
             "post": {
-                "description": "UserLogout User account",
+                "description": "User logout User",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Auth"
                 ],
-                "summary": "UserLogout User account",
+                "summary": "user-logout",
+                "parameters": [
+                    {
+                        "description": "User login details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.LoginRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Login user successfully"
+                        "description": "success"
                     },
                     "400": {
                         "description": "Bad request"
@@ -117,7 +139,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "Register user successfully"
                     },
                     "400": {
@@ -138,9 +160,21 @@ const docTemplate = `{
                 "tags": [
                     "Auth"
                 ],
+                "summary": "send-email",
+                "parameters": [
+                    {
+                        "description": "send email request body",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Login user successfully"
+                        "description": "Success"
                     },
                     "400": {
                         "description": "Bad request"
@@ -160,9 +194,21 @@ const docTemplate = `{
                 "tags": [
                     "Auth"
                 ],
+                "summary": "verify-email",
+                "parameters": [
+                    {
+                        "description": "verify email request body",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.VerifyEmailRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Login user successfully"
+                        "description": "Success"
                     },
                     "400": {
                         "description": "Bad request"
@@ -175,6 +221,11 @@ const docTemplate = `{
         },
         "/v1/chat/messages": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Register User account",
                 "produces": [
                     "application/json"
@@ -223,6 +274,11 @@ const docTemplate = `{
         },
         "/v1/chat/room/contact": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "UserLogin User account",
                 "produces": [
                     "application/json"
@@ -247,6 +303,11 @@ const docTemplate = `{
         },
         "/v1/chat/room/groups": {
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "UserLogin User account",
                 "produces": [
                     "application/json"
@@ -271,6 +332,11 @@ const docTemplate = `{
         },
         "/v1/chat/rooms": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "GetChatRooms",
                 "produces": [
                     "application/json"
@@ -293,6 +359,11 @@ const docTemplate = `{
                 "responses": {}
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "CreateChatRoom",
                 "produces": [
                     "application/json"
@@ -315,6 +386,11 @@ const docTemplate = `{
                 "responses": {}
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "DeleteChatRoom",
                 "produces": [
                     "application/json"
@@ -471,13 +547,18 @@ const docTemplate = `{
         },
         "/v1/users": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "User"
                 ],
-                "summary": "User create",
+                "summary": "get all users",
                 "parameters": [
                     {
                         "description": "User create details",
@@ -492,13 +573,18 @@ const docTemplate = `{
                 "responses": {}
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "User"
                 ],
-                "summary": "User create",
+                "summary": "user-update",
                 "parameters": [
                     {
                         "description": "User create details",
@@ -513,6 +599,11 @@ const docTemplate = `{
                 "responses": {}
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -536,24 +627,18 @@ const docTemplate = `{
         },
         "/v1/users/{id}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "User"
                 ],
-                "summary": "User create",
-                "parameters": [
-                    {
-                        "description": "User create details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.CreateUserData"
-                        }
-                    }
-                ],
+                "summary": "get user by ID",
                 "responses": {}
             }
         }
@@ -657,6 +742,21 @@ const docTemplate = `{
                 }
             }
         },
+        "types.ForgotPasswordRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "new_password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "new_password": {
+                    "type": "string"
+                }
+            }
+        },
         "types.GetChatMessageRequestBody": {
             "type": "object",
             "properties": {
@@ -670,12 +770,17 @@ const docTemplate = `{
         },
         "types.LoginRequest": {
             "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
             "properties": {
                 "email": {
                     "type": "string"
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 6
                 }
             }
         },
@@ -702,20 +807,33 @@ const docTemplate = `{
                     "minLength": 6
                 }
             }
+        },
+        "types.SendEmailRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.VerifyEmailRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "otp": {
+                    "type": "string"
+                }
+            }
         }
     },
     "securityDefinitions": {
-        "BasicAuth": {
-            "type": "basic"
-        },
-        "OAuth2Application": {
-            "type": "oauth2",
-            "flow": "application",
-            "tokenUrl": "https://example.com/oauth/token",
-            "scopes": {
-                "admin": " Grants read and write access to administrative information",
-                "write": " Grants write access"
-            }
+        "Bearer": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

@@ -19,6 +19,16 @@ type RegisterResponse struct {
 	Token map[string]string `json:"token"`
 }
 
+type ForgotPasswordRequest struct {
+	Email string `json:"email" validate:"required,email"`
+	NewPassword string `json:"new_password" validate:"required,not_blank"`
+}
+
+type LogoutRequest struct {
+	Email string `json:"email" validate:"required,email"`
+	NewPassword string `json:"new_password" validate:"required,not_blank"`
+}
+
 type AuthResponse struct {
 	models.User
 	Token map[string]string `json:"token"`

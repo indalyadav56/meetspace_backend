@@ -30,7 +30,6 @@ func ClientAddUser(c *gin.Context){
 
 	var reqData types.ClientAddUser
 	if err := utils.BindJsonData(c, &reqData); err != nil {
-		utils.HandleError(c, err)
 		return
 	}
 	reqData.ClientID = currentUser.ClientID

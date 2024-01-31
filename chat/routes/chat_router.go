@@ -17,10 +17,10 @@ func ChatRouter(e *gin.Engine, handler ChatHandlers){
 	chatRouter := e.Group("/v1/chat")
 
 	// rooms
-	chatRouter.GET("/room/contact", handlers.GetChatRoomContact)
-	chatRouter.GET("/rooms", handlers.GetChatRooms)
-	chatRouter.POST("/rooms", handlers.CreateChatRoom)
-	chatRouter.DELETE("/rooms", handlers.DeleteChatRoom)
+	chatRouter.GET("/room/contact", handler.ChatRoomHandler.GetChatRoomContact)
+	chatRouter.GET("/rooms", handler.ChatRoomHandler.GetChatRooms)
+	chatRouter.POST("/rooms", handler.ChatRoomHandler.CreateChatRoom)
+	chatRouter.DELETE("/rooms", handler.ChatRoomHandler.DeleteChatRoom)
 
 	// groups
 	// chatGroup.POST("/groups", services.AddChatGroup)

@@ -30,6 +30,7 @@ func NewChatMessageHandler() *ChatMessageHandler {
 //	@Produce		json
 // @Param user body types.GetChatMessageRequestBody true "User registration details"
 //	@Router			/v1/chat/messages [get]
+// @Security Bearer
 func GetChatMessageAPI(ctx *gin.Context){
     chatRoomID := ctx.Param("chatRoomId")
     

@@ -12,9 +12,9 @@ func UserRouter(e *gin.Engine, handler *handlers.UserHandler){
 	usersRouter := e.Group("/v1/users")
 
 	usersRouter.POST("", handler.CreateUserHandler)
-	usersRouter.GET("", handlers.GetAllUsers)
-	usersRouter.GET("/:userId", handlers.GetUserByID)
-	usersRouter.PATCH("", handlers.UpdateUser)
+	usersRouter.GET("", handler.GetAllUsers)
+	usersRouter.GET("/:userId", handler.GetUserByID)
+	usersRouter.PATCH("", handler.UpdateUser)
 
-	userRouter.GET("/check-email", handlers.CheckUserEmail)
+	userRouter.GET("/check-email", handler.CheckUserEmail)
 }

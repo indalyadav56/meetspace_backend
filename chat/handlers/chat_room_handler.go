@@ -35,7 +35,8 @@ type CreateChatRoomBody struct {
 //	@Produce		json
 // @Param user body types.LoginRequest true "User login details"
 //	@Router			/v1/chat/room/contact [get]
-func GetChatRoomContact(ctx *gin.Context){
+// @Security Bearer
+func (h *ChatRoomHandler) GetChatRoomContact(ctx *gin.Context){
     currentUser, exists := utils.GetUserFromContext(ctx)
     if !exists{
         return 
@@ -96,7 +97,8 @@ func GetChatRoomContact(ctx *gin.Context){
 //	@Produce		json
 // @Param user body types.LoginRequest true "User login details"
 //	@Router			/v1/chat/rooms [post]
-func CreateChatRoom (ctx *gin.Context){
+// @Security Bearer
+func (h *ChatRoomHandler) CreateChatRoom (ctx *gin.Context){
     currentUserID := ctx.MustGet("userId")
 
     var reqBody CreateChatRoomBody
@@ -158,7 +160,8 @@ func CreateChatRoom (ctx *gin.Context){
 //	@Produce		json
 // @Param user body types.LoginRequest true "User login details"
 //	@Router			/v1/chat/rooms [delete]
-func DeleteChatRoom (ctx *gin.Context){
+// @Security Bearer
+func (h *ChatRoomHandler)DeleteChatRoom (ctx *gin.Context){
 
 }
 
@@ -170,7 +173,8 @@ func DeleteChatRoom (ctx *gin.Context){
 //	@Produce		json
 // @Param user body types.LoginRequest true "User login details"
 //	@Router			/v1/chat/rooms [get]
-func GetChatRooms(ctx *gin.Context){
+// @Security Bearer
+func (h *ChatRoomHandler) GetChatRooms(ctx *gin.Context){
     currentUser, exists := utils.GetUserFromContext(ctx)
     if !exists{
         return 

@@ -29,6 +29,7 @@ func NewChatGroupHandler() *ChatGroupHandler {
 //	@Produce		json
 // @Param user body types.LoginRequest true "User login details"
 //	@Router			/v1/chat/room/groups [post]
+// @Security Bearer
 func AddChatGroup(ctx *fiber.Ctx) error{
     // currentUser, exists := utils.GetUserFromContext(ctx)
     // if !exists{

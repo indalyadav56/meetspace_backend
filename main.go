@@ -29,12 +29,10 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// @securityDefinitions.basic BasicAuth
-
-// @securitydefinitions.oauth2.application OAuth2Application
-// @tokenUrl https://example.com/oauth/token
-// @scope.write Grants write access
-// @scope.admin Grants read and write access to administrative information
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
 func main() {
 	// load environment
 	config.LoadEnv()
@@ -66,7 +64,6 @@ func main() {
 	chatGroupHandler := chatHandlers.NewChatGroupHandler()
 	chatMessageHandler := chatHandlers.NewChatMessageHandler()
 	
-
 	r := gin.Default()
 
 	// static
@@ -95,8 +92,8 @@ func main() {
 	)
 	
 	docs.SwaggerInfo.Title = "MeetSpace API"
-	docs.SwaggerInfo.Description = "This is a sample server Petstore server."
-	docs.SwaggerInfo.Version = "1.0"
+	docs.SwaggerInfo.Description = "MeetSpace API documentation"
+	docs.SwaggerInfo.Version = "v1"
 	docs.SwaggerInfo.Host = "localhost:8080"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 

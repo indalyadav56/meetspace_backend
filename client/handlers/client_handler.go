@@ -19,7 +19,6 @@ func RegisterClientHandler(c *gin.Context){
 
 	var reqData types.ClientCreateData
 	if err := utils.BindJsonData(c, &reqData); err != nil {
-		utils.HandleError(c, err)
 		return
 	}
 	reqData.Password = "Indal@123"

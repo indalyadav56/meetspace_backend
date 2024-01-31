@@ -47,10 +47,10 @@ func (us *UserService) GetUserByID(userID string) utils.Response {
 	
 	if err != nil {
 		errorData := []interface{}{}
-		return utils.ErrorResponse("error", errorData)
+		return *utils.ErrorResponse("error", errorData)
 	}
 
-	return utils.SuccessResponse("success", user)
+	return *utils.SuccessResponse("success", user)
 }
 
 func (us *UserService) GetUserByEmail(email string) (models.User, error) {
@@ -102,7 +102,7 @@ func (us *UserService) UpdateUser(userId string, updateData types.UpdateUserData
 		UpdatedAt: userData.UpdatedAt,
 	}
 
-	return utils.SuccessResponse(
+	return *utils.SuccessResponse(
 		"User updated successfully", 
 		userResponse,
 	)

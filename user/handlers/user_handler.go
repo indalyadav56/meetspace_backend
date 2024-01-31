@@ -28,6 +28,7 @@ func NewUserHandler(userService *services.UserService) *UserHandler{
 //	@Produce		json
 // @Param user body types.CreateUserData true "User create details"
 //	@Router			/v1/users [post]
+// @Security Bearer
 func (handler *UserHandler) CreateUserHandler(c *gin.Context) {
 	var reqBody types.CreateUserData
 	utils.BindJsonData(c, &reqBody)
@@ -39,12 +40,12 @@ func (handler *UserHandler) CreateUserHandler(c *gin.Context) {
 }
 
 // GetUserByID godoc
-//	@Summary		User create
+//	@Summary		get user by ID
 //	@Tags			User
 //	@Produce		json
-// @Param user body types.CreateUserData true "User create details"
 //	@Router			/v1/users/{id} [get]
-func GetUserByID(c *gin.Context) {
+// @Security Bearer
+func (h *UserHandler) GetUserByID(c *gin.Context) {
 	userId := c.Param("userId")
 	
 	resp := config.UserService.GetUserByID(userId)
@@ -54,12 +55,13 @@ func GetUserByID(c *gin.Context) {
 }
 
 // GetUserByID godoc
-//	@Summary		User create
+//	@Summary		get all users
 //	@Tags			User
 //	@Produce		json
 // @Param user body types.CreateUserData true "User create details"
 //	@Router			/v1/users [get]
-func GetAllUsers(c *gin.Context) {
+// @Security Bearer
+func (h *UserHandler) GetAllUsers(c *gin.Context) {
 	email := c.Query("email")
 
 	users, err := config.UserService.GetAllUsers(email)
@@ -79,13 +81,14 @@ func GetAllUsers(c *gin.Context) {
 	return
 }
 
-// GetUserByID godoc
-//	@Summary		User create
+// UpdateUser godoc
+//	@Summary		user-update
 //	@Tags			User
 //	@Produce		json
 // @Param user body types.CreateUserData true "User create details"
 //	@Router			/v1/users [put]
-func UpdateUser(c *gin.Context) {
+// @Security Bearer
+func (h *UserHandler) UpdateUser(c *gin.Context) {
 	currentUser, exists := utils.GetUserFromContext(c)
 	
 	if !exists{
@@ -118,7 +121,7 @@ func UpdateUser(c *gin.Context) {
 //	@Produce		json
 // @Param user body types.CreateUserData true "User create details"
 //	@Router			/v1/user/check-email [get]
-func CheckUserEmail(c *gin.Context) {
+func (h *UserHandler) CheckUserEmail(c *gin.Context) {
 	email := c.Query("email")
 	
 	user, err := config.UserService.GetUserByEmail(email)

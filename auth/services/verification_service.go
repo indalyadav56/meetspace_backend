@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"meetspace_backend/auth/models"
 	"meetspace_backend/auth/repositories"
 )
@@ -11,7 +10,6 @@ type VerificationService struct {
 }
 
 func NewVerificationService(repo *repositories.VerificationRepository) *VerificationService {
-	fmt.Println("initializing new auth service")
     return &VerificationService{
         VerificationRepository: repo,
     }

@@ -63,6 +63,16 @@ definitions:
       updated_by:
         $ref: '#/definitions/models.Client'
     type: object
+  types.ForgotPasswordRequest:
+    properties:
+      email:
+        type: string
+      new_password:
+        type: string
+    required:
+    - email
+    - new_password
+    type: object
   types.GetChatMessageRequestBody:
     properties:
       chat_room_id:
@@ -75,7 +85,11 @@ definitions:
       email:
         type: string
       password:
+        minLength: 6
         type: string
+    required:
+    - email
+    - password
     type: object
   types.RegisterRequest:
     properties:
@@ -94,22 +108,41 @@ definitions:
     - last_name
     - password
     type: object
+  types.SendEmailRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  types.VerifyEmailRequest:
+    properties:
+      email:
+        type: string
+      otp:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
   /v1/auth/forgot-password:
     post:
-      description: ForgotPassword
+      description: Forgot password
+      parameters:
+      - description: forgot password request body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.ForgotPasswordRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: Login user successfully
+          description: Success
         "400":
           description: Bad request
         "500":
           description: Internal server error
-      summary: ForgotPassword
+      summary: forgot-password
       tags:
       - Auth
   /v1/auth/login:
@@ -136,17 +169,24 @@ paths:
       - Auth
   /v1/auth/logout:
     post:
-      description: UserLogout User account
+      description: User logout User
+      parameters:
+      - description: User login details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.LoginRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: Login user successfully
+          description: success
         "400":
           description: Bad request
         "500":
           description: Internal server error
-      summary: UserLogout User account
+      summary: user-logout
       tags:
       - Auth
   /v1/auth/register:
@@ -162,7 +202,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: Register user successfully
         "400":
           description: Bad request
@@ -174,29 +214,45 @@ paths:
   /v1/auth/send-email:
     post:
       description: Send email to user
+      parameters:
+      - description: send email request body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.SendEmailRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: Login user successfully
+          description: Success
         "400":
           description: Bad request
         "500":
           description: Internal server error
+      summary: send-email
       tags:
       - Auth
   /v1/auth/verify-email:
     post:
       description: Verify email otp.
+      parameters:
+      - description: verify email request body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.VerifyEmailRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: Login user successfully
+          description: Success
         "400":
           description: Bad request
         "500":
           description: Internal server error
+      summary: verify-email
       tags:
       - Auth
   /v1/chat/messages:
@@ -212,6 +268,8 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - Bearer: []
       summary: Register User account
       tags:
       - Chat-Message
@@ -244,6 +302,8 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - Bearer: []
       summary: UserLogin User account
       tags:
       - Chat-Room
@@ -260,6 +320,8 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - Bearer: []
       summary: UserLogin User account
       tags:
       - Chat-Group
@@ -276,6 +338,8 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - Bearer: []
       summary: DeleteChatRoom
       tags:
       - Chat-Room
@@ -291,6 +355,8 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - Bearer: []
       summary: GetChatRooms
       tags:
       - Chat-Room
@@ -306,6 +372,8 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - Bearer: []
       summary: CreateChatRoom
       tags:
       - Chat-Room
@@ -410,7 +478,9 @@ paths:
       produces:
       - application/json
       responses: {}
-      summary: User create
+      security:
+      - Bearer: []
+      summary: get all users
       tags:
       - User
     post:
@@ -424,6 +494,8 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - Bearer: []
       summary: User create
       tags:
       - User
@@ -438,32 +510,25 @@ paths:
       produces:
       - application/json
       responses: {}
-      summary: User create
+      security:
+      - Bearer: []
+      summary: user-update
       tags:
       - User
   /v1/users/{id}:
     get:
-      parameters:
-      - description: User create details
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/types.CreateUserData'
       produces:
       - application/json
       responses: {}
-      summary: User create
+      security:
+      - Bearer: []
+      summary: get user by ID
       tags:
       - User
 securityDefinitions:
-  BasicAuth:
-    type: basic
-  OAuth2Application:
-    flow: application
-    scopes:
-      admin: ' Grants read and write access to administrative information'
-      write: ' Grants write access'
-    tokenUrl: https://example.com/oauth/token
-    type: oauth2
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
