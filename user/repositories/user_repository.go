@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"errors"
-	"meetspace_backend/auth/constants"
+	"meetspace_backend/user/constants"
 	"meetspace_backend/user/models"
 	"meetspace_backend/user/types"
 	"meetspace_backend/utils"
@@ -69,7 +69,7 @@ func (userRepo *UserRepository) GetUserByEmail(email string) (models.User, error
     var user models.User
     err := userRepo.db.Where("email=?", email).First(&user).Error
     if errors.Is(err, gorm.ErrRecordNotFound) {
-        return user, err
+        return user, errors.New(constants.EMAIL_NOT_FOUND)
     }
     return user, nil
 }

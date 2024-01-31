@@ -7,11 +7,11 @@ import (
 )
 
 
-func UserRouter(e *gin.Engine){
+func UserRouter(e *gin.Engine, handler *handlers.UserHandler){
 	userRouter := e.Group("/v1/user")
 	usersRouter := e.Group("/v1/users")
 
-	usersRouter.POST("", handlers.CreateUserHandler)
+	usersRouter.POST("", handler.CreateUserHandler)
 	usersRouter.GET("", handlers.GetAllUsers)
 	usersRouter.GET("/:userId", handlers.GetUserByID)
 	usersRouter.PATCH("", handlers.UpdateUser)

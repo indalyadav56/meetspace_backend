@@ -16,7 +16,7 @@ import (
 
 var DB *gorm.DB
 
-func InitDB() (*gorm.DB, error) {
+func InitDB() *gorm.DB {
 
   dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
 	os.Getenv("DB_HOST"),
@@ -44,7 +44,7 @@ func InitDB() (*gorm.DB, error) {
 	db.AutoMigrate(&clientModel.Client{})
 
 	DB = db
-	return db, nil
+	return db
 }
 
 func GetDB() *gorm.DB {

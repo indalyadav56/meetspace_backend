@@ -28,8 +28,8 @@ func EncryptPassword(password string) (string, error) {
 }
 
 // ComparePassword compares a plain-text password with a hashed password.
-func ComparePassword(plainPassword string, hashedPassword string) bool {
-    err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plainPassword))
+func ComparePassword(hashedPassword, rawPassword string) bool {
+    err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(rawPassword))
     return err == nil
 }
 

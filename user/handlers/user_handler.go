@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"meetspace_backend/config"
+	"meetspace_backend/user/services"
 	"meetspace_backend/user/types"
 	"meetspace_backend/utils"
 	"net/http"
@@ -11,13 +12,23 @@ import (
 	"gorm.io/gorm"
 )
 
+type UserHandler struct {
+	UserService *services.UserService
+}
+
+func NewUserHandler(userService *services.UserService) *UserHandler{
+	return &UserHandler{
+		UserService:  userService,
+	}
+}
+
 // CreateUserHandler godoc
 //	@Summary		User create
 //	@Tags			User
 //	@Produce		json
 // @Param user body types.CreateUserData true "User create details"
 //	@Router			/v1/users [post]
-func CreateUserHandler(c *gin.Context) {
+func (handler *UserHandler) CreateUserHandler(c *gin.Context) {
 	var reqBody types.CreateUserData
 	utils.BindJsonData(c, &reqBody)
 

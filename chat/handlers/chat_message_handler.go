@@ -12,6 +12,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type ChatMessageHandler struct {
+
+}
+
+func NewChatMessageHandler() *ChatMessageHandler {
+    return &ChatMessageHandler{
+        
+    }
+}
+
+
 // GetChatMessageAPI godoc
 //	@Summary		Register User account
 //	@Description	Register User account

@@ -14,20 +14,51 @@
                     "Auth"
                 ],
                 "summary": "ForgotPassword",
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "Login user successfully"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         },
         "/v1/auth/login": {
             "post": {
-                "description": "UserLogin User account",
+                "description": "Login user",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Auth"
                 ],
-                "summary": "UserLogin User account",
-                "responses": {}
+                "summary": "login-user",
+                "parameters": [
+                    {
+                        "description": "User login details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login user successfully"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         },
         "/v1/auth/logout": {
@@ -40,7 +71,17 @@
                     "Auth"
                 ],
                 "summary": "UserLogout User account",
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "Login user successfully"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         },
         "/v1/auth/register": {
@@ -52,7 +93,7 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Register User account",
+                "summary": "register-user",
                 "parameters": [
                     {
                         "description": "User registration details",
@@ -64,7 +105,17 @@
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "Register user successfully"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         },
         "/v1/auth/send-email": {
@@ -76,7 +127,17 @@
                 "tags": [
                     "Auth"
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "Login user successfully"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         },
         "/v1/auth/verify-email": {
@@ -88,7 +149,17 @@
                 "tags": [
                     "Auth"
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "Login user successfully"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         },
         "/v1/chat/messages": {
@@ -594,14 +665,17 @@
                 },
                 "password": {
                     "type": "string"
-                },
-                "user_type": {
-                    "type": "string"
                 }
             }
         },
         "types.RegisterRequest": {
             "type": "object",
+            "required": [
+                "email",
+                "first_name",
+                "last_name",
+                "password"
+            ],
             "properties": {
                 "email": {
                     "type": "string"
@@ -613,7 +687,8 @@
                     "type": "string"
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 6
                 }
             }
         }

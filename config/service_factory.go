@@ -23,12 +23,13 @@ var (
 )
 
 func StartService(){
-	UserService = userServices.NewUserService(userRepo.NewUserRepository(GetDB()))
-	AuthService = authServices.NewAuthService(userServices.NewUserService(userRepo.NewUserRepository(GetDB())))
-	VerificationService = authServices.NewVerificationService(authRepo.NewVerificationRepository(GetDB()))
-	ClientService = clientServices.NewClientService(clientRepo.NewClientRepository(GetDB()), UserService)
-	ClientUserService = clientServices.NewClientUserService(clientRepo.NewClientRepository(GetDB()), UserService)
-	ChatRoomService = chatServices.NewChatRoomService(chatRepo.NewChatRoomRepository(GetDB()), UserService)
-	ChatGroupService = chatServices.NewChatGroupService(chatRepo.NewChatRoomRepository(GetDB()), UserService)
-	ChatMessageService = chatServices.NewChatMessageService(chatRepo.NewChatMessageRepository(GetDB()), UserService, ChatRoomService)
+	db := GetDB()
+	UserService = userServices.NewUserService(userRepo.NewUserRepository(db))
+	AuthService = authServices.NewAuthService(userServices.NewUserService(userRepo.NewUserRepository(db)))
+	VerificationService = authServices.NewVerificationService(authRepo.NewVerificationRepository(db))
+	ClientService = clientServices.NewClientService(clientRepo.NewClientRepository(db), UserService)
+	ClientUserService = clientServices.NewClientUserService(clientRepo.NewClientRepository(db), UserService)
+	ChatRoomService = chatServices.NewChatRoomService(chatRepo.NewChatRoomRepository(db), UserService)
+	ChatGroupService = chatServices.NewChatGroupService(chatRepo.NewChatRoomRepository(db), UserService)
+	ChatMessageService = chatServices.NewChatMessageService(chatRepo.NewChatMessageRepository(db), UserService, ChatRoomService)
 }

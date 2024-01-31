@@ -6,8 +6,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type ChatHandlers struct {
+	*handlers.ChatRoomHandler
+	*handlers.ChatGroupHandler
+	*handlers.ChatMessageHandler
+}
 
-func ChatRouter(e *gin.Engine){
+
+func ChatRouter(e *gin.Engine, handler ChatHandlers){
 	chatRouter := e.Group("/v1/chat")
 
 	// rooms

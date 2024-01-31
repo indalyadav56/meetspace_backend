@@ -132,13 +132,3 @@ func (us *UserService) UploadUserProfilePic(file  *multipart.FileHeader, userId 
 
 	return string(jsonData)
 }
-
-// err := utils.ValidateStruct(updateData)
-
-// if err != nil {
-// 	errorList := utils.HandleValidationError(err, updateData)
-// 	return utils.ErrorResponse("error", errorList)
-// }
-
-// mapData, _:= utils.StructToMap(updateData)
-// delete(mapData, "ProfilePic")

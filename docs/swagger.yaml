@@ -76,8 +76,6 @@ definitions:
         type: string
       password:
         type: string
-      user_type:
-        type: string
     type: object
   types.RegisterRequest:
     properties:
@@ -88,7 +86,13 @@ definitions:
       last_name:
         type: string
       password:
+        minLength: 6
         type: string
+    required:
+    - email
+    - first_name
+    - last_name
+    - password
     type: object
 info:
   contact: {}
@@ -98,17 +102,36 @@ paths:
       description: ForgotPassword
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: Login user successfully
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
       summary: ForgotPassword
       tags:
       - Auth
   /v1/auth/login:
     post:
-      description: UserLogin User account
+      description: Login user
+      parameters:
+      - description: User login details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.LoginRequest'
       produces:
       - application/json
-      responses: {}
-      summary: UserLogin User account
+      responses:
+        "200":
+          description: Login user successfully
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      summary: login-user
       tags:
       - Auth
   /v1/auth/logout:
@@ -116,7 +139,13 @@ paths:
       description: UserLogout User account
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: Login user successfully
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
       summary: UserLogout User account
       tags:
       - Auth
@@ -132,8 +161,14 @@ paths:
           $ref: '#/definitions/types.RegisterRequest'
       produces:
       - application/json
-      responses: {}
-      summary: Register User account
+      responses:
+        "200":
+          description: Register user successfully
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      summary: register-user
       tags:
       - Auth
   /v1/auth/send-email:
@@ -141,7 +176,13 @@ paths:
       description: Send email to user
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: Login user successfully
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
       tags:
       - Auth
   /v1/auth/verify-email:
@@ -149,7 +190,13 @@ paths:
       description: Verify email otp.
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: Login user successfully
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
       tags:
       - Auth
   /v1/chat/messages:

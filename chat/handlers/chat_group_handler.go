@@ -10,6 +10,18 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+type ChatGroupHandler struct {
+
+}
+
+func NewChatGroupHandler() *ChatGroupHandler {
+    return &ChatGroupHandler{
+        
+    }
+}
+
+
+
 // AddChatGroup godoc
 //	@Summary		UserLogin User account
 //	@Description	UserLogin User account

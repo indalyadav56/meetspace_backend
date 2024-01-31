@@ -5,7 +5,6 @@ import (
 	"meetspace_backend/client/models"
 	"meetspace_backend/client/repositories"
 	"meetspace_backend/client/types"
-	"meetspace_backend/user/constants"
 	userModel "meetspace_backend/user/models"
 	userService "meetspace_backend/user/services"
 	"meetspace_backend/utils"
@@ -46,7 +45,7 @@ func (cs *ClientService) CreateClient(clientData types.ClientCreateData) (*model
 		LastName: clientData.LastName,
 		Email: clientData.Email,
 		Password: hashedPassword,
-		Role: constants.ROLE_ADMIN,
+		Role: "admin",
 		IsAdmin: true,
 		ClientID: client.ID,
 		CreatedBy: client,

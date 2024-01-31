@@ -25,20 +25,51 @@ const docTemplate = `{
                     "Auth"
                 ],
                 "summary": "ForgotPassword",
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "Login user successfully"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         },
         "/v1/auth/login": {
             "post": {
-                "description": "UserLogin User account",
+                "description": "Login user",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Auth"
                 ],
-                "summary": "UserLogin User account",
-                "responses": {}
+                "summary": "login-user",
+                "parameters": [
+                    {
+                        "description": "User login details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login user successfully"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         },
         "/v1/auth/logout": {
@@ -51,7 +82,17 @@ const docTemplate = `{
                     "Auth"
                 ],
                 "summary": "UserLogout User account",
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "Login user successfully"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         },
         "/v1/auth/register": {
@@ -63,7 +104,7 @@ const docTemplate = `{
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Register User account",
+                "summary": "register-user",
                 "parameters": [
                     {
                         "description": "User registration details",
@@ -75,7 +116,17 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "Register user successfully"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         },
         "/v1/auth/send-email": {
@@ -87,7 +138,17 @@ const docTemplate = `{
                 "tags": [
                     "Auth"
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "Login user successfully"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         },
         "/v1/auth/verify-email": {
@@ -99,7 +160,17 @@ const docTemplate = `{
                 "tags": [
                     "Auth"
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "Login user successfully"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         },
         "/v1/chat/messages": {
@@ -605,14 +676,17 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
-                },
-                "user_type": {
-                    "type": "string"
                 }
             }
         },
         "types.RegisterRequest": {
             "type": "object",
+            "required": [
+                "email",
+                "first_name",
+                "last_name",
+                "password"
+            ],
             "properties": {
                 "email": {
                     "type": "string"
@@ -624,7 +698,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 6
                 }
             }
         }

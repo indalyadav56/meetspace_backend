@@ -12,6 +12,17 @@ import (
 	"github.com/google/uuid"
 )
 
+type ChatRoomHandler struct {
+
+}
+
+func NewChatRoomHandler() *ChatRoomHandler {
+    return &ChatRoomHandler{
+        
+    }
+}
+
+
 type CreateChatRoomBody struct {
     RoomId uuid.UUID `json:"room_id"`
     RoomUsers []string `json:"room_users"`

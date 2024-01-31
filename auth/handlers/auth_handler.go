@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"meetspace_backend/auth/constants"
 	"meetspace_backend/auth/models"
+	"meetspace_backend/auth/services"
 	"meetspace_backend/auth/types"
 	"meetspace_backend/config"
 	"meetspace_backend/utils"
@@ -11,14 +12,29 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type AuthHandler struct{
+	AuthService *services.AuthService
+	VerificationService *services.VerificationService
+}
+
+func NewAuthHandler(authSvc *services.AuthService, verificationSvc *services.VerificationService) *AuthHandler {
+	return &AuthHandler{
+		AuthService: authSvc,
+		VerificationService: verificationSvc,
+	}
+}
+
 // 	UserRegister godoc
-//	@Summary		Register User account
+//	@Summary		register-user
 //	@Description	Register User account
 //	@Tags			Auth
 //	@Produce		json
 // 	@Param user body types.RegisterRequest true "User registration details"
 //	@Router			/v1/auth/register [post]
-func UserRegister(c *gin.Context){
+// @Success      200 "Register user successfully"
+// @Failure      400 "Bad request"
+// @Failure      500 "Internal server error"
+func (handler *AuthHandler) UserRegister(c *gin.Context){
 	var req types.RegisterRequest
 	
 	if err := utils.BindJsonData(c, &req); err != nil {
@@ -34,7 +50,7 @@ func UserRegister(c *gin.Context){
 		return
     }
 
-	user, err := config.AuthService.Register(req)
+	user, err := handler.AuthService.Register(req)
 	if err != nil {
 		var errData []utils.ErrorMsg
 		errData = append(errData, utils.ErrorMsg{
@@ -57,28 +73,32 @@ func UserRegister(c *gin.Context){
 }
 
 // 	UserLogin godoc
-//	@Summary		UserLogin User account
-//	@Description	UserLogin User account
+//	@Summary		login-user
+//	@Description	Login user
 //	@Tags			Auth
 //	@Produce		json
+// 	@Param user body types.LoginRequest true "User login details"
 //	@Router			/v1/auth/login [post]
-func UserLogin(c *gin.Context) {
+// @Success      200 "Login user successfully"
+// @Failure      400 "Bad request"
+// @Failure      500 "Internal server error"
+func (handler *AuthHandler) UserLogin(c *gin.Context) {
 	var req types.LoginRequest
+	
 	if err := utils.BindJsonData(c, &req); err != nil {
+		resp:= utils.ErrorResponse(constants.REQUEST_BODY_ERROR_MSG, nil)
+		c.JSON(resp.StatusCode, resp)
         return 
     }
 
-	user, err := config.AuthService.Login(req)
+	respData, err := handler.AuthService.Login(req)
 	if err != nil {
-		return 
+		resp := utils.ErrorResponse(err.Error(), nil)
+		c.JSON(resp.StatusCode, resp)
+		return
 	}
 
-	tokenData, _ := utils.GenerateUserToken(user.ID.String())
-	fmt.Println(tokenData)
-	resData := types.AuthResponse{
-		// Token: tokenData,
-	}
-	successResponse := utils.SuccessResponse(constants.USER_LOGIN_MSG, resData)
+	successResponse := utils.SuccessResponse(constants.USER_LOGIN_MSG, respData)
 	c.JSON(200, successResponse)
 	return 
 }
@@ -89,7 +109,10 @@ func UserLogin(c *gin.Context) {
 //	@Tags			Auth
 //	@Produce		json
 //	@Router			/v1/auth/logout [post]
-func UserLogout(c *gin.Context) {
+// @Success      200 "Login user successfully"
+// @Failure      400 "Bad request"
+// @Failure      500 "Internal server error"
+func (handler *AuthHandler) UserLogout(c *gin.Context) {
 	successResponse := utils.SuccessResponse("Successfully logged in!!", "test")
 	c.JSON(200, successResponse)
 	return
@@ -101,7 +124,10 @@ func UserLogout(c *gin.Context) {
 //	@Tags			Auth
 //	@Produce		json
 //	@Router			/v1/auth/forgot-password [post]
-func ForgotPassword(c *gin.Context){
+// @Success      200 "Login user successfully"
+// @Failure      400 "Bad request"
+// @Failure      500 "Internal server error"
+func (handler *AuthHandler) ForgotPassword(c *gin.Context){
 	successResponse := utils.SuccessResponse("Successfully logged in!!", "test")
 	c.JSON(200, successResponse)
 
@@ -113,7 +139,10 @@ func ForgotPassword(c *gin.Context){
 //	@Tags			Auth
 //	@Produce		json
 //	@Router			/v1/auth/send-email [post]
-func SendEmailHandler(c *gin.Context) {
+// @Success      200 "Login user successfully"
+// @Failure      400 "Bad request"
+// @Failure      500 "Internal server error"
+func (handler *AuthHandler) SendEmailHandler(c *gin.Context) {
 	var reqBody types.SendEmailRequest
 	err := c.ShouldBindJSON(&reqBody)
 	if err != nil {
@@ -128,7 +157,7 @@ func SendEmailHandler(c *gin.Context) {
 		Email: reqBody.Email,
 		Otp: otp,
 	}
-	config.VerificationService.Create(data)
+	handler.VerificationService.Create(data)
 	
 	resp := utils.SuccessResponse("successfully send email!", gin.H{
 	})
@@ -141,14 +170,17 @@ func SendEmailHandler(c *gin.Context) {
 //	@Tags			Auth
 //	@Produce		json
 //	@Router			/v1/auth/verify-email [post]
-func VerifyEmailHandler(c *gin.Context) {
+// @Success      200 "Login user successfully"
+// @Failure      400 "Bad request"
+// @Failure      500 "Internal server error"
+func (handler *AuthHandler) VerifyEmailHandler(c *gin.Context) {
 	var reqBody types.VerifyEmailRequest
 	err := c.ShouldBindJSON(&reqBody)
 	if err != nil {
 		return
 	}
 
-	modelObj, _ := config.VerificationService.GetVerificationDataByEmail(reqBody.Email)
+	modelObj, _ := handler.VerificationService.GetVerificationDataByEmail(reqBody.Email)
 	if modelObj.Otp == reqBody.OTP{
 		config.DB.Model(&modelObj).Update("is_verified", true)
 		resp := utils.SuccessResponse("successfully send email!", nil)

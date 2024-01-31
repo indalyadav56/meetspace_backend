@@ -10,9 +10,8 @@ type RegisterRequest struct {
 }
 
 type LoginRequest struct {
-	Email string `json:"email"`
-    Password  string `json:"password"`
-	UserType string `json:"user_type,omitempty"`
+	Email string `json:"email" validate:"required,email"`
+    Password  string `json:"password" validate:"required,min=6,not_blank"`
 }
 
 type RegisterResponse struct {
@@ -22,7 +21,7 @@ type RegisterResponse struct {
 
 type AuthResponse struct {
 	models.User
-	Token map[string]interface{} `json:"token"`
+	Token map[string]string `json:"token"`
 }
 
 type SendEmailRequest struct {
