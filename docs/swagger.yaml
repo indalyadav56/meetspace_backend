@@ -112,6 +112,8 @@ definitions:
     properties:
       email:
         type: string
+    required:
+    - email
     type: object
   types.VerifyEmailRequest:
     properties:
@@ -119,6 +121,9 @@ definitions:
         type: string
       otp:
         type: string
+    required:
+    - email
+    - otp
     type: object
   utils.Metadata:
     properties:
@@ -218,6 +223,8 @@ paths:
           description: Bad request
         "500":
           description: Internal server error
+      security:
+      - Bearer: []
       summary: user-logout
       tags:
       - Auth

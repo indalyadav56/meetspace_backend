@@ -15,7 +15,7 @@ type User struct {
 	ID uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
 	FirstName string `json:"first_name"`
 	LastName string `json:"last_name"`
-	Email string `gorm:"uniqueIndex" json:"email"`
+	Email string `gorm:"uniqueIndex,index" json:"email"`
 	Password string `gorm:"not null" json:"-"`
 	ProfilePic json.RawMessage `gorm:"type:jsonb" json:"profile_pic"` 
 	IsActive bool `json:"is_active" gorm:"default:true"`

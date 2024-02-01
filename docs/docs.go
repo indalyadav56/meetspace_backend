@@ -88,6 +88,11 @@ const docTemplate = `{
         },
         "/v1/auth/logout": {
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "User logout User",
                 "produces": [
                     "application/json"
@@ -813,6 +818,9 @@ const docTemplate = `{
         },
         "types.SendEmailRequest": {
             "type": "object",
+            "required": [
+                "email"
+            ],
             "properties": {
                 "email": {
                     "type": "string"
@@ -821,6 +829,10 @@ const docTemplate = `{
         },
         "types.VerifyEmailRequest": {
             "type": "object",
+            "required": [
+                "email",
+                "otp"
+            ],
             "properties": {
                 "email": {
                     "type": "string"

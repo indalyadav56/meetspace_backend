@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"errors"
+	"fmt"
 	"meetspace_backend/user/constants"
 	"meetspace_backend/user/models"
 	"meetspace_backend/user/types"
@@ -98,12 +99,27 @@ func (userRepo *UserRepository) GetUsersByClientId(clientId string)([]models.Use
 }
 
 
-func (userRepo *UserRepository) UpdateUser(userId string, updateUser map[string]interface{}) (types.UserResponse, error) {
+func (userRepo *UserRepository) UpdateUserByID(userId string, updateUser map[string]interface{}) (types.UserResponse, error) {
     var resp types.UserResponse
     
     data, _ := utils.RemoveKeysNotInStruct(models.User{}, updateUser)
     
-    if err := userRepo.db.Model(&resp).Where("id=?", userId).Updates(data).First(&resp).Error; err != nil {
+    if err := userRepo.db.Model(&models.User{}).Where("id = ?", userId).Updates(data).First(&resp).Error; err != nil {
+        return resp, err
+    }
+    
+    return resp, nil
+}
+
+func (userRepo *UserRepository) UpdateUserByEmail(email string, updateUser map[string]interface{}) (types.UserResponse, error) {
+    var resp types.UserResponse
+    
+    fmt.Println("data to be update before :- ", updateUser)
+    data, _ := utils.RemoveKeysNotInStruct(models.User{}, updateUser)
+
+    fmt.Println("data to be update", data)
+    
+    if err := userRepo.db.Model(&models.User{}).Where("email = ?", email).Updates(data).First(&resp).Error; err != nil {
         return resp, err
     }
     

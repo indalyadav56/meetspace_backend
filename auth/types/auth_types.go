@@ -35,12 +35,12 @@ type AuthResponse struct {
 }
 
 type SendEmailRequest struct {
-	Email string `json:"email"`
+	Email string `json:"email" validate:"required,email"`
 }
 
 type VerifyEmailRequest struct {
-	Email string `json:"email"`
-	OTP string `json:"otp"`
+	Email string `json:"email" validate:"required,email"`
+	OTP string `json:"otp" validate:"required,not_blank"`
 }
 
 type SendEmailResponse struct {

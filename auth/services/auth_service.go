@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"meetspace_backend/auth/constants"
 	"meetspace_backend/auth/types"
 	"meetspace_backend/user/services"
@@ -86,4 +87,34 @@ func (as *AuthService) Register(reqData types.RegisterRequest) *utils.Response {
 	delete(data, "password")
 	
     return utils.SuccessResponse("success", data)
+}
+
+// user logout
+func (as *AuthService) UserLogout(reqData types.LogoutRequest) *utils.Response {
+    return utils.SuccessResponse("success", nil)
+}
+
+// forgot password
+func (as *AuthService) ForgotPassword(reqData types.ForgotPasswordRequest) *utils.Response {
+	// validate request struct data
+	if err := utils.GetValidator().Struct(reqData); err != nil {
+		data := utils.ParseError(err, reqData)
+		return utils.ErrorResponse(constants.AUTH_REQUEST_VALIDATION_ERROR_MSG, data)
+    }
+
+	hashedPassword, err := utils.EncryptPassword(reqData.NewPassword)
+	if err != nil {
+		return utils.ErrorResponse(err.Error(), nil)
+	}
+
+	updateData := map[string]interface{}{
+		"Password": hashedPassword,
+	}
+	fmt.Println("updateData", updateData)
+	resp, err := as.UserService.UserRepository.UpdateUserByEmail(reqData.Email, updateData)
+	if err != nil {
+		return utils.ErrorResponse(err.Error(), nil)
+	}
+
+    return utils.SuccessResponse("success", resp)
 }

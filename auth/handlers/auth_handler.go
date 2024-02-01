@@ -1,12 +1,8 @@
 package handlers
 
 import (
-	"fmt"
-	"meetspace_backend/auth/constants"
-	"meetspace_backend/auth/models"
 	"meetspace_backend/auth/services"
 	"meetspace_backend/auth/types"
-	"meetspace_backend/config"
 	"meetspace_backend/utils"
 
 	"github.com/gin-gonic/gin"
@@ -80,15 +76,16 @@ func (handler *AuthHandler) UserLogin(c *gin.Context) {
 // @Success      200 "success"
 // @Failure      400 "Bad request"
 // @Failure      500 "Internal server error"
+// @Security Bearer
 func (handler *AuthHandler) UserLogout(c *gin.Context) {
 	var req types.LogoutRequest
-	if err := utils.BindJsonData(c, &req); err != nil {
-		resp:= utils.ErrorResponse(constants.REQUEST_BODY_ERROR_MSG, nil)
-		c.JSON(resp.StatusCode, resp)
+	if errorResp := utils.BindJsonData(c, &req); errorResp != nil {
+		c.JSON(errorResp.StatusCode, errorResp)
         return 
     }
-	successResponse := utils.SuccessResponse("Success", "test")
-	c.JSON(200, successResponse)
+
+	resp := handler.AuthService.UserLogout(req)
+	c.JSON(resp.StatusCode, resp)
 	return
 }
 
@@ -104,13 +101,13 @@ func (handler *AuthHandler) UserLogout(c *gin.Context) {
 // @Failure      500 "Internal server error"
 func (handler *AuthHandler) ForgotPassword(c *gin.Context){
 	var req types.ForgotPasswordRequest
-	if errResp := utils.BindJsonData(c, &req); errResp != nil {
-		c.JSON(errResp.StatusCode, errResp)
+	if errorResp := utils.BindJsonData(c, &req); errorResp != nil {
+		c.JSON(errorResp.StatusCode, errorResp)
         return 
     }
 	
-	successResponse := utils.SuccessResponse("Successfully logged in!!", "test")
-	c.JSON(200, successResponse)
+	resp := handler.AuthService.ForgotPassword(req)
+	c.JSON(resp.StatusCode, resp)
 	return
 }
 
@@ -125,25 +122,15 @@ func (handler *AuthHandler) ForgotPassword(c *gin.Context){
 // @Failure      400 "Bad request"
 // @Failure      500 "Internal server error"
 func (handler *AuthHandler) SendEmailHandler(c *gin.Context) {
-	var reqBody types.SendEmailRequest
-	err := c.ShouldBindJSON(&reqBody)
-	if err != nil {
-		return
-	}
-	otp := utils.GenerateOTP()
+	var req types.SendEmailRequest
 	
-	emailBody := fmt.Sprintf("Your OTP is:- <h2> %s </h2>", otp)
-	go utils.SendEmail(reqBody.Email, "Email OTP", emailBody)
+	if errResp := utils.BindJsonData(c, &req); errResp != nil {
+		c.JSON(errResp.StatusCode, errResp)
+        return 
+    }
 	
-	data := models.Verification{
-		Email: reqBody.Email,
-		Otp: otp,
-	}
-	handler.VerificationService.Create(data)
-	
-	resp := utils.SuccessResponse("successfully send email!", gin.H{
-	})
-	c.JSON(200, resp)
+	resp := handler.VerificationService.Create(req)
+	c.JSON(resp.StatusCode, resp)
 	return
 }
 
@@ -158,21 +145,13 @@ func (handler *AuthHandler) SendEmailHandler(c *gin.Context) {
 // @Failure      400 "Bad request"
 // @Failure      500 "Internal server error"
 func (handler *AuthHandler) VerifyEmailHandler(c *gin.Context) {
-	var reqBody types.VerifyEmailRequest
-	err := c.ShouldBindJSON(&reqBody)
-	if err != nil {
-		return
-	}
+	var req types.VerifyEmailRequest
+	if errResp := utils.BindJsonData(c, &req); errResp != nil {
+		c.JSON(errResp.StatusCode, errResp)
+        return 
+    }
 	
-	modelObj, _ := handler.VerificationService.GetVerificationDataByEmail(reqBody.Email)
-	if modelObj.Otp == reqBody.OTP{
-		config.DB.Model(&modelObj).Update("is_verified", true)
-		resp := utils.SuccessResponse("successfully send email!", nil)
-		c.JSON(200, resp)
-		return
-	}
-	
-	resp := utils.ErrorResponse("error", nil)
-	c.JSON(200, resp)
+	resp := handler.VerificationService.VerifyEmailOtp(req)
+	c.JSON(resp.StatusCode, resp)
 	return 
 }
