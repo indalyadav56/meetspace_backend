@@ -38,7 +38,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success"
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
                     },
                     "400": {
                         "description": "Bad request"
@@ -823,6 +826,51 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "otp": {
+                    "type": "string"
+                }
+            }
+        },
+        "utils.Metadata": {
+            "type": "object",
+            "properties": {
+                "api_version": {
+                    "type": "string",
+                    "default": "v1"
+                },
+                "server_info": {
+                    "$ref": "#/definitions/utils.ServerInfo"
+                }
+            }
+        },
+        "utils.Response": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "error": {},
+                "message": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "$ref": "#/definitions/utils.Metadata"
+                },
+                "request_id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "status_code": {
+                    "type": "integer"
+                },
+                "time_stamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "utils.ServerInfo": {
+            "type": "object",
+            "properties": {
+                "hostname": {
                     "type": "string"
                 }
             }

@@ -41,23 +41,7 @@ func (handler *AuthHandler) UserRegister(c *gin.Context){
 		c.JSON(errResp.StatusCode, errResp)
         return
     }
-	// if err != nil {
-		// 	var errData []utils.ErrorMsg
-		// 	errData = append(errData, utils.ErrorMsg{
-			// 		Field: "email",
-			// 		Message: err.Error(),
-			// 	})
-			// 	resp := utils.ErrorResponse(err.Error(), errData)
-			// 	c.JSON(resp.StatusCode, resp)
-			// 	return 
-			// }
-			
-			// tokenData, _ := utils.GenerateUserToken(user.ID.String())
-			// resData := types.RegisterResponse{
-				// 	RegisterRequest: req,
-	// 	Token: tokenData,
-	// }
-	// respData := utils.SuccessResponse(constants.USER_REGISTER_MSG, resData)
+	
 	respData := handler.AuthService.Register(req)
 	c.JSON(respData.StatusCode, respData)
 	return
@@ -115,7 +99,7 @@ func (handler *AuthHandler) UserLogout(c *gin.Context) {
 //	@Produce		json
 // 	@Param user body types.ForgotPasswordRequest true "forgot password request body"
 //	@Router			/v1/auth/forgot-password [post]
-// @Success      200 "Success"
+// @Success      200 {object} utils.Response "Success"
 // @Failure      400 "Bad request"
 // @Failure      500 "Internal server error"
 func (handler *AuthHandler) ForgotPassword(c *gin.Context){

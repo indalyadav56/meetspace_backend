@@ -49,7 +49,8 @@ func main() {
 
 	// services
 	userService := userServices.NewUserService(userRepo)
-	authService := authServices.NewAuthService(userService)
+	tokenService := authServices.NewTokenService()
+	authService := authServices.NewAuthService(tokenService, userService)
 	verificationService := authServices.NewVerificationService(verificationRepo)
 	clientServices.NewClientService(clientRepo, userService)
 	clientServices.NewClientUserService(clientRepo, userService)

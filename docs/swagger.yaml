@@ -120,6 +120,36 @@ definitions:
       otp:
         type: string
     type: object
+  utils.Metadata:
+    properties:
+      api_version:
+        default: v1
+        type: string
+      server_info:
+        $ref: '#/definitions/utils.ServerInfo'
+    type: object
+  utils.Response:
+    properties:
+      data: {}
+      error: {}
+      message:
+        type: string
+      metadata:
+        $ref: '#/definitions/utils.Metadata'
+      request_id:
+        type: string
+      status:
+        type: string
+      status_code:
+        type: integer
+      time_stamp:
+        type: string
+    type: object
+  utils.ServerInfo:
+    properties:
+      hostname:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -138,6 +168,8 @@ paths:
       responses:
         "200":
           description: Success
+          schema:
+            $ref: '#/definitions/utils.Response'
         "400":
           description: Bad request
         "500":

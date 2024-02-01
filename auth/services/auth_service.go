@@ -9,17 +9,19 @@ import (
 )
 
 type AuthService struct {
+	TokenService *TokenService
 	UserService *services.UserService
 }
 
-func NewAuthService(service *services.UserService) *AuthService {
+func NewAuthService(ts *TokenService, us *services.UserService) *AuthService {
     return &AuthService{
-		UserService: service,
+		TokenService: ts,
+		UserService: us,
     }
 }
 
 // user login
-func (authService *AuthService) Login(reqData types.LoginRequest) *utils.Response {
+func (as *AuthService) Login(reqData types.LoginRequest) *utils.Response {
 	// request data struct validation
 	if err := utils.GetValidator().Struct(reqData); err != nil {
 		data := utils.ParseError(err, reqData)
@@ -27,7 +29,7 @@ func (authService *AuthService) Login(reqData types.LoginRequest) *utils.Respons
     }
 
 	// get user by email and compare the password against the user's password
-	user, err := authService.UserService.GetUserByEmail(reqData.Email)
+	user, err := as.UserService.GetUserByEmail(reqData.Email)
 	if err != nil {
 		return utils.ErrorResponse(err.Error(), nil)
 	}
@@ -37,17 +39,17 @@ func (authService *AuthService) Login(reqData types.LoginRequest) *utils.Respons
 		return utils.ErrorResponse("invalid password", nil)
 	}
 
-	// generate token for user
-	tokenData, _ := utils.GenerateUserToken(user.ID.String())
-	resData := types.AuthResponse{
-		User: user,
-		Token: tokenData,
-	}
-	return utils.SuccessResponse("success",resData)
+	// generate new user tokens
+	tokens, err := as.TokenService.GenerateToken(user.ID.String())
+	
+	data, _ := utils.StructToMap(reqData)
+	data["token"] = tokens
+	delete(data, "password")
+	return utils.SuccessResponse("success", data)
 }
 
 // register new user
-func (us *AuthService) Register(reqData types.RegisterRequest) *utils.Response {
+func (as *AuthService) Register(reqData types.RegisterRequest) *utils.Response {
 	// validate request struct data
 	if err := utils.GetValidator().Struct(reqData); err != nil {
 		data := utils.ParseError(err, reqData)
@@ -65,6 +67,23 @@ func (us *AuthService) Register(reqData types.RegisterRequest) *utils.Response {
 		Email: reqData.Email,
 		Password: string(hashedPassword),
 	}
-	createdUser, _ := us.UserService.CreateUser(userCreateData)
-    return utils.SuccessResponse("success", createdUser)
+	createdUser, err := as.UserService.CreateUser(userCreateData)
+	if err != nil {
+		var errData []utils.ErrorMsg
+		errData = append(errData, utils.ErrorMsg{
+				Field: "email",
+				Message: err.Error(),
+			})
+		resp := utils.ErrorResponse(err.Error(), errData)
+		return resp
+	}
+	
+	// generate new user tokens
+	tokens, err := as.TokenService.GenerateToken(createdUser.ID.String())
+	
+	data, _ := utils.StructToMap(reqData)
+	data["token"] = tokens
+	delete(data, "password")
+	
+    return utils.SuccessResponse("success", data)
 }

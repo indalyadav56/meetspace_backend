@@ -25,7 +25,6 @@ var (
 func StartService(){
 	db := GetDB()
 	UserService = userServices.NewUserService(userRepo.NewUserRepository(db))
-	AuthService = authServices.NewAuthService(userServices.NewUserService(userRepo.NewUserRepository(db)))
 	VerificationService = authServices.NewVerificationService(authRepo.NewVerificationRepository(db))
 	ClientService = clientServices.NewClientService(clientRepo.NewClientRepository(db), UserService)
 	ClientUserService = clientServices.NewClientUserService(clientRepo.NewClientRepository(db), UserService)
