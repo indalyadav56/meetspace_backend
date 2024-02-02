@@ -121,13 +121,25 @@ func (as *AuthService) Register(reqData types.RegisterRequest) *utils.Response {
 
 // user logout
 func (as *AuthService) UserLogout(userID string, reqData types.LogoutRequest) *utils.Response {
+	// validate request struct data
+	if err := utils.GetValidator().Struct(reqData); err != nil {
+		data := utils.ParseError(err, reqData)
+		return utils.ErrorResponse(constants.AUTH_REQUEST_VALIDATION_ERROR_MSG, data)
+    }
+
+	// verify refresh token
+	err := as.TokenService.VerifyRefreshToken(reqData.RefreshToken)
+	if err != nil {
+		return utils.ErrorResponse(err.Error(), nil)
+	}
+
 	// tokens store in redis
 	accessTokenKey := fmt.Sprintf(gloablConstants.ACCESS_TOKEN_KEY, userID)
 	refreshTokenKey := fmt.Sprintf(gloablConstants.REFRESH_TOKEN_KEY, userID)
 	
 	// remove tokens from redis
-	as.RedisService.Del(accessTokenKey)
-	as.RedisService.Del(refreshTokenKey)
+	go as.RedisService.Del(accessTokenKey)
+	go as.RedisService.Del(refreshTokenKey)
 
     return utils.NoContentResponse()
 }

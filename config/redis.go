@@ -15,7 +15,8 @@ func InitRedis() *redis.Client {
 	db := os.Getenv("REDIS_DB")
 	password := os.Getenv("REDIS_PASSWORD")
     
-    addr := fmt.Sprintf("%s %s", host, port)
+    addr := fmt.Sprintf("%s:%s", host, port)
+    fmt.Println("addr:->", addr)
     dbInt, _ :=  strconv.Atoi(db)
 
     // Connect to Redis
