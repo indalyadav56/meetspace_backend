@@ -79,7 +79,6 @@ func NotFoundErrorResponse(message string, errorData interface{}) *Response {
     }
 }
 
-
 func InternalError(message string, data []interface{}) *Response {
     metadata := Metadata{
         ApiVersion: "v1",
@@ -93,4 +92,18 @@ func InternalError(message string, data []interface{}) *Response {
       Error: data,
       Metadata: metadata,
     } 
+}
+
+// NoContentResponse creates a 204 No Content response
+func NoContentResponse() *Response {
+    metadata := Metadata{
+        ApiVersion: "v1",
+        ServerInfo: ServerInfo{
+            Hostname: "localhost",
+        },
+    }
+    return &Response{
+        StatusCode: http.StatusNoContent,
+        Metadata: metadata,
+    }
 }

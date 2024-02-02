@@ -14,14 +14,14 @@ var (
     AccessExpiration = 1200 * time.Hour
     RefreshExpiration = 2004 * time.Hour
     SigningAlgorithm = "HS256" 
-    SecretKey = os.Getenv("JWT_SECRET_KEY")
+    secretKey = os.Getenv("JWT_SECRET_KEY")
 )
 
 
-  type TokenClaims struct {
+type TokenClaims struct {
     UserID string `json:"user_id"`
     jwt.StandardClaims
-  }
+}
 
 type TokenService struct {
     signingKey []byte
@@ -51,7 +51,7 @@ func (ts *TokenService) GenerateToken(userID string) (map[string]string, error) 
     accessToken, _ := jwt.NewWithClaims(
         jwt.SigningMethodHS256, 
         accessClaims,
-    ).SignedString([]byte(SecretKey))
+    ).SignedString([]byte(secretKey))
         
     
     // Refresh token claims
@@ -64,7 +64,7 @@ func (ts *TokenService) GenerateToken(userID string) (map[string]string, error) 
     refreshToken, _ := jwt.NewWithClaims(
         jwt.SigningMethodHS256,
         refreshClaims,  
-      ).SignedString([]byte(SecretKey))
+      ).SignedString([]byte(secretKey))
 
     tokenData = map[string]string{
         "access": accessToken,
@@ -83,7 +83,7 @@ func (ts *TokenService) VerifyToken(tokenString string) (string, error) {
         }
         
         // Return key for validation
-        return []byte(SecretKey), nil
+        return []byte(secretKey), nil
       })
   
     if err != nil {
@@ -101,4 +101,49 @@ func (ts *TokenService) VerifyToken(tokenString string) (string, error) {
   
     return userID, nil
 }
+
+// RefreshToken checks if token is expired, generates a new one
+func (ts *TokenService) RefreshToken(oldToken string) (string, error) {
+    // Parse the token
+    token, err := jwt.ParseWithClaims(oldToken, &TokenClaims{}, func(token *jwt.Token) (interface{}, error) {
+        return secretKey, nil
+    })
+    fmt.Println("token:->", token)
+
+    // Invalid token
+    if err != nil { 
+        return "", err
+    }
+
+    // // Token is valid, get claims
+    // claims, ok := token.Claims.(*Claims)
+    // if !ok {
+    //     return "", err
+    // }
   
+    // // Issued at time is older than expiry time
+    // if time.Unix(claims.ExpiresAt, 0).Sub(time.Now()) > 30*time.Second {
+    //     return ts.GenerateToken(claims.u) 
+    // }
+
+    // Token still valid, return old token
+    return oldToken, nil
+}
+
+func RotateToken(tokenString string) (string, error) {
+    // token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+    //     return secretKey, nil
+    // })
+    // if err != nil {
+    //     return "", err
+    // }
+
+    // claims, ok := token.Claims.(*Claims) 
+    // if ok && token.Valid { 
+    //     claims.ExpiresAt = time.Now().Add(time.Minute * 15).Unix()
+    //     return generateToken(claims.Username)
+    // } else {
+    //     return "", err
+    // }
+    return "new token", nil
+}

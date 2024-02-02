@@ -14,6 +14,7 @@ import (
 	clientRepo "meetspace_backend/client/repositories"
 	clientRoutes "meetspace_backend/client/routes"
 	clientServices "meetspace_backend/client/services"
+	commonServices "meetspace_backend/common/services"
 	"meetspace_backend/config"
 	"meetspace_backend/middlewares"
 	userHandlers "meetspace_backend/user/handlers"
@@ -39,6 +40,7 @@ func main() {
 	
 	// initialize database connection
 	db := config.InitDB()
+	redisDB := config.InitRedis()
 
 	// repositories
 	userRepo := userRepo.NewUserRepository(db)
@@ -48,9 +50,11 @@ func main() {
 	chatRoomRepo := chatRepo.NewChatRoomRepository(db)
 
 	// services
+	loggerService := commonServices.NewLoggerService()
+	redisService := commonServices.NewRedisService(redisDB)
 	userService := userServices.NewUserService(userRepo)
 	tokenService := authServices.NewTokenService()
-	authService := authServices.NewAuthService(tokenService, userService)
+	authService := authServices.NewAuthService(loggerService, redisService, tokenService, userService)
 	verificationService := authServices.NewVerificationService(verificationRepo)
 	clientServices.NewClientService(clientRepo, userService)
 	clientServices.NewClientUserService(clientRepo, userService)

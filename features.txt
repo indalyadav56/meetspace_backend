@@ -1,0 +1,58 @@
+1. Authentication and Authorization
+    1.1 jwt rotatation
+
+
+
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: 'https://your-api-url.com',
+});
+
+// Add a request interceptor
+api.interceptors.request.use(
+  async (config) => {
+    // Check if token is present and not expired
+    if (localStorage.getItem('token')) {
+      // Add the token to the request headers
+      config.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Add a response interceptor
+api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async function (error) {
+    const originalRequest = error.config;
+
+    // If token is expired or unauthorized
+    if (error.response.status === 401) {
+      // Attempt to refresh token or handle authentication flow
+      try {
+        const response = await axios.post('https://your-api-url.com/refresh-token', {
+          token: localStorage.getItem('refreshToken'),
+        });
+
+        // If refresh successful, update token and retry original request
+        localStorage.setItem('token', response.data.token);
+        originalRequest.headers.Authorization = `Bearer ${response.data.token}`;
+        return axios(originalRequest);
+      } catch (error) {
+        // Handle refresh token failure or other authentication errors
+        console.error('Failed to refresh token:', error);
+        // Perform logout or redirect to login page
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+export default api;

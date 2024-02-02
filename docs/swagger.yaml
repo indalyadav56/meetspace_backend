@@ -91,6 +91,13 @@ definitions:
     - email
     - password
     type: object
+  types.LogoutRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
   types.RegisterRequest:
     properties:
       email:
@@ -213,7 +220,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/types.LoginRequest'
+          $ref: '#/definitions/types.LogoutRequest'
       produces:
       - application/json
       responses:
@@ -226,6 +233,28 @@ paths:
       security:
       - Bearer: []
       summary: user-logout
+      tags:
+      - Auth
+  /v1/auth/refresh-token:
+    post:
+      description: refresh jwt token
+      parameters:
+      - description: verify email request body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.VerifyEmailRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      summary: refresh token
       tags:
       - Auth
   /v1/auth/register:

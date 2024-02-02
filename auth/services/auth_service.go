@@ -4,18 +4,30 @@ import (
 	"fmt"
 	"meetspace_backend/auth/constants"
 	"meetspace_backend/auth/types"
+	gloablConstants "meetspace_backend/common/constants"
+	commonServices "meetspace_backend/common/services"
 	"meetspace_backend/user/services"
 	userTypes "meetspace_backend/user/types"
 	"meetspace_backend/utils"
+	"time"
 )
 
 type AuthService struct {
+	LoggerService *commonServices.LoggerService
+	RedisService *commonServices.RedisService
 	TokenService *TokenService
 	UserService *services.UserService
 }
 
-func NewAuthService(ts *TokenService, us *services.UserService) *AuthService {
+func NewAuthService(
+	loggerService *commonServices.LoggerService, 
+	redisService *commonServices.RedisService,
+	ts *TokenService, 
+	us *services.UserService,
+	) *AuthService {
     return &AuthService{
+		LoggerService: loggerService,
+        RedisService:  redisService,
 		TokenService: ts,
 		UserService: us,
     }
@@ -42,10 +54,21 @@ func (as *AuthService) Login(reqData types.LoginRequest) *utils.Response {
 
 	// generate new user tokens
 	tokens, err := as.TokenService.GenerateToken(user.ID.String())
+
+	// tokens store in redis
+	as.RedisService.Set("user_access_token", "access_token", time.Minute * 15)
+
+	// tokens store in redis
+	accessTokenKey := fmt.Sprintf(gloablConstants.ACCESS_TOKEN_KEY, user.ID.String())
+	refreshTokenKey := fmt.Sprintf(gloablConstants.REFRESH_TOKEN_KEY, user.ID.String())
+
+	go as.RedisService.Set(accessTokenKey, tokens["access"], time.Minute * 15)
+	go as.RedisService.Set(refreshTokenKey, tokens["refresh"], time.Hour * 48)
 	
 	data, _ := utils.StructToMap(reqData)
 	data["token"] = tokens
 	delete(data, "password")
+	
 	return utils.SuccessResponse("success", data)
 }
 
@@ -81,6 +104,13 @@ func (as *AuthService) Register(reqData types.RegisterRequest) *utils.Response {
 	
 	// generate new user tokens
 	tokens, err := as.TokenService.GenerateToken(createdUser.ID.String())
+
+	// tokens store in redis
+	accessTokenKey := fmt.Sprintf(gloablConstants.ACCESS_TOKEN_KEY, createdUser.ID.String())
+	refreshTokenKey := fmt.Sprintf(gloablConstants.REFRESH_TOKEN_KEY, createdUser.ID.String())
+
+	go as.RedisService.Set(accessTokenKey, tokens["access"], time.Minute * 15)
+	go as.RedisService.Set(refreshTokenKey, tokens["refresh"], time.Hour * 48)
 	
 	data, _ := utils.StructToMap(reqData)
 	data["token"] = tokens
@@ -90,8 +120,16 @@ func (as *AuthService) Register(reqData types.RegisterRequest) *utils.Response {
 }
 
 // user logout
-func (as *AuthService) UserLogout(reqData types.LogoutRequest) *utils.Response {
-    return utils.SuccessResponse("success", nil)
+func (as *AuthService) UserLogout(userID string, reqData types.LogoutRequest) *utils.Response {
+	// tokens store in redis
+	accessTokenKey := fmt.Sprintf(gloablConstants.ACCESS_TOKEN_KEY, userID)
+	refreshTokenKey := fmt.Sprintf(gloablConstants.REFRESH_TOKEN_KEY, userID)
+	
+	// remove tokens from redis
+	as.RedisService.Del(accessTokenKey)
+	as.RedisService.Del(refreshTokenKey)
+
+    return utils.NoContentResponse()
 }
 
 // forgot password
@@ -117,4 +155,15 @@ func (as *AuthService) ForgotPassword(reqData types.ForgotPasswordRequest) *util
 	}
 
     return utils.SuccessResponse("success", resp)
+}
+
+// forgot password
+func (as *AuthService) RefreshToken() *utils.Response {
+	// validate request struct data
+	// if err := utils.GetValidator().Struct(reqData); err != nil {
+	// 	data := utils.ParseError(err, reqData)
+	// 	return utils.ErrorResponse(constants.AUTH_REQUEST_VALIDATION_ERROR_MSG, data)
+    // }
+
+    return utils.SuccessResponse("success", nil)
 }

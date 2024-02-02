@@ -16,5 +16,5 @@ func AuthRouter(e *gin.Engine, handler *handlers.AuthHandler){
 	authRouter.POST("/forgot-password", handler.ForgotPassword)
 	authRouter.POST("/send-email", handler.SendEmailHandler)
 	authRouter.POST("/verify-email", handler.VerifyEmailHandler)
-
+	authRouter.POST("/refresh-token", handler.RefreshToken)
 }

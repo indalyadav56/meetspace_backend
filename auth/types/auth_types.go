@@ -25,8 +25,7 @@ type ForgotPasswordRequest struct {
 }
 
 type LogoutRequest struct {
-	Email string `json:"email" validate:"required,email"`
-	NewPassword string `json:"new_password" validate:"required,not_blank"`
+	RefreshToken string `json:"refresh_token" validate:"required,not_blank"`
 }
 
 type AuthResponse struct {
