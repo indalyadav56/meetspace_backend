@@ -58,7 +58,6 @@ func (ts *TokenService) GenerateToken(userID string) (map[string]string, error) 
         jwt.SigningMethodHS256, 
         accessClaims,
     ).SignedString([]byte(secretKey))
-        
     
     // Refresh token claims
     refreshClaims := &TokenClaims{
@@ -81,123 +80,66 @@ func (ts *TokenService) GenerateToken(userID string) (map[string]string, error) 
     return tokenData, nil
 }
 
-func (ts *TokenService) VerifyToken(tokenString string) (string, error) {
-  
+// verify token
+func (ts *TokenService) VerifyToken(tokenString string, expectedTokenType string) (map[string]interface{}, error) {
     token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
         // Validate method
         if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
           return nil, fmt.Errorf("Unexpected signing method") 
         }
-        
-        // Return key for validation
-        return []byte(secretKey), nil
-      })
-  
-    if err != nil {
-        fmt.Println("Error:", err)
-        return "", err
-    }
-  
-    if !token.Valid {
-        return "", errors.New("Invalid token")
-    }
-  
-    // Extract the user ID from the token claims
-    claims := token.Claims.(jwt.MapClaims)
-    userID := claims["user_id"].(string)
-  
-    return userID, nil
-}
-
-// verify access token
-func (ts *TokenService) VerifyAccessToken(tokenString string) error {
-    token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-        // Validate method
-        if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-          return nil, fmt.Errorf("Unexpected signing method") 
-        }
-        
         // Return key for validation
         return []byte(secretKey), nil
     })
-  
     if err != nil {
-        fmt.Println("Error:", err)
-        return err
+        return nil, err
     }
 
     // Extract the token claims
-    claims := token.Claims.(jwt.MapClaims)
-
-    if !token.Valid {
-        return errors.New("Invalid access token")
+    claims, ok := token.Claims.(jwt.MapClaims)
+    if !ok || !token.Valid {
+        return nil, errors.New("Invalid token")
     }
 
-    if claims["token_type"] != ACCESS_TOKEN_TYPE {
-        return errors.New("Invalid token type")
+    // Verify token type
+    tokenType, ok := claims["token_type"].(string)
+    if !ok || tokenType != expectedTokenType {
+        return nil, fmt.Errorf("Invalid token type: expected %s", expectedTokenType)
     }
-
-    return nil
+    return claims, nil
 }
-
-// verify refresh token
-func (ts *TokenService) VerifyRefreshToken(tokenString string) error {
-    token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-        // Validate method
-        if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-          return nil, fmt.Errorf("Unexpected signing method") 
-        }
-        
-        // Return key for validation
-        return []byte(secretKey), nil
-    })
-  
-    if err != nil {
-        fmt.Println("Error:", err)
-        return err
-    }
-
-    // Extract the token claims
-    claims := token.Claims.(jwt.MapClaims)
-
-    if !token.Valid {
-        return errors.New("Invalid refresh token")
-    }
-
-    if claims["token_type"] != REFRESH_TOKEN_TYPE {
-        return errors.New("Invalid token type")
-    }
-
-    return nil
-}
-
 
 // RefreshToken checks if token is expired, generates a new one
-func (ts *TokenService) RefreshToken(oldToken string) (string, error) {
-    // Parse the token
-    token, err := jwt.ParseWithClaims(oldToken, &TokenClaims{}, func(token *jwt.Token) (interface{}, error) {
-        return secretKey, nil
+func (ts *TokenService) RefreshToken(refreshToken string) (string, error) {
+    token, err := jwt.Parse(refreshToken, func(token *jwt.Token) (interface{}, error) {
+        // Validate method
+        if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+          return nil, fmt.Errorf("Unexpected signing method") 
+        }
+        // Return key for validation
+        return []byte(secretKey), nil
     })
-    fmt.Println("token:->", token)
-
-    // Invalid token
-    if err != nil { 
-        return "", err
+    // Extract the token claims
+    claims, ok := token.Claims.(jwt.MapClaims)
+    fmt.Println("claims", claims)
+    if !ok || !token.Valid {
+        return "", errors.New("Invalid token")
+    }
+    userId := claims["user_id"].(string)
+    // Access token claims  
+    accessTokenClaims := &TokenClaims{ 
+        ACCESS_TOKEN_TYPE,
+        userId, 
+        jwt.StandardClaims{
+            ExpiresAt: time.Now().Add(accessExpiration).Unix(),
+        },
     }
 
-    // // Token is valid, get claims
-    // claims, ok := token.Claims.(*Claims)
-    // if !ok {
-    //     return "", err
-    // }
-  
-    // // Issued at time is older than expiry time
-    // if time.Unix(claims.ExpiresAt, 0).Sub(time.Now()) > 30*time.Second {
-    //     return ts.GenerateToken(claims.u) 
-    // }
-
-    // Token still valid, return old token
-    return oldToken, nil
+    accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessTokenClaims)
+    accessTokenString, err := accessToken.SignedString([]byte(secretKey))
+    if err != nil {
+        return "", fmt.Errorf("Failed to generate access token")
+    }
+    return accessTokenString, nil
 }
 
 func RotateToken(tokenString string) (string, error) {

@@ -62,6 +62,21 @@ func ErrorResponse(message string, errorData interface{}) *Response {
     }
 }
 
+func UnauthorizedResponse(message string) *Response {
+    metadata := Metadata{
+        ApiVersion: "v1",
+        ServerInfo: ServerInfo{
+            Hostname: "localhost",
+        },
+    }
+    return &Response{
+        Status: "error",
+        StatusCode: http.StatusUnauthorized,
+        Message: message,
+        Metadata: metadata,
+    }
+}
+
 // ErrorResponse creates an error response with an optional message and errors
 func NotFoundErrorResponse(message string, errorData interface{}) *Response {
     metadata := Metadata{

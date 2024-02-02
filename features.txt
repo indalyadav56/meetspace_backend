@@ -1,6 +1,18 @@
 1. Authentication and Authorization
     1.1 jwt rotatation
 
+logout functionality from admin dashboard(as admin user),
+1. admin user will call the admin/user-logout api.
+2. in backend service logout api, remove the accces/refresh token from redis and return 204.
+3. in frontend when user will call any api with access/refresh token then in middleware, check in redis that tokens should be available. need to research on this.  
+4. in frontend redirect user to login page 
+
+rotate token should be integrated in auth middleware R&D
+
+
+if i have my own refresh token and other user have there token, 
+i should not be able to update the refresh token of that user, check that.
+
 
 
 import axios from 'axios';

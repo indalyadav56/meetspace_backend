@@ -113,7 +113,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "204": {
                         "description": "success"
                     },
                     "400": {
@@ -127,6 +127,11 @@ const docTemplate = `{
         },
         "/v1/auth/refresh-token": {
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "refresh jwt token",
                 "produces": [
                     "application/json"
@@ -137,12 +142,12 @@ const docTemplate = `{
                 "summary": "refresh token",
                 "parameters": [
                     {
-                        "description": "verify email request body",
+                        "description": "refresh token request body",
                         "name": "user",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types.VerifyEmailRequest"
+                            "$ref": "#/definitions/types.RefreshTokenRequest"
                         }
                     }
                 ],
@@ -827,6 +832,17 @@ const docTemplate = `{
             }
         },
         "types.LogoutRequest": {
+            "type": "object",
+            "required": [
+                "refresh_token"
+            ],
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.RefreshTokenRequest": {
             "type": "object",
             "required": [
                 "refresh_token"

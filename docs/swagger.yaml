@@ -98,6 +98,13 @@ definitions:
     required:
     - refresh_token
     type: object
+  types.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
   types.RegisterRequest:
     properties:
       email:
@@ -224,7 +231,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "204":
           description: success
         "400":
           description: Bad request
@@ -239,12 +246,12 @@ paths:
     post:
       description: refresh jwt token
       parameters:
-      - description: verify email request body
+      - description: refresh token request body
         in: body
         name: user
         required: true
         schema:
-          $ref: '#/definitions/types.VerifyEmailRequest'
+          $ref: '#/definitions/types.RefreshTokenRequest'
       produces:
       - application/json
       responses:
@@ -254,6 +261,8 @@ paths:
           description: Bad request
         "500":
           description: Internal server error
+      security:
+      - Bearer: []
       summary: refresh token
       tags:
       - Auth

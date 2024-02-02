@@ -24,7 +24,6 @@ func ClientAddUser(c *gin.Context){
 
 	currentClient, err  := config.ClientService.GetClientById(currentUser.ClientID.String())
 	if err != nil {
-		utils.HandleError(c, err)
 		return
 	}
 
@@ -38,7 +37,6 @@ func ClientAddUser(c *gin.Context){
 
 	user, err := config.ClientUserService.AddClientUser(reqData)
 	if err != nil {  
-		utils.HandleError(c, err)
 		return 
 	}
 

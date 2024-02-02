@@ -14,27 +14,11 @@ import (
 	"reflect"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 
 	"github.com/mitchellh/mapstructure"
 )
 
-// EncryptPassword hashes a password using bcrypt.
-func EncryptPassword(password string) (string, error) {
-    hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-    if err != nil {
-        return "", err
-    }
-    return string(hashedPassword), nil
-}
-
-// ComparePassword compares a plain-text password with a hashed password.
-func ComparePassword(hashedPassword, rawPassword string) bool {
-    err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(rawPassword))
-    return err == nil
-}
-
-// get user from gin context
+// get user from gin request context
 func GetUserFromContext(c *gin.Context) (*models.User, bool) {
 	currentUser, exists := c.Get("user")
 	if !exists {
@@ -47,6 +31,11 @@ func GetUserFromContext(c *gin.Context) (*models.User, bool) {
 	}
 
 	return &user, true
+}
+
+// get user from gin context
+func SetUserFromContext(c *gin.Context) (error) {
+	return nil
 }
 
 // StructToString converts a struct to a string

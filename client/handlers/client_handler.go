@@ -24,7 +24,6 @@ func RegisterClientHandler(c *gin.Context){
 	reqData.Password = "Indal@123"
 	client, err := config.ClientService.CreateClient(reqData)
 	if err != nil {  
-		utils.HandleError(c, err)
 		return 
 	}
 	resp := utils.SuccessResponse("success", client)

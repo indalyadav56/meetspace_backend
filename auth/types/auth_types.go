@@ -1,7 +1,5 @@
 package types
 
-import "meetspace_backend/user/models"
-
 type RegisterRequest struct {
 	FirstName string `json:"first_name" validate:"required,not_blank"`
 	LastName string `json:"last_name" validate:"required,not_blank"`
@@ -28,9 +26,8 @@ type LogoutRequest struct {
 	RefreshToken string `json:"refresh_token" validate:"required,not_blank"`
 }
 
-type AuthResponse struct {
-	models.User
-	Token map[string]string `json:"token"`
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token" validate:"required,not_blank"`
 }
 
 type SendEmailRequest struct {

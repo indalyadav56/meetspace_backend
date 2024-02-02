@@ -119,19 +119,20 @@ func (handler *AuthHandler) ForgotPassword(c *gin.Context){
 //	@Description	refresh jwt token
 //	@Tags			Auth
 //	@Produce		json
-// 	@Param user body types.VerifyEmailRequest true "verify email request body"
+// 	@Param user body types.RefreshTokenRequest true "refresh token request body"
 //	@Router			/v1/auth/refresh-token [post]
 // @Success      200 "Success"
 // @Failure      400 "Bad request"
 // @Failure      500 "Internal server error"
+// @Security Bearer
 func (handler *AuthHandler) RefreshToken(c *gin.Context) {
-	var req types.VerifyEmailRequest
+	var req types.RefreshTokenRequest
 	if errResp := utils.BindJsonData(c, &req); errResp != nil {
 		c.JSON(errResp.StatusCode, errResp)
         return 
     }
 	
-	resp := handler.AuthService.RefreshToken()
+	resp := handler.AuthService.RefreshToken(req.RefreshToken)
 	c.JSON(resp.StatusCode, resp)
 	return 
 }

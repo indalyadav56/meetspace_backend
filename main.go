@@ -77,7 +77,7 @@ func main() {
 	// middlewares
 	r.Use(middlewares.LoggerMiddleware())
 	r.Use(middlewares.CorsMiddleware())
-	r.Use(middlewares.AuthMiddleware())
+	r.Use(middlewares.AuthMiddleware(loggerService, tokenService))
 	
 	// routes
 	authRoutes.AuthRouter(r, authHandler)

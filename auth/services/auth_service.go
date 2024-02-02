@@ -128,7 +128,7 @@ func (as *AuthService) UserLogout(userID string, reqData types.LogoutRequest) *u
     }
 
 	// verify refresh token
-	err := as.TokenService.VerifyRefreshToken(reqData.RefreshToken)
+	_, err := as.TokenService.VerifyToken(reqData.RefreshToken, gloablConstants.REFRESH_TOKEN_KEY)
 	if err != nil {
 		return utils.ErrorResponse(err.Error(), nil)
 	}
@@ -170,12 +170,11 @@ func (as *AuthService) ForgotPassword(reqData types.ForgotPasswordRequest) *util
 }
 
 // forgot password
-func (as *AuthService) RefreshToken() *utils.Response {
-	// validate request struct data
-	// if err := utils.GetValidator().Struct(reqData); err != nil {
-	// 	data := utils.ParseError(err, reqData)
-	// 	return utils.ErrorResponse(constants.AUTH_REQUEST_VALIDATION_ERROR_MSG, data)
-    // }
+func (as *AuthService) RefreshToken(refreshToken string) *utils.Response {
+	accessToken, err := as.TokenService.RefreshToken(refreshToken)
 
-    return utils.SuccessResponse("success", nil)
+	fmt.Println("accessTokenINAuthServ:-", accessToken)
+	fmt.Println("err", err)
+
+    return utils.SuccessResponse("success", map[string]string{"access": accessToken})
 }
