@@ -118,13 +118,17 @@ func (ts *TokenService) RefreshToken(refreshToken string) (string, error) {
         // Return key for validation
         return []byte(secretKey), nil
     })
+    if err != nil {
+        return "", errors.New("Invalid refresh token")
+    }
+   
     // Extract the token claims
     claims, ok := token.Claims.(jwt.MapClaims)
-    fmt.Println("claims", claims)
     if !ok || !token.Valid {
         return "", errors.New("Invalid token")
     }
     userId := claims["user_id"].(string)
+
     // Access token claims  
     accessTokenClaims := &TokenClaims{ 
         ACCESS_TOKEN_TYPE,

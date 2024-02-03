@@ -59,10 +59,13 @@ func (userRepo *UserRepository) CreateRecord(user models.User) (*models.User, er
 }
 
 
-func (userRepo *UserRepository) GetUserByID(userID string) (models.User, error) {
+func (userRepo *UserRepository) GetUserByID(userID string) (*models.User, error) {
     var user models.User
-    userRepo.db.Where("id = ?", userID).First(&user)
-    return user, nil
+    // err := userRepo.db.Where("id = ?", userID).First(&user).Error
+    // if err != nil {
+    //     return nil, err
+    // }
+    return &user, nil
 }
 
 

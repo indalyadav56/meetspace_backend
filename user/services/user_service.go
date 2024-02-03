@@ -2,11 +2,13 @@ package services
 
 import (
 	"encoding/json"
+	"fmt"
 	"meetspace_backend/user/models"
 	"meetspace_backend/user/repositories"
 	"meetspace_backend/user/types"
 	"meetspace_backend/utils"
 	"mime/multipart"
+	"strings"
 )
 
 type UserService struct {
@@ -42,15 +44,19 @@ func (us *UserService) CreateUser(userData types.CreateUserData) (*models.User, 
 }
 
 
-func (us *UserService) GetUserByID(userID string) utils.Response {
-    user, err :=  us.UserRepository.GetUserByID(userID)
-	
-	if err != nil {
-		errorData := []interface{}{}
-		return *utils.ErrorResponse("error", errorData)
+func (us *UserService) GetUserByID(userID string) *utils.Response {
+	if strings.TrimSpace(userID) == "" {
+		return utils.ErrorResponse("user id cannot be blank!", nil)
 	}
 
-	return *utils.SuccessResponse("success", user)
+	fmt.Println("user", us.UserRepository)
+
+    // user, err :=  us.UserRepository.GetUserByID(userID)
+	// if err != nil {
+	// 	return utils.ErrorResponse(err.Error(), nil)
+	// }
+
+	return utils.SuccessResponse("successfully get data!", "user")
 }
 
 func (us *UserService) GetUserByEmail(email string) (models.User, error) {

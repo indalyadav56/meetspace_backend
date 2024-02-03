@@ -15,6 +15,7 @@ import (
 //	@Produce		json
 // @Param user body types.ClientAddUser true "User registration details"
 //	@Router			/v1/client/users [post]
+// @Security Bearer
 func ClientAddUser(c *gin.Context){
 	currentUser, exists := utils.GetUserFromContext(c)
     if !exists{
@@ -51,6 +52,7 @@ func ClientAddUser(c *gin.Context){
 //	@Tags			Client-User
 //	@Produce		json
 //	@Router			/v1/client/users [get]
+// @Security Bearer
 func GetClientUsers(c *gin.Context){
 	currentUser, _ := utils.GetUserFromContext(c)
 

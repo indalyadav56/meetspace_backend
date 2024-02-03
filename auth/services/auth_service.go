@@ -9,6 +9,7 @@ import (
 	"meetspace_backend/user/services"
 	userTypes "meetspace_backend/user/types"
 	"meetspace_backend/utils"
+	"strings"
 	"time"
 )
 
@@ -24,7 +25,8 @@ func NewAuthService(
 	redisService *commonServices.RedisService,
 	ts *TokenService, 
 	us *services.UserService,
-	) *AuthService {
+) *AuthService {
+
     return &AuthService{
 		LoggerService: loggerService,
         RedisService:  redisService,
@@ -160,7 +162,7 @@ func (as *AuthService) ForgotPassword(reqData types.ForgotPasswordRequest) *util
 	updateData := map[string]interface{}{
 		"Password": hashedPassword,
 	}
-	fmt.Println("updateData", updateData)
+	
 	resp, err := as.UserService.UserRepository.UpdateUserByEmail(reqData.Email, updateData)
 	if err != nil {
 		return utils.ErrorResponse(err.Error(), nil)
@@ -171,10 +173,13 @@ func (as *AuthService) ForgotPassword(reqData types.ForgotPasswordRequest) *util
 
 // forgot password
 func (as *AuthService) RefreshToken(refreshToken string) *utils.Response {
+	if strings.TrimSpace(refreshToken) == "" {
+		return utils.ErrorResponse("refresh token cannot be blank.", nil)
+	}
+	
 	accessToken, err := as.TokenService.RefreshToken(refreshToken)
-
-	fmt.Println("accessTokenINAuthServ:-", accessToken)
-	fmt.Println("err", err)
-
+	if err != nil {
+		return utils.ErrorResponse(err.Error(), nil)
+	}
     return utils.SuccessResponse("success", map[string]string{"access": accessToken})
 }

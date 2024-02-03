@@ -45,22 +45,26 @@ func (handler *UserHandler) CreateUserHandler(c *gin.Context) {
 //	@Produce		json
 //	@Router			/v1/users/{id} [get]
 // @Security Bearer
+// @Param id path string true "User ID"
+// @Success      200 "Success"
+// @Failure      400 "Bad request"
+// @Failure      500 "Internal server error"
 func (h *UserHandler) GetUserByID(c *gin.Context) {
 	userId := c.Param("userId")
-	
 	resp := config.UserService.GetUserByID(userId)
-	
 	c.JSON(resp.StatusCode, resp)
 	return
 }
 
-// GetUserByID godoc
+// GetAllUsers godoc
 //	@Summary		get all users
 //	@Tags			User
 //	@Produce		json
-// @Param user body types.CreateUserData true "User create details"
 //	@Router			/v1/users [get]
 // @Security Bearer
+// @Success      200 "Success"
+// @Failure      400 "Bad request"
+// @Failure      500 "Internal server error"
 func (h *UserHandler) GetAllUsers(c *gin.Context) {
 	email := c.Query("email")
 
@@ -88,6 +92,9 @@ func (h *UserHandler) GetAllUsers(c *gin.Context) {
 // @Param user body types.CreateUserData true "User create details"
 //	@Router			/v1/users [put]
 // @Security Bearer
+// @Success      200 "Success"
+// @Failure      400 "Bad request"
+// @Failure      500 "Internal server error"
 func (h *UserHandler) UpdateUser(c *gin.Context) {
 	currentUser, exists := utils.GetUserFromContext(c)
 	
@@ -121,6 +128,9 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 //	@Produce		json
 // @Param user body types.CreateUserData true "User create details"
 //	@Router			/v1/user/check-email [get]
+// @Success      200 "Success"
+// @Failure      400 "Bad request"
+// @Failure      500 "Internal server error"
 func (h *UserHandler) CheckUserEmail(c *gin.Context) {
 	email := c.Query("email")
 	

@@ -462,6 +462,11 @@ const docTemplate = `{
         },
         "/v1/client/users": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "GetClientUsers account",
                 "produces": [
                     "application/json"
@@ -473,6 +478,11 @@ const docTemplate = `{
                 "responses": {}
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "ClientAddUser account",
                 "produces": [
                     "application/json"
@@ -497,6 +507,11 @@ const docTemplate = `{
         },
         "/v1/clients": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "GetAllClients User account",
                 "produces": [
                     "application/json"
@@ -525,6 +540,11 @@ const docTemplate = `{
                 "responses": {}
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "UserLogin User account",
                 "produces": [
                     "application/json"
@@ -549,6 +569,11 @@ const docTemplate = `{
         },
         "/v1/clients/{id}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "GetClientById User account",
                 "produces": [
                     "application/json"
@@ -606,18 +631,17 @@ const docTemplate = `{
                     "User"
                 ],
                 "summary": "get all users",
-                "parameters": [
-                    {
-                        "description": "User create details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.CreateUserData"
-                        }
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
                     }
-                ],
-                "responses": {}
+                }
             },
             "put": {
                 "security": [
@@ -686,7 +710,26 @@ const docTemplate = `{
                     "User"
                 ],
                 "summary": "get user by ID",
-                "responses": {}
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         }
     },

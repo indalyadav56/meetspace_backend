@@ -46,7 +46,7 @@ func AddChatGroup(ctx *fiber.Ctx) error{
 	for _, userId := range reqData.UserIds {
 		user, err := config.ChatGroupService.UserService.UserRepository.GetUserByID(userId)
 		if err == nil {
-			roomUsers = append(roomUsers, &user)
+			roomUsers = append(roomUsers, user)
 		}
 	}
 

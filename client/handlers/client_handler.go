@@ -15,6 +15,7 @@ import (
 //	@Produce		json
 // @Param user body types.ClientCreateData true "User login details"
 //	@Router			/v1/clients [post]
+// @Security Bearer
 func RegisterClientHandler(c *gin.Context){
 
 	var reqData types.ClientCreateData
@@ -40,6 +41,7 @@ func RegisterClientHandler(c *gin.Context){
 //	@Produce		json
 // @Param id path int true "Client ID"
 //	@Router			/v1/clients/{id} [get]
+// @Security Bearer
 func GetClientById(c *gin.Context){
 	clientId := c.Param("clientId")
 
@@ -60,6 +62,7 @@ func GetClientById(c *gin.Context){
 // @Param company_name query string false "Client's company name"
 // @Param user body types.ClientCreateData true "GetAllClients login details"
 //	@Router			/v1/clients [get]
+// @Security Bearer
 func GetAllClients(c *gin.Context){
 	_, isUser:= utils.GetUserFromContext(c)
 	if !isUser{
