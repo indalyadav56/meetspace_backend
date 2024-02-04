@@ -10,7 +10,6 @@ import (
 
 type ChatMessageHandler struct {
 	ChatMessageService *services.ChatMessageService
-
 }
 
 func NewChatMessageHandler(svc *services.ChatMessageService) *ChatMessageHandler {
@@ -20,12 +19,13 @@ func NewChatMessageHandler(svc *services.ChatMessageService) *ChatMessageHandler
 }
 
 // GetChatMessageAPI godoc
-//	@Summary		Register User account
-//	@Description	Register User account
+//	@Summary		get chat messages by room id
+//	@Description	Get chat messages by room id
 //	@Tags			Chat-Message
 //	@Produce		json
-//	@Router			/v1/chat/messages [get]
-// @Security Bearer
+//	@Param			chat_room_id	path	string	true	"Chat Room ID"
+//	@Router			/v1/chat/messages/{chat_room_id} [get]
+//	@Security		Bearer
 func (h *ChatMessageHandler) GetChatMessageByRoomID(ctx *gin.Context){
     // get user from context
 	currentUser, _ := utils.GetUserFromContext(ctx)

@@ -1,19 +1,4 @@
 definitions:
-  models.Client:
-    properties:
-      client_user_id:
-        type: string
-      company_domain:
-        type: string
-      company_name:
-        type: string
-      company_size:
-        type: integer
-      country:
-        type: string
-      id:
-        type: string
-    type: object
   types.AddChatGroup:
     properties:
       title:
@@ -22,43 +7,14 @@ definitions:
         items:
           type: string
         type: array
-    type: object
-  types.ClientAddUser:
-    properties:
-      client_id:
-        type: string
-      created_by:
-        $ref: '#/definitions/models.Client'
-      email:
-        type: string
-      first_name:
-        type: string
-      last_name:
-        type: string
-      password:
-        type: string
-      updated_by:
-        $ref: '#/definitions/models.Client'
-    type: object
-  types.ClientCreateData:
-    properties:
-      company_name:
-        type: string
-      email:
-        type: string
-      first_name:
-        type: string
-      last_name:
-        type: string
-      password:
-        type: string
+    required:
+    - title
+    - user_ids
     type: object
   types.CreateUserData:
     properties:
       client_id:
         type: string
-      created_by:
-        $ref: '#/definitions/models.Client'
       email:
         type: string
       first_name:
@@ -69,8 +25,6 @@ definitions:
         type: string
       role:
         type: string
-      updated_by:
-        $ref: '#/definitions/models.Client'
     type: object
   types.ForgotPasswordRequest:
     properties:
@@ -81,13 +35,6 @@ definitions:
     required:
     - email
     - new_password
-    type: object
-  types.GetChatMessageRequestBody:
-    properties:
-      chat_room_id:
-        type: string
-      current_user_id:
-        type: string
     type: object
   types.LoginRequest:
     properties:
@@ -359,38 +306,21 @@ paths:
       summary: add-chat-group
       tags:
       - Chat-Group
-  /v1/chat/messages:
+  /v1/chat/messages/{chat_room_id}:
     get:
-      description: Register User account
+      description: Get chat messages by room id
       parameters:
-      - description: User registration details
-        in: body
-        name: user
+      - description: Chat Room ID
+        in: path
+        name: chat_room_id
         required: true
-        schema:
-          $ref: '#/definitions/types.GetChatMessageRequestBody'
+        type: string
       produces:
       - application/json
       responses: {}
       security:
       - Bearer: []
-      summary: Register User account
-      tags:
-      - Chat-Message
-  /v1/chat/messages/{room_id}:
-    get:
-      description: GetChatMessageByRoomId
-      parameters:
-      - description: User registration details
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/types.GetChatMessageRequestBody'
-      produces:
-      - application/json
-      responses: {}
-      summary: GetChatMessageByRoomId
+      summary: get chat messages by room id
       tags:
       - Chat-Message
   /v1/chat/room/contact:
@@ -463,90 +393,6 @@ paths:
       summary: CreateChatRoom
       tags:
       - Chat-Room
-  /v1/client/users:
-    get:
-      description: GetClientUsers account
-      produces:
-      - application/json
-      responses: {}
-      security:
-      - Bearer: []
-      summary: GetClientUsers account
-      tags:
-      - Client-User
-    post:
-      description: ClientAddUser account
-      parameters:
-      - description: User registration details
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/types.ClientAddUser'
-      produces:
-      - application/json
-      responses: {}
-      security:
-      - Bearer: []
-      summary: ClientAddUser account
-      tags:
-      - Client-User
-  /v1/clients:
-    get:
-      description: GetAllClients User account
-      parameters:
-      - description: Client's company name
-        in: query
-        name: company_name
-        type: string
-      - description: GetAllClients login details
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/types.ClientCreateData'
-      produces:
-      - application/json
-      responses: {}
-      security:
-      - Bearer: []
-      summary: GetAllClients User account
-      tags:
-      - Client
-    post:
-      description: UserLogin User account
-      parameters:
-      - description: User login details
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/types.ClientCreateData'
-      produces:
-      - application/json
-      responses: {}
-      security:
-      - Bearer: []
-      summary: UserLogin User account
-      tags:
-      - Client
-  /v1/clients/{id}:
-    get:
-      description: GetClientById User account
-      parameters:
-      - description: Client ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses: {}
-      security:
-      - Bearer: []
-      summary: GetClientById User account
-      tags:
-      - Client
   /v1/user/check-email:
     get:
       parameters:

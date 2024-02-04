@@ -23,9 +23,9 @@ func NewChatGroupHandler(svc *services.ChatGroupService) *ChatGroupHandler {
 //	@Description	Add Chat group
 //	@Tags			Chat-Group
 //	@Produce		json
-// @Param user body types.AddChatGroup true "Add chat group details"
+//	@Param			user	body	types.AddChatGroup	true	"Add chat group details"
 //	@Router			/v1/chat/groups [post]
-// @Security Bearer
+//	@Security		Bearer
 func (h *ChatGroupHandler) AddChatGroup(ctx *gin.Context){
 	currentUser, _ := utils.GetUserFromContext(ctx)
   

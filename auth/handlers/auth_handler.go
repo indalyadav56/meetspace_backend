@@ -25,11 +25,11 @@ func NewAuthHandler(authSvc *services.AuthService, verificationSvc *services.Ver
 //	@Description	Register User account
 //	@Tags			Auth
 //	@Produce		json
-// 	@Param user body types.RegisterRequest true "User registration details"
+//	@Param			user	body	types.RegisterRequest	true	"User registration details"
 //	@Router			/v1/auth/register [post]
-// @Success      201 "Register user successfully"
-// @Failure      400 "Bad request"
-// @Failure      500 "Internal server error"
+//	@Success		201	"Register user successfully"
+//	@Failure		400	"Bad request"
+//	@Failure		500	"Internal server error"
 func (handler *AuthHandler) UserRegister(c *gin.Context){
 	var req types.RegisterRequest
 	
@@ -48,11 +48,11 @@ func (handler *AuthHandler) UserRegister(c *gin.Context){
 //	@Description	Login user
 //	@Tags			Auth
 //	@Produce		json
-// 	@Param user body types.LoginRequest true "User login details"
+//	@Param			user	body	types.LoginRequest	true	"User login details"
 //	@Router			/v1/auth/login [post]
-// @Success      200 "Login user successfully"
-// @Failure      400 "Bad request"
-// @Failure      500 "Internal server error"
+//	@Success		200	"Login user successfully"
+//	@Failure		400	"Bad request"
+//	@Failure		500	"Internal server error"
 func (handler *AuthHandler) UserLogin(c *gin.Context) {
 	var req types.LoginRequest
 	
@@ -71,12 +71,12 @@ func (handler *AuthHandler) UserLogin(c *gin.Context) {
 //	@Description	User logout User
 //	@Tags			Auth
 //	@Produce		json
-// 	@Param user body types.LogoutRequest true "User login details"
+//	@Param			user	body	types.LogoutRequest	true	"User login details"
 //	@Router			/v1/auth/logout [post]
-// @Success      204 "success"
-// @Failure      400 "Bad request"
-// @Failure      500 "Internal server error"
-// @Security Bearer
+//	@Success		204	"success"
+//	@Failure		400	"Bad request"
+//	@Failure		500	"Internal server error"
+//	@Security		Bearer
 func (handler *AuthHandler) UserLogout(c *gin.Context) {
 	// get user from context
 	currentUser, _ := utils.GetUserFromContext(c)
@@ -97,11 +97,11 @@ func (handler *AuthHandler) UserLogout(c *gin.Context) {
 //	@Description	Forgot password
 //	@Tags			Auth
 //	@Produce		json
-// 	@Param user body types.ForgotPasswordRequest true "forgot password request body"
+//	@Param			user	body	types.ForgotPasswordRequest	true	"forgot password request body"
 //	@Router			/v1/auth/forgot-password [post]
-// @Success      200 {object} utils.Response "Success"
-// @Failure      400 "Bad request"
-// @Failure      500 "Internal server error"
+//	@Success		200	{object}	utils.Response	"Success"
+//	@Failure		400	"Bad request"
+//	@Failure		500	"Internal server error"
 func (handler *AuthHandler) ForgotPassword(c *gin.Context){
 	var req types.ForgotPasswordRequest
 	if errorResp := utils.BindJsonData(c, &req); errorResp != nil {
@@ -119,12 +119,12 @@ func (handler *AuthHandler) ForgotPassword(c *gin.Context){
 //	@Description	refresh jwt token
 //	@Tags			Auth
 //	@Produce		json
-// 	@Param user body types.RefreshTokenRequest true "refresh token request body"
+//	@Param			user	body	types.RefreshTokenRequest	true	"refresh token request body"
 //	@Router			/v1/auth/refresh-token [post]
-// @Success      200 "Success"
-// @Failure      400 "Bad request"
-// @Failure      500 "Internal server error"
-// @Security Bearer
+//	@Success		200	"Success"
+//	@Failure		400	"Bad request"
+//	@Failure		500	"Internal server error"
+//	@Security		Bearer
 func (handler *AuthHandler) RefreshToken(c *gin.Context) {
 	var req types.RefreshTokenRequest
 	if errResp := utils.BindJsonData(c, &req); errResp != nil {
@@ -139,15 +139,15 @@ func (handler *AuthHandler) RefreshToken(c *gin.Context) {
 
 
 // SendEmail godoc
-// @Summary		send-email
-// @Description	Send email to user
-// @Tags			Auth
-// @Produce		json
-// @Param user body types.SendEmailRequest true "send email request body"
-// @Router			/v1/auth/send-email [post]
-// @Success      200 "Success"
-// @Failure      400 "Bad request"
-// @Failure      500 "Internal server error"
+//	@Summary		send-email
+//	@Description	Send email to user
+//	@Tags			Auth
+//	@Produce		json
+//	@Param			user	body	types.SendEmailRequest	true	"send email request body"
+//	@Router			/v1/auth/send-email [post]
+//	@Success		200	"Success"
+//	@Failure		400	"Bad request"
+//	@Failure		500	"Internal server error"
 func (handler *AuthHandler) SendEmailHandler(c *gin.Context) {
 	var req types.SendEmailRequest
 	
@@ -166,11 +166,11 @@ func (handler *AuthHandler) SendEmailHandler(c *gin.Context) {
 //	@Description	Verify email otp.
 //	@Tags			Auth
 //	@Produce		json
-// 	@Param user body types.VerifyEmailRequest true "verify email request body"
+//	@Param			user	body	types.VerifyEmailRequest	true	"verify email request body"
 //	@Router			/v1/auth/verify-email [post]
-// @Success      200 "Success"
-// @Failure      400 "Bad request"
-// @Failure      500 "Internal server error"
+//	@Success		200	"Success"
+//	@Failure		400	"Bad request"
+//	@Failure		500	"Internal server error"
 func (handler *AuthHandler) VerifyEmailHandler(c *gin.Context) {
 	var req types.VerifyEmailRequest
 	if errResp := utils.BindJsonData(c, &req); errResp != nil {

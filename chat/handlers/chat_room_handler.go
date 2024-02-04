@@ -33,9 +33,9 @@ type CreateChatRoomBody struct {
 //	@Description	UserLogin User account
 //	@Tags			Chat-Room
 //	@Produce		json
-// @Param user body types.LoginRequest true "User login details"
+//	@Param			user	body	types.LoginRequest	true	"User login details"
 //	@Router			/v1/chat/room/contact [get]
-// @Security Bearer
+//	@Security		Bearer
 func (h *ChatRoomHandler) GetChatRoomContact(ctx *gin.Context){
     currentUser, exists := utils.GetUserFromContext(ctx)
     if !exists{
@@ -95,9 +95,9 @@ func (h *ChatRoomHandler) GetChatRoomContact(ctx *gin.Context){
 //	@Description	CreateChatRoom
 //	@Tags			Chat-Room
 //	@Produce		json
-// @Param user body types.LoginRequest true "User login details"
+//	@Param			user	body	types.LoginRequest	true	"User login details"
 //	@Router			/v1/chat/rooms [post]
-// @Security Bearer
+//	@Security		Bearer
 func (h *ChatRoomHandler) CreateChatRoom (ctx *gin.Context){
     currentUserID := ctx.MustGet("userId")
 
@@ -158,9 +158,9 @@ func (h *ChatRoomHandler) CreateChatRoom (ctx *gin.Context){
 //	@Description	DeleteChatRoom
 //	@Tags			Chat-Room
 //	@Produce		json
-// @Param user body types.LoginRequest true "User login details"
+//	@Param			user	body	types.LoginRequest	true	"User login details"
 //	@Router			/v1/chat/rooms [delete]
-// @Security Bearer
+//	@Security		Bearer
 func (h *ChatRoomHandler)DeleteChatRoom (ctx *gin.Context){
 
 }
@@ -171,9 +171,9 @@ func (h *ChatRoomHandler)DeleteChatRoom (ctx *gin.Context){
 //	@Description	GetChatRooms
 //	@Tags			Chat-Room
 //	@Produce		json
-// @Param user body types.LoginRequest true "User login details"
+//	@Param			user	body	types.LoginRequest	true	"User login details"
 //	@Router			/v1/chat/rooms [get]
-// @Security Bearer
+//	@Security		Bearer
 func (h *ChatRoomHandler) GetChatRooms(ctx *gin.Context){
     currentUser, exists := utils.GetUserFromContext(ctx)
     if !exists{

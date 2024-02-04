@@ -22,12 +22,12 @@ func NewUserHandler(userService *services.UserService) *UserHandler{
 }
 
 // CreateUserHandler godoc
-//	@Summary		User create
-//	@Tags			User
-//	@Produce		json
-// @Param user body types.CreateUserData true "User create details"
-//	@Router			/v1/users [post]
-// @Security Bearer
+//	@Summary	User create
+//	@Tags		User
+//	@Produce	json
+//	@Param		user	body	types.CreateUserData	true	"User create details"
+//	@Router		/v1/users [post]
+//	@Security	Bearer
 func (h *UserHandler) CreateUserHandler(c *gin.Context) {
 	var reqBody types.CreateUserData
 	utils.BindJsonData(c, &reqBody)
@@ -39,15 +39,15 @@ func (h *UserHandler) CreateUserHandler(c *gin.Context) {
 }
 
 // GetUserByID godoc
-//	@Summary		get user by ID
-//	@Tags			User
-//	@Produce		json
-//	@Router			/v1/users/{id} [get]
-// @Security Bearer
-// @Param id path string true "User ID"
-// @Success      200 "Success"
-// @Failure      400 "Bad request"
-// @Failure      500 "Internal server error"
+//	@Summary	get user by ID
+//	@Tags		User
+//	@Produce	json
+//	@Router		/v1/users/{id} [get]
+//	@Security	Bearer
+//	@Param		id	path	string	true	"User ID"
+//	@Success	200	"Success"
+//	@Failure	400	"Bad request"
+//	@Failure	500	"Internal server error"
 func (h *UserHandler) GetUserByID(c *gin.Context) {
 	userId := c.Param("userId")
 	resp := h.UserService.GetUserByID(userId)
@@ -56,14 +56,14 @@ func (h *UserHandler) GetUserByID(c *gin.Context) {
 }
 
 // GetAllUsers godoc
-//	@Summary		get all users
-//	@Tags			User
-//	@Produce		json
-//	@Router			/v1/users [get]
-// @Security Bearer
-// @Success      200 "Success"
-// @Failure      400 "Bad request"
-// @Failure      500 "Internal server error"
+//	@Summary	get all users
+//	@Tags		User
+//	@Produce	json
+//	@Router		/v1/users [get]
+//	@Security	Bearer
+//	@Success	200	"Success"
+//	@Failure	400	"Bad request"
+//	@Failure	500	"Internal server error"
 func (h *UserHandler) GetAllUsers(c *gin.Context) {
 	email := c.Query("email")
 
@@ -85,15 +85,15 @@ func (h *UserHandler) GetAllUsers(c *gin.Context) {
 }
 
 // UpdateUser godoc
-//	@Summary		user-update
-//	@Tags			User
-//	@Produce		json
-// @Param user body types.CreateUserData true "User create details"
-//	@Router			/v1/users [put]
-// @Security Bearer
-// @Success      200 "Success"
-// @Failure      400 "Bad request"
-// @Failure      500 "Internal server error"
+//	@Summary	user-update
+//	@Tags		User
+//	@Produce	json
+//	@Param		user	body	types.CreateUserData	true	"User create details"
+//	@Router		/v1/users [put]
+//	@Security	Bearer
+//	@Success	200	"Success"
+//	@Failure	400	"Bad request"
+//	@Failure	500	"Internal server error"
 func (h *UserHandler) UpdateUser(c *gin.Context) {
 	currentUser, exists := utils.GetUserFromContext(c)
 	
@@ -122,14 +122,14 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 }
 
 // CheckUserEmail godoc
-//	@Summary		User create
-//	@Tags			User
-//	@Produce		json
-// @Param user body types.CreateUserData true "User create details"
-//	@Router			/v1/user/check-email [get]
-// @Success      200 "Success"
-// @Failure      400 "Bad request"
-// @Failure      500 "Internal server error"
+//	@Summary	User create
+//	@Tags		User
+//	@Produce	json
+//	@Param		user	body	types.CreateUserData	true	"User create details"
+//	@Router		/v1/user/check-email [get]
+//	@Success	200	"Success"
+//	@Failure	400	"Bad request"
+//	@Failure	500	"Internal server error"
 func (h *UserHandler) CheckUserEmail(c *gin.Context) {
 	email := c.Query("email")
 	
@@ -152,14 +152,14 @@ func (h *UserHandler) CheckUserEmail(c *gin.Context) {
 }
 
 // GetUserProfile godoc
-//	@Summary		get user profile
-//	@Tags			User
-//	@Produce		json
-//	@Router			/v1/user/profile [get]
-// @Security Bearer
-// @Success      200 "Success"
-// @Failure      400 "Bad request"
-// @Failure      500 "Internal server error"
+//	@Summary	get user profile
+//	@Tags		User
+//	@Produce	json
+//	@Router		/v1/user/profile [get]
+//	@Security	Bearer
+//	@Success	200	"Success"
+//	@Failure	400	"Bad request"
+//	@Failure	500	"Internal server error"
 func (h *UserHandler) GetUserProfile(c *gin.Context) {
 	currentUser, exists := utils.GetUserFromContext(c)
 	if !exists{

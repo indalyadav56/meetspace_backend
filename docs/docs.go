@@ -295,54 +295,28 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/v1/chat/messages": {
+        "/v1/chat/messages/{chat_room_id}": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Register User account",
+                "description": "Get chat messages by room id",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Chat-Message"
                 ],
-                "summary": "Register User account",
+                "summary": "get chat messages by room id",
                 "parameters": [
                     {
-                        "description": "User registration details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.GetChatMessageRequestBody"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/v1/chat/messages/{room_id}": {
-            "get": {
-                "description": "GetChatMessageByRoomId",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Chat-Message"
-                ],
-                "summary": "GetChatMessageByRoomId",
-                "parameters": [
-                    {
-                        "description": "User registration details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.GetChatMessageRequestBody"
-                        }
+                        "type": "string",
+                        "description": "Chat Room ID",
+                        "name": "chat_room_id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -455,140 +429,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/types.LoginRequest"
                         }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/v1/client/users": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "GetClientUsers account",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Client-User"
-                ],
-                "summary": "GetClientUsers account",
-                "responses": {}
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "ClientAddUser account",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Client-User"
-                ],
-                "summary": "ClientAddUser account",
-                "parameters": [
-                    {
-                        "description": "User registration details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.ClientAddUser"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/v1/clients": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "GetAllClients User account",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Client"
-                ],
-                "summary": "GetAllClients User account",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Client's company name",
-                        "name": "company_name",
-                        "in": "query"
-                    },
-                    {
-                        "description": "GetAllClients login details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.ClientCreateData"
-                        }
-                    }
-                ],
-                "responses": {}
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "UserLogin User account",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Client"
-                ],
-                "summary": "UserLogin User account",
-                "parameters": [
-                    {
-                        "description": "User login details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.ClientCreateData"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/v1/clients/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "GetClientById User account",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Client"
-                ],
-                "summary": "GetClientById User account",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Client ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {}
@@ -781,31 +621,12 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.Client": {
-            "type": "object",
-            "properties": {
-                "client_user_id": {
-                    "type": "string"
-                },
-                "company_domain": {
-                    "type": "string"
-                },
-                "company_name": {
-                    "type": "string"
-                },
-                "company_size": {
-                    "type": "integer"
-                },
-                "country": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
         "types.AddChatGroup": {
             "type": "object",
+            "required": [
+                "title",
+                "user_ids"
+            ],
             "properties": {
                 "title": {
                     "type": "string"
@@ -818,60 +639,11 @@ const docTemplate = `{
                 }
             }
         },
-        "types.ClientAddUser": {
-            "type": "object",
-            "properties": {
-                "client_id": {
-                    "type": "string"
-                },
-                "created_by": {
-                    "$ref": "#/definitions/models.Client"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "first_name": {
-                    "type": "string"
-                },
-                "last_name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "updated_by": {
-                    "$ref": "#/definitions/models.Client"
-                }
-            }
-        },
-        "types.ClientCreateData": {
-            "type": "object",
-            "properties": {
-                "company_name": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "first_name": {
-                    "type": "string"
-                },
-                "last_name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
         "types.CreateUserData": {
             "type": "object",
             "properties": {
                 "client_id": {
                     "type": "string"
-                },
-                "created_by": {
-                    "$ref": "#/definitions/models.Client"
                 },
                 "email": {
                     "type": "string"
@@ -887,9 +659,6 @@ const docTemplate = `{
                 },
                 "role": {
                     "type": "string"
-                },
-                "updated_by": {
-                    "$ref": "#/definitions/models.Client"
                 }
             }
         },
@@ -904,17 +673,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "new_password": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.GetChatMessageRequestBody": {
-            "type": "object",
-            "properties": {
-                "chat_room_id": {
-                    "type": "string"
-                },
-                "current_user_id": {
                     "type": "string"
                 }
             }

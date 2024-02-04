@@ -5,7 +5,6 @@ import (
 	"log"
 	authModel "meetspace_backend/auth/models"
 	"meetspace_backend/chat/models"
-	clientModel "meetspace_backend/client/models"
 	userModel "meetspace_backend/user/models"
 	"os"
 
@@ -41,7 +40,6 @@ func InitDB() *gorm.DB {
 	db.AutoMigrate(&userModel.User{})
 	db.AutoMigrate(&models.ChatMessage{})
 	db.AutoMigrate(&models.ChatRoom{})
-	db.AutoMigrate(&clientModel.Client{})
 
 	DB = db
 	return db

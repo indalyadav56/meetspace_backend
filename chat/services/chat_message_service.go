@@ -76,13 +76,6 @@ func formatDate(t time.Time) string {
 }
 
 
-// GetChatMessageByRoomId godoc
-//	@Summary		GetChatMessageByRoomId
-//	@Description	GetChatMessageByRoomId
-//	@Tags			Chat-Message
-//	@Produce		json
-// @Param user body types.GetChatMessageRequestBody true "User registration details"
-//	@Router			/v1/chat/messages/{room_id} [get]
 func (chatMessageService *ChatMessageService) GetChatMessageByRoomId(roomID, userID string) ([]types.ChatMessageResponse, error){
     var messages []models.ChatMessage
     config.DB.Preload("Sender").Preload("ChatRoom").

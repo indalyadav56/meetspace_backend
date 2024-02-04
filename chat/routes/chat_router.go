@@ -27,7 +27,7 @@ func ChatRouter(e *gin.Engine, handler ChatHandlers){
 	chatRoom.DELETE("", handler.DeleteChatRoom)
 
 	// groups
-	chatGroup.POST("", handler.ChatGroupHandler.AddChatGroup)
+	chatGroup.POST("", handler.AddChatGroup)
 	// chatGroup.GET("/group/members/:roomId", services.GetGroupMembers)
 
 	// messages

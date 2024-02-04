@@ -11,9 +11,6 @@ import (
 	chatRoutes "meetspace_backend/chat/routes"
 	chatServices "meetspace_backend/chat/services"
 	websocketRoute "meetspace_backend/chat/websocket"
-	clientRepo "meetspace_backend/client/repositories"
-	clientRoutes "meetspace_backend/client/routes"
-	clientServices "meetspace_backend/client/services"
 	commonServices "meetspace_backend/common/services"
 	"meetspace_backend/config"
 	"meetspace_backend/middlewares"
@@ -30,10 +27,10 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// @securityDefinitions.apikey Bearer
-// @in header
-// @name Authorization
-// @description Type "Bearer" followed by a space and JWT token.
+//	@securityDefinitions.apikey	Bearer
+//	@in							header
+//	@name						Authorization
+//	@description				Type "Bearer" followed by a space and JWT token.
 func main() {
 	// load environment
 	config.LoadEnv()
@@ -45,7 +42,6 @@ func main() {
 	// repositories
 	userRepo := userRepo.NewUserRepository(db)
 	verificationRepo := authRepo.NewVerificationRepository(db)
-	clientRepo := clientRepo.NewClientRepository(db)
 	chatMessageRepo := chatRepo.NewChatMessageRepository(db)
 	chatRoomRepo := chatRepo.NewChatRoomRepository(db)
 
@@ -56,8 +52,6 @@ func main() {
 	tokenService := authServices.NewTokenService()
 	authService := authServices.NewAuthService(loggerService, redisService, tokenService, userService)
 	verificationService := authServices.NewVerificationService(verificationRepo)
-	clientServices.NewClientService(clientRepo, userService)
-	clientServices.NewClientUserService(clientRepo, userService)
 	chatRoomService := chatServices.NewChatRoomService(chatRoomRepo, userService)
 	chatGroupService := chatServices.NewChatGroupService(chatRoomRepo, userService)
 	chatMessageService := chatServices.NewChatMessageService(chatMessageRepo, userService, chatRoomService)
@@ -88,7 +82,6 @@ func main() {
 		ChatMessageHandler: chatMessageHandler,
 	})
 	websocketRoute.WebSocketRouter(r)
-	clientRoutes.ClientRouter(r)
 
 	// swagger
 	r.GET("/docs/*any", ginSwagger.WrapHandler(
