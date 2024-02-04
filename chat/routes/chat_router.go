@@ -22,9 +22,9 @@ func ChatRouter(e *gin.Engine, handler ChatHandlers){
 	// rooms
 	chatRouter.GET("/contact", handler.ChatRoomHandler.GetChatRoomContact)
 
-	chatRoom.GET("", handler.ChatRoomHandler.GetChatRooms)
-	chatRoom.POST("", handler.ChatRoomHandler.CreateChatRoom)
-	chatRoom.DELETE("", handler.ChatRoomHandler.DeleteChatRoom)
+	chatRoom.GET("", handler.GetChatRooms)
+	chatRoom.POST("", handler.CreateChatRoom)
+	chatRoom.DELETE("", handler.DeleteChatRoom)
 
 	// groups
 	chatGroup.POST("", handler.ChatGroupHandler.AddChatGroup)

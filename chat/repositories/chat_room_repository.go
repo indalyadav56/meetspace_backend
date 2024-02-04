@@ -5,9 +5,7 @@ import (
 
 	"gorm.io/gorm"
 )
-var (
-	Test= "testing"
-)
+
 
 type ChatRoomRepository struct {
 	db *gorm.DB

@@ -19,7 +19,6 @@ func NewChatMessageHandler(svc *services.ChatMessageService) *ChatMessageHandler
     }
 }
 
-
 // GetChatMessageAPI godoc
 //	@Summary		Register User account
 //	@Description	Register User account
@@ -36,5 +35,3 @@ func (h *ChatMessageHandler) GetChatMessageByRoomID(ctx *gin.Context){
     ctx.JSON(http.StatusOK, utils.SuccessResponse("success", msg))
     return
 }
-
-
