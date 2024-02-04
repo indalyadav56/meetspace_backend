@@ -1,10 +1,6 @@
 package handlers
 
 import (
-	"meetspace_backend/client/types"
-	"meetspace_backend/config"
-	"meetspace_backend/utils"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,32 +13,32 @@ import (
 //	@Router			/v1/client/users [post]
 // @Security Bearer
 func ClientAddUser(c *gin.Context){
-	currentUser, exists := utils.GetUserFromContext(c)
-    if !exists{
-        return 
-    }
+	// currentUser, exists := utils.GetUserFromContext(c)
+    // if !exists{
+    //     return 
+    // }
 
 
-	currentClient, err  := config.ClientService.GetClientById(currentUser.ClientID.String())
-	if err != nil {
-		return
-	}
+	// currentClient, err  := config.ClientService.GetClientById(currentUser.ClientID.String())
+	// if err != nil {
+	// 	return
+	// }
 
-	var reqData types.ClientAddUser
-	if err := utils.BindJsonData(c, &reqData); err != nil {
-		return
-	}
-	reqData.ClientID = currentUser.ClientID
-	reqData.CreatedBy = &currentClient
-	reqData.UpdatedBy = &currentClient
+	// var reqData types.ClientAddUser
+	// if err := utils.BindJsonData(c, &reqData); err != nil {
+	// 	return
+	// }
+	// reqData.ClientID = currentUser.ClientID
+	// reqData.CreatedBy = &currentClient
+	// reqData.UpdatedBy = &currentClient
 
-	user, err := config.ClientUserService.AddClientUser(reqData)
-	if err != nil {  
-		return 
-	}
+	// user, err := config.ClientUserService.AddClientUser(reqData)
+	// if err != nil {  
+	// 	return 
+	// }
 
-	resp := utils.SuccessResponse("success", user)
-	c.JSON(resp.StatusCode, resp)
+	// resp := utils.SuccessResponse("success", user)
+	// c.JSON(resp.StatusCode, resp)
 	return
 }
 
@@ -54,10 +50,10 @@ func ClientAddUser(c *gin.Context){
 //	@Router			/v1/client/users [get]
 // @Security Bearer
 func GetClientUsers(c *gin.Context){
-	currentUser, _ := utils.GetUserFromContext(c)
+	// currentUser, _ := utils.GetUserFromContext(c)
 
-	users , _  := config.ClientUserService.GetClientUsers(currentUser.ClientID.String())
-	resp := utils.SuccessResponse("success", users)
-	c.JSON(resp.StatusCode, resp)
+	// users , _  := config.ClientUserService.GetClientUsers(currentUser.ClientID.String())
+	// resp := utils.SuccessResponse("success", users)
+	// c.JSON(resp.StatusCode, resp)
 	return
 }

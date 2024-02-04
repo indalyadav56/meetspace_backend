@@ -33,5 +33,5 @@ func ChatRouter(e *gin.Engine, handler ChatHandlers){
 	// messages
 	// chatGroup.POST("/messages", handlers.CreateChatMessageAPI)
 	// chatGroup.PATCH("/messages", handlers.UpdateChatMessage)
-	chatRouter.GET("/messages/:chatRoomId", handlers.GetChatMessageAPI)
+	chatRouter.GET("/messages/:chatRoomId", handler.GetChatMessageByRoomID)
 }

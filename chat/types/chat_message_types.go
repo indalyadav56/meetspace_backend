@@ -10,8 +10,7 @@ type CreateChatRequestBody struct {
 }
 
 type GetChatMessageRequestBody struct {
-    ChatRoomId string `json:"chat_room_id"`
-    CurrentUserId string `json:"current_user_id,omitempty"`
+    ChatRoomId string `json:"chat_room_id" validate:"required,not_blank"`
 }
 
 

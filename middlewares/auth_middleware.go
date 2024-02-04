@@ -75,21 +75,23 @@ func AuthMiddleware(loggerService *commonServices.LoggerService, tokenService *a
 
 func upgradeWebSocketConnection(c *gin.Context, tokenService *authServices.TokenService) {
 	if upgrade := c.Request.Header.Get("Upgrade"); upgrade == "websocket" {
-		// websocketToken := c.Request.URL.Query().Get("token")
+		websocketToken := c.Request.URL.Query().Get("token")
 
-		// if websocketToken != "" {
-		// 	userId, err := tokenService.VerifyToken(websocketToken, "access")
+		if websocketToken != "" {
+			claims, err := tokenService.VerifyToken(websocketToken, "access")
+			userId := claims["user_id"]
+			if err != nil {
+				c.AbortWithStatus(401)
+				return
+			}
 	
-		// 	if err != nil {
-		// 		return
-		// 	}
-	
-		// 	var user models.User
-		// 	config.DB.Where("id = ?", userId).Find(&user)
-		// 	c.Set("user", user)
-		// 	return
-		// }
-		// c.AbortWithStatus(401)
+			var user models.User
+			config.DB.Where("id = ?", userId).Find(&user)
+			c.Set("user", user)
+			c.Next()
+			return
+		}
+		c.AbortWithStatus(401)
 		c.Next()
 		return
 	}

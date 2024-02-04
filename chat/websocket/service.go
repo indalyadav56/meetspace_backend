@@ -43,20 +43,20 @@ func (ws *WebSocketService) HandleUserDisconnected(payload types.Payload, client
 }
 
 func (ws *WebSocketService) HandleChatMessageSent(payload types.Payload, client *Client) {
-	currentRoom, err := config.ChatRoomService.GetChatRoomByID(client.GroupName)
+	// currentRoom, err := config.ChatRoomService.GetChatRoomByID(client.GroupName)
 	
 	// if chat room not found then create a new chat room for sender and receiver user
-	if err != nil {
-		receiverUserData := payload.Data["receiver_user"].(map[string]interface{})
-		var users []string
-		users = append(users, receiverUserData["id"].(string))
-		config.ChatRoomService.CreateChatRoomRecord("NewChatRoom", client.User.ID.String(), users)
-		CheckMessageNotification(client, payload)
-	}else{
-		senderUserData := payload.Data["sender"].(map[string]interface{})
-		config.ChatMessageService.CreateChatMessage("NewChatMessageContent", senderUserData["id"].(string), currentRoom.ID.String())
-		CheckMessageNotification(client, payload)
-	}
+	// if err != nil {
+	// 	receiverUserData := payload.Data["receiver_user"].(map[string]interface{})
+	// 	var users []string
+	// 	users = append(users, receiverUserData["id"].(string))
+	// 	// config.ChatRoomService.CreateChatRoomRecord("NewChatRoom", client.User.ID.String(), users)
+	// 	CheckMessageNotification(client, payload)
+	// }else{
+	// 	// senderUserData := payload.Data["sender"].(map[string]interface{})
+	// 	// config.ChatMessageService.CreateChatMessage("NewChatMessageContent", senderUserData["id"].(string), currentRoom.ID.String())
+	// 	CheckMessageNotification(client, payload)
+	// }
 }
 
 func (ws *WebSocketService) HandleChatNotificationReceived(payload types.Payload, client *Client) {
