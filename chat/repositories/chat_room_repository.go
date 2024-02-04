@@ -5,6 +5,9 @@ import (
 
 	"gorm.io/gorm"
 )
+var (
+	Test= "testing"
+)
 
 type ChatRoomRepository struct {
 	db *gorm.DB
@@ -17,6 +20,14 @@ func NewChatRoomRepository(db *gorm.DB) *ChatRoomRepository {
 }
 
 func (crr *ChatRoomRepository) CreateChatRoomRecord(chatRoom models.ChatRoom) (models.ChatRoom, error) {
+	err := crr.db.Create(&chatRoom).Error
+	if err != nil {
+	    return models.ChatRoom{}, err
+	}
+	return chatRoom, nil
+}
+
+func (crr *ChatRoomRepository) CreateRecord(chatRoom models.ChatRoom) (models.ChatRoom, error) {
 	err := crr.db.Create(&chatRoom).Error
 	if err != nil {
 	    return models.ChatRoom{}, err

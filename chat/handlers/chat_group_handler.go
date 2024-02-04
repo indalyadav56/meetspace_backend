@@ -1,60 +1,42 @@
 package handlers
 
 import (
-	"meetspace_backend/chat/models"
+	"meetspace_backend/chat/services"
 	"meetspace_backend/chat/types"
-	"meetspace_backend/config"
-	userModel "meetspace_backend/user/models"
 	"meetspace_backend/utils"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 )
 
 type ChatGroupHandler struct {
-
+	ChatGroupService *services.ChatGroupService
 }
 
-func NewChatGroupHandler() *ChatGroupHandler {
+func NewChatGroupHandler(svc *services.ChatGroupService) *ChatGroupHandler {
     return &ChatGroupHandler{
-        
+		ChatGroupService: svc,
     }
 }
 
-
-
 // AddChatGroup godoc
-//	@Summary		UserLogin User account
-//	@Description	UserLogin User account
+//	@Summary		add-chat-group
+//	@Description	Add Chat group
 //	@Tags			Chat-Group
 //	@Produce		json
-// @Param user body types.LoginRequest true "User login details"
-//	@Router			/v1/chat/room/groups [post]
+// @Param user body types.AddChatGroup true "Add chat group details"
+//	@Router			/v1/chat/groups [post]
 // @Security Bearer
-func AddChatGroup(ctx *fiber.Ctx) error{
-    // currentUser, exists := utils.GetUserFromContext(ctx)
-    // if !exists{
-    //     return nil
-    // }
-	var reqData types.AddChatGroup
+func (h *ChatGroupHandler) AddChatGroup(ctx *gin.Context){
+	currentUser, _ := utils.GetUserFromContext(ctx)
+  
+	var req types.AddChatGroup
+	if errResp := utils.BindJsonData(ctx, &req); errResp != nil {
+		ctx.JSON(errResp.StatusCode, errResp)
+        return
+    }
 
-	var chatRoom models.ChatRoom
-	var roomUsers []*userModel.User
-
-	chatRoom.IsGroup = true
-	chatRoom.RoomName = reqData.Title
-
-	for _, userId := range reqData.UserIds {
-		user, err := config.ChatGroupService.UserService.UserRepository.GetUserByID(userId)
-		if err == nil {
-			roomUsers = append(roomUsers, user)
-		}
-	}
-
-	// roomUsers = append(roomUsers, currentUser)
-	// chatRoom.RoomUsers = roomUsers
-	// chatRoom.RoomOwner = currentUser
-
-	chatGroup, _ := config.ChatGroupService.CreateChatGroup(chatRoom)
-	ctx.JSON(utils.SuccessResponse("success", chatGroup))
-	return nil
+	resp := h.ChatGroupService.CreateChatGroup(currentUser, req)
+    
+	ctx.JSON(resp.StatusCode, resp)
+	return
 }

@@ -266,6 +266,35 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/chat/groups": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Add Chat group",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat-Group"
+                ],
+                "summary": "add-chat-group",
+                "parameters": [
+                    {
+                        "description": "Add chat group details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.AddChatGroup"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/v1/chat/messages": {
             "get": {
                 "security": [
@@ -332,35 +361,6 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "Chat-Room"
-                ],
-                "summary": "UserLogin User account",
-                "parameters": [
-                    {
-                        "description": "User login details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.LoginRequest"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/v1/chat/room/groups": {
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "UserLogin User account",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Chat-Group"
                 ],
                 "summary": "UserLogin User account",
                 "parameters": [
@@ -614,7 +614,44 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/v1/user/profile": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "get user profile",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         },
         "/v1/users": {
@@ -667,7 +704,17 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             },
             "post": {
                 "security": [
@@ -754,6 +801,20 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
+                }
+            }
+        },
+        "types.AddChatGroup": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "user_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

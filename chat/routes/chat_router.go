@@ -16,14 +16,18 @@ type ChatHandlers struct {
 func ChatRouter(e *gin.Engine, handler ChatHandlers){
 	chatRouter := e.Group("/v1/chat")
 
+	chatRoom := chatRouter.Group("/rooms")
+	chatGroup := chatRouter.Group("/groups")
+
 	// rooms
-	chatRouter.GET("/room/contact", handler.ChatRoomHandler.GetChatRoomContact)
-	chatRouter.GET("/rooms", handler.ChatRoomHandler.GetChatRooms)
-	chatRouter.POST("/rooms", handler.ChatRoomHandler.CreateChatRoom)
-	chatRouter.DELETE("/rooms", handler.ChatRoomHandler.DeleteChatRoom)
+	chatRouter.GET("/contact", handler.ChatRoomHandler.GetChatRoomContact)
+
+	chatRoom.GET("", handler.ChatRoomHandler.GetChatRooms)
+	chatRoom.POST("", handler.ChatRoomHandler.CreateChatRoom)
+	chatRoom.DELETE("", handler.ChatRoomHandler.DeleteChatRoom)
 
 	// groups
-	// chatGroup.POST("/groups", services.AddChatGroup)
+	chatGroup.POST("", handler.ChatGroupHandler.AddChatGroup)
 	// chatGroup.GET("/group/members/:roomId", services.GetGroupMembers)
 
 	// messages

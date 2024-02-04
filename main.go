@@ -59,14 +59,14 @@ func main() {
 	clientServices.NewClientService(clientRepo, userService)
 	clientServices.NewClientUserService(clientRepo, userService)
 	chatRoomService := chatServices.NewChatRoomService(chatRoomRepo, userService)
-	chatServices.NewChatGroupService(chatRoomRepo, userService)
+	chatGroupService := chatServices.NewChatGroupService(chatRoomRepo, userService)
 	chatServices.NewChatMessageService(chatMessageRepo, userService, chatRoomService)
 
 	// handlers
 	authHandler := authHandlers.NewAuthHandler(authService, verificationService)
 	userHandler := userHandlers.NewUserHandler(userService)
 	chatRoomHandler := chatHandlers.NewChatRoomHandler()
-	chatGroupHandler := chatHandlers.NewChatGroupHandler()
+	chatGroupHandler := chatHandlers.NewChatGroupHandler(chatGroupService)
 	chatMessageHandler := chatHandlers.NewChatMessageHandler()
 	
 	r := gin.Default()

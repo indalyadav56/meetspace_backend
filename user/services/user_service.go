@@ -2,13 +2,14 @@ package services
 
 import (
 	"encoding/json"
-	"fmt"
 	"meetspace_backend/user/models"
 	"meetspace_backend/user/repositories"
 	"meetspace_backend/user/types"
 	"meetspace_backend/utils"
 	"mime/multipart"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 type UserService struct {
@@ -49,14 +50,17 @@ func (us *UserService) GetUserByID(userID string) *utils.Response {
 		return utils.ErrorResponse("user id cannot be blank!", nil)
 	}
 
-	fmt.Println("user", us.UserRepository)
+	_, err := uuid.Parse(userID)
+	if err != nil {
+		return utils.ErrorResponse("user id is invalid", nil)
+	}
 
-    // user, err :=  us.UserRepository.GetUserByID(userID)
-	// if err != nil {
-	// 	return utils.ErrorResponse(err.Error(), nil)
-	// }
+    user, err :=  us.UserRepository.GetUserByID(userID)
+	if err != nil {
+		return utils.ErrorResponse(err.Error(), nil)
+	}
 
-	return utils.SuccessResponse("successfully get data!", "user")
+	return utils.SuccessResponse("successfully get data!", user)
 }
 
 func (us *UserService) GetUserByEmail(email string) (models.User, error) {

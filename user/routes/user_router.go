@@ -15,6 +15,7 @@ func UserRouter(e *gin.Engine, handler *handlers.UserHandler){
 	usersRouter.GET("", handler.GetAllUsers)
 	usersRouter.GET("/:userId", handler.GetUserByID)
 	usersRouter.PATCH("", handler.UpdateUser)
-
+	
+	userRouter.GET("/profile", handler.GetUserProfile)
 	userRouter.GET("/check-email", handler.CheckUserEmail)
 }
