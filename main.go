@@ -27,6 +27,23 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title           MeetSpace API
+// @version         1.0
+// @description     MeetSpace API documentation.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8080
+// @BasePath  /api/v1
+
+// @externalDocs.description  OpenAPI
+// @externalDocs.url          https://swagger.io/resources/open-api/
 //	@securityDefinitions.apikey	Bearer
 //	@in							header
 //	@name						Authorization
@@ -88,11 +105,6 @@ func main() {
 		swaggerFiles.Handler,
 		ginSwagger.DefaultModelsExpandDepth(-1)),
 	)
-	
-	docs.SwaggerInfo.Title = "MeetSpace API"
-	docs.SwaggerInfo.Description = "MeetSpace API documentation"
-	docs.SwaggerInfo.Version = "v1"
-	docs.SwaggerInfo.Host = "localhost:8080"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	fmt.Println("server:->", "http://localhost:8080")
