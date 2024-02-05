@@ -16,7 +16,6 @@
         "version": "1.0"
     },
     "host": "localhost:8080",
-    "basePath": "/api/v1",
     "paths": {
         "/v1/auth/forgot-password": {
             "post": {
@@ -322,7 +321,17 @@
                         "required": true
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "201": {
+                        "description": "get messages successfully"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         },
         "/v1/chat/room/contact": {

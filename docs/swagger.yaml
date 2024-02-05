@@ -1,4 +1,3 @@
-basePath: /api/v1
 definitions:
   types.AddChatGroup:
     properties:
@@ -332,7 +331,13 @@ paths:
         type: string
       produces:
       - application/json
-      responses: {}
+      responses:
+        "201":
+          description: get messages successfully
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
       security:
       - Bearer: []
       summary: get chat messages by room id
