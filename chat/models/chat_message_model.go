@@ -13,7 +13,7 @@ type ChatMessage struct {
 	ID uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
 	Content     string `json:"content"`
 	SenderID uuid.UUID `gorm:"foreignKey:SenderID;references:ID" json:"sender_id"`
-	Sender   models.User `gorm:"joinForeignKey:SenderID" json:"sender"`
+	Sender   *models.User `gorm:"joinForeignKey:SenderID" json:"sender"`
 	ChatRoomID uuid.UUID `gorm:"foreignKey:ChatRoomID;references:ID"`
 	ChatRoom ChatRoom `gorm:"joinForeignKey:ChatRoomID" json:"chat_room"`
 	IsSeen bool `gorm:"default:false" json:"is_seen"`

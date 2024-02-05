@@ -1,7 +1,6 @@
 package websocket
 
 import (
-	"fmt"
 	"meetspace_backend/chat/constants"
 	"meetspace_backend/chat/models"
 	"meetspace_backend/chat/services"
@@ -54,13 +53,10 @@ func (ws *WebSocketService) HandleUserDisconnected(payload types.Payload, client
 
 func (ws *WebSocketService) HandleChatMessageSent(payload types.Payload, client *Client) {
 
-	fmt.Println("payload: ", payload)
-	fmt.Println("GroupName: ", client.GroupName)
-	fmt.Println("currentRoom", ws.ChatRoomService)
-	// currentRoom, _ := ws.ChatRoomService.GetChatRoomByID(client.GroupName)
-	// fmt.Println("currentRoom", currentRoom)
+	// currentRoom, err := ws.ChatRoomService.GetChatRoomByID(client.GroupName)
+	ws.ChatMessageService.CreateChatMessage("NewChatMessageContent", "f6d24455-b2ba-4284-82a8-2e9050eb4043", client.GroupName)
 	
-	// // if chat room not found then create a new chat room for sender and receiver user
+	// if chat room not found then create a new chat room for sender and receiver user
 	// if err != nil {
 	// 	receiverUserData := payload.Data["receiver_user"].(map[string]interface{})
 	// 	var users []string
@@ -68,8 +64,8 @@ func (ws *WebSocketService) HandleChatMessageSent(payload types.Payload, client 
 	// 	ws.ChatRoomService.CreateChatRoomRecord("NewChatRoom", client.User.ID.String(), users)
 	// 	CheckMessageNotification(client, payload)
 	// }else{
-	// 	senderUserData := payload.Data["sender"].(map[string]interface{})
-	// 	ws.ChatMessageService.CreateChatMessage("NewChatMessageContent", senderUserData["id"].(string), currentRoom.ID.String())
+	// 	// senderUserData := payload.Data["sender"].(map[string]interface{})
+	// 	ws.ChatMessageService.CreateChatMessage("NewChatMessageContent", "f6d24455-b2ba-4284-82a8-2e9050eb4043", currentRoom.ID.String())
 	// 	CheckMessageNotification(client, payload)
 	// }
 }

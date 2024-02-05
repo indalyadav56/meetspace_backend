@@ -17,7 +17,7 @@ type GetChatMessageRequestBody struct {
 type SingleChatMessageResponse struct {
     Content string `json:"content"`
     ChatRoomId string `json:"chat_room_Id"`
-    Sender models.User `json:"sender"`
+    Sender *models.User `json:"sender"`
 }
 
 type ChatMessageResponse struct {

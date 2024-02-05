@@ -6,7 +6,6 @@ import (
 	"meetspace_backend/chat/repositories"
 	"meetspace_backend/chat/types"
 	"meetspace_backend/config"
-	userModel "meetspace_backend/user/models"
 	"time"
 
 	userService "meetspace_backend/user/services"
@@ -31,14 +30,14 @@ func NewChatMessageService(
 }
 
 func (chatMessageService *ChatMessageService) CreateChatMessage(content string, senderId string, chatRoomId string) (models.ChatMessage, error) {
-	sender := chatMessageService.UserService.GetUserByID(senderId)
+	senderUser, _ := chatMessageService.UserService.UserRepository.GetUserByID(senderId)
 	chatRoom, _ := chatMessageService.ChatRoomService.GetChatRoomByID(chatRoomId)
 
-	userResponse := sender.Data.(userModel.User)
+	// userResponse := sender.Data.(userModel.User)
 	
 	chatMessage := models.ChatMessage{
 		Content: content,
-		Sender: userResponse,
+		Sender: senderUser,
 		ChatRoom: chatRoom,
 	}
 
