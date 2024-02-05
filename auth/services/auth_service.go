@@ -130,7 +130,7 @@ func (as *AuthService) UserLogout(userID string, reqData types.LogoutRequest) *u
     }
 
 	// verify refresh token
-	_, err := as.TokenService.VerifyToken(reqData.RefreshToken, gloablConstants.REFRESH_TOKEN_KEY)
+	_, err := as.TokenService.VerifyToken(reqData.RefreshToken, "refresh")
 	if err != nil {
 		return utils.ErrorResponse(err.Error(), nil)
 	}

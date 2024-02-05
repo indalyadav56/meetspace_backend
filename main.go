@@ -10,7 +10,7 @@ import (
 	chatRepo "meetspace_backend/chat/repositories"
 	chatRoutes "meetspace_backend/chat/routes"
 	chatServices "meetspace_backend/chat/services"
-	websocketRoute "meetspace_backend/chat/websocket"
+	websocket "meetspace_backend/chat/websocket"
 	commonServices "meetspace_backend/common/services"
 	"meetspace_backend/config"
 	"meetspace_backend/middlewares"
@@ -72,6 +72,7 @@ func main() {
 	chatRoomService := chatServices.NewChatRoomService(chatRoomRepo, userService)
 	chatGroupService := chatServices.NewChatGroupService(chatRoomRepo, userService)
 	chatMessageService := chatServices.NewChatMessageService(chatMessageRepo, userService, chatRoomService)
+	webSocketService := websocket.NewWebSocketService(chatRoomService, chatMessageService, userService)
 
 	// handlers
 	authHandler := authHandlers.NewAuthHandler(authService, verificationService)
@@ -79,6 +80,7 @@ func main() {
 	chatRoomHandler := chatHandlers.NewChatRoomHandler()
 	chatGroupHandler := chatHandlers.NewChatGroupHandler(chatGroupService)
 	chatMessageHandler := chatHandlers.NewChatMessageHandler(chatMessageService)
+	wsHandler := websocket.NewWebSocketHandler(webSocketService)
 	
 	r := gin.Default()
 
@@ -98,7 +100,7 @@ func main() {
 		ChatGroupHandler: chatGroupHandler, 
 		ChatMessageHandler: chatMessageHandler,
 	})
-	websocketRoute.WebSocketRouter(r)
+	websocket.WebSocketRouter(r, wsHandler)
 
 	// swagger
 	r.GET("/docs/*any", ginSwagger.WrapHandler(
@@ -107,6 +109,6 @@ func main() {
 	)
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
-	fmt.Println("server:->", "http://localhost:8080")
+	fmt.Println("server runnning at:- ", "http://localhost:8080")
 	r.Run()
 }

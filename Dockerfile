@@ -15,7 +15,7 @@ COPY . .
 # Build the Go app
 RUN go build -o main .
 
-EXPOSE 8080
+EXPOSE 8081
 
 # Command to run the executable
 CMD ["./main"]

@@ -1,18 +1,28 @@
 package websocket
 
 import (
+	"fmt"
 	"meetspace_backend/chat/constants"
 	"meetspace_backend/chat/models"
+	"meetspace_backend/chat/services"
 	"meetspace_backend/chat/types"
 	"meetspace_backend/config"
+	userServices "meetspace_backend/user/services"
 	"meetspace_backend/utils"
-	// userService "meetspace_backend/internal/user/services"
 )
 
-type WebSocketService struct {}
+type WebSocketService struct {
+	ChatRoomService *services.ChatRoomService
+	ChatMessageService *services.ChatMessageService
+	UserService *userServices.UserService
+}
 
-func NewWebSocketService() *WebSocketService {
-	return &WebSocketService{}
+func NewWebSocketService(chatRoomSvc *services.ChatRoomService, chatMsgSvc *services.ChatMessageService, userSvc *userServices.UserService) *WebSocketService {
+	return &WebSocketService{
+		ChatRoomService: chatRoomSvc,
+		ChatMessageService: chatMsgSvc,
+		UserService: userSvc,
+	}
 }
 
 func (ws *WebSocketService) HandleEvent(payload types.Payload, client *Client) {
@@ -43,18 +53,23 @@ func (ws *WebSocketService) HandleUserDisconnected(payload types.Payload, client
 }
 
 func (ws *WebSocketService) HandleChatMessageSent(payload types.Payload, client *Client) {
-	// currentRoom, err := config.ChatRoomService.GetChatRoomByID(client.GroupName)
+
+	fmt.Println("payload: ", payload)
+	fmt.Println("GroupName: ", client.GroupName)
+	fmt.Println("currentRoom", ws.ChatRoomService)
+	// currentRoom, _ := ws.ChatRoomService.GetChatRoomByID(client.GroupName)
+	// fmt.Println("currentRoom", currentRoom)
 	
-	// if chat room not found then create a new chat room for sender and receiver user
+	// // if chat room not found then create a new chat room for sender and receiver user
 	// if err != nil {
 	// 	receiverUserData := payload.Data["receiver_user"].(map[string]interface{})
 	// 	var users []string
 	// 	users = append(users, receiverUserData["id"].(string))
-	// 	// config.ChatRoomService.CreateChatRoomRecord("NewChatRoom", client.User.ID.String(), users)
+	// 	ws.ChatRoomService.CreateChatRoomRecord("NewChatRoom", client.User.ID.String(), users)
 	// 	CheckMessageNotification(client, payload)
 	// }else{
-	// 	// senderUserData := payload.Data["sender"].(map[string]interface{})
-	// 	// config.ChatMessageService.CreateChatMessage("NewChatMessageContent", senderUserData["id"].(string), currentRoom.ID.String())
+	// 	senderUserData := payload.Data["sender"].(map[string]interface{})
+	// 	ws.ChatMessageService.CreateChatMessage("NewChatMessageContent", senderUserData["id"].(string), currentRoom.ID.String())
 	// 	CheckMessageNotification(client, payload)
 	// }
 }
