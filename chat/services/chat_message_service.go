@@ -6,6 +6,7 @@ import (
 	"meetspace_backend/chat/repositories"
 	"meetspace_backend/chat/types"
 	"meetspace_backend/config"
+	"meetspace_backend/utils"
 	"time"
 
 	userService "meetspace_backend/user/services"
@@ -38,7 +39,7 @@ func (chatMessageService *ChatMessageService) CreateChatMessage(content string, 
 	chatMessage := models.ChatMessage{
 		Content: content,
 		Sender: senderUser,
-		ChatRoom: chatRoom,
+		ChatRoom: &chatRoom,
 	}
 
 	return chatMessageService.ChatMessageRepository.CreateRecord(chatMessage)
@@ -101,4 +102,37 @@ func (chatMessageService *ChatMessageService) GetChatMessageByRoomId(roomID, use
         })
     }
     return resp, nil
+}
+
+
+func (s *ChatMessageService) GetChatMessageByUserID(currentUserID, otherUserID string) *utils.Response{
+	users :=  []string{currentUserID, otherUserID}
+    // var messages []models.ChatMessage
+	// var chatRoom models.ChatRoom
+	
+	// chatRoom2, _ :=  s.ChatRoomService.CreateChatRoomRecord("room-2", currentUserID, users)
+	// s.CreateChatMessage("test-users msg -create", currentUserID, chatRoom2.ID.String())
+	var rooms []models.ChatRoom
+
+	config.DB.Model(&models.ChatRoom{}).
+	Select("id", "room_name", "is_group", "CreatedAt", "UpdatedAt").
+	Preload("RoomUsers").
+	Where("id IN (?)", 
+	config.DB.Table("room_users").Select("chat_room_id").Where("user_id IN (?)", users)).
+	Order("chat_rooms.updated_at DESC").Find(&rooms)
+
+	// if len(rooms) >= 2 {
+	// 	// If both users are in the room, fetch all messages in the room
+	// 	config.DB.Preload("ChatRoom").
+	// 		Where("chat_room_id = ?", chatRoom.ID).
+	// 		Order("created_at").
+	// 		Find(&messages)
+	
+	// 	fmt.Println("messages:->", messages)
+	// } else {
+	// 	fmt.Println("Chat room not found or doesn't contain both users")
+	// }
+
+	// fmt.Println("messages:->", messages)
+    return utils.SuccessResponse("sucess", nil)
 }

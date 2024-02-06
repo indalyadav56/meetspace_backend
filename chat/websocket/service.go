@@ -1,6 +1,7 @@
 package websocket
 
 import (
+	"fmt"
 	"meetspace_backend/chat/constants"
 	"meetspace_backend/chat/models"
 	"meetspace_backend/chat/services"
@@ -53,21 +54,25 @@ func (ws *WebSocketService) HandleUserDisconnected(payload types.Payload, client
 
 func (ws *WebSocketService) HandleChatMessageSent(payload types.Payload, client *Client) {
 
-	// currentRoom, err := ws.ChatRoomService.GetChatRoomByID(client.GroupName)
-	ws.ChatMessageService.CreateChatMessage("NewChatMessageContent", "f6d24455-b2ba-4284-82a8-2e9050eb4043", client.GroupName)
-	
+	fmt.Println("current room id:->", client.GroupName)
+
+	currentRoom, err := ws.ChatRoomService.GetChatRoomByID(client.GroupName)
 	// if chat room not found then create a new chat room for sender and receiver user
-	// if err != nil {
-	// 	receiverUserData := payload.Data["receiver_user"].(map[string]interface{})
-	// 	var users []string
-	// 	users = append(users, receiverUserData["id"].(string))
-	// 	ws.ChatRoomService.CreateChatRoomRecord("NewChatRoom", client.User.ID.String(), users)
-	// 	CheckMessageNotification(client, payload)
-	// }else{
-	// 	// senderUserData := payload.Data["sender"].(map[string]interface{})
-	// 	ws.ChatMessageService.CreateChatMessage("NewChatMessageContent", "f6d24455-b2ba-4284-82a8-2e9050eb4043", currentRoom.ID.String())
-	// 	CheckMessageNotification(client, payload)
-	// }
+	if err != nil {
+		receiverUserData := payload.Data["receiver_user"].(map[string]interface{})
+		var users []string
+		users = append(users, receiverUserData["id"].(string))
+		ws.ChatRoomService.CreateChatRoomRecord("NewChatRoom", client.User.ID.String(), users)
+		CheckMessageNotification(client, payload)
+	}else{
+		// senderUserData := payload.Data["sender"].(map[string]interface{})
+		mapData, err := utils.StructToMap(payload.Data)
+		if err != nil{
+			fmt.Println("error while data conversion", err)
+		}
+		ws.ChatMessageService.CreateChatMessage(mapData["content"].(string),  client.User.ID.String(), currentRoom.ID.String())
+		// CheckMessageNotification(client, payload)
+	}
 }
 
 func (ws *WebSocketService) HandleChatNotificationReceived(payload types.Payload, client *Client) {

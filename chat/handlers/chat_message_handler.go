@@ -40,3 +40,23 @@ func (h *ChatMessageHandler) GetChatMessageByRoomID(ctx *gin.Context){
     ctx.JSON(http.StatusOK, utils.SuccessResponse("success", msg))
     return
 }
+
+// GetChatMessages godoc
+//	@Summary		get chat messages
+//	@Description	Get chat message
+//	@Tags			Chat-Message
+//	@Produce		json
+// @Param user_id query string true "User ID"
+//	@Router			/v1/chat/messages [get]
+//	@Security		Bearer
+//	@Success		201	"get messages successfully"
+//	@Failure		400	"Bad request"
+//	@Failure		500	"Internal server error"
+func (h *ChatMessageHandler) GetChatMessages(ctx *gin.Context){
+	currentUser, _ := utils.GetUserFromContext(ctx)
+    userID := ctx.Query("user_id")
+    
+	resp := h.ChatMessageService.GetChatMessageByUserID(currentUser.ID.String(), userID)
+    ctx.JSON(resp.StatusCode, resp)
+    return
+}

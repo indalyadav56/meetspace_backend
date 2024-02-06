@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"meetspace_backend/chat/models"
+	"meetspace_backend/chat/services"
 	"meetspace_backend/chat/types"
 	"meetspace_backend/config"
 	userModel "meetspace_backend/user/models"
@@ -13,12 +14,13 @@ import (
 )
 
 type ChatRoomHandler struct {
+    ChatRoomService *services.ChatRoomService
 
 }
 
-func NewChatRoomHandler() *ChatRoomHandler {
+func NewChatRoomHandler(svc *services.ChatRoomService) *ChatRoomHandler {
     return &ChatRoomHandler{
-        
+        ChatRoomService: svc,
     }
 }
 
@@ -89,7 +91,6 @@ func (h *ChatRoomHandler) GetChatRoomContact(ctx *gin.Context){
 	return
 }
 
-
 // CreateChatRoom godoc
 //	@Summary		CreateChatRoom 
 //	@Description	CreateChatRoom
@@ -153,6 +154,7 @@ func (h *ChatRoomHandler) CreateChatRoom (ctx *gin.Context){
     }
 
 }
+
 // DeleteChatRoom godoc
 //	@Summary		DeleteChatRoom 
 //	@Description	DeleteChatRoom
@@ -161,19 +163,18 @@ func (h *ChatRoomHandler) CreateChatRoom (ctx *gin.Context){
 //	@Param			user	body	types.LoginRequest	true	"User login details"
 //	@Router			/v1/chat/rooms [delete]
 //	@Security		Bearer
-func (h *ChatRoomHandler)DeleteChatRoom (ctx *gin.Context){
-
+func (h *ChatRoomHandler) DeleteChatRoom (ctx *gin.Context){
+    return
 }
-
 
 // GetChatRooms godoc
 //	@Summary		GetChatRooms
 //	@Description	GetChatRooms
 //	@Tags			Chat-Room
 //	@Produce		json
-//	@Param			user	body	types.LoginRequest	true	"User login details"
 //	@Router			/v1/chat/rooms [get]
 //	@Security		Bearer
+// @Param user_id query string true "User ID"
 func (h *ChatRoomHandler) GetChatRooms(ctx *gin.Context){
     currentUser, exists := utils.GetUserFromContext(ctx)
     if !exists{

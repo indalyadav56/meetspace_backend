@@ -99,7 +99,7 @@ func (us *UserService) UpdateUser(userId string, updateData types.UpdateUserData
 		mapData["profile_pic"] = profilePicData
 	}
 	
-	userData, _:= us.UserRepository.UpdateUserByID(userId, mapData)
+	userData, _ := us.UserRepository.UpdateUserByID(userId, mapData)
 
 	userResponse := types.UserResponse{
 		ID: userData.ID,

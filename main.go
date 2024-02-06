@@ -76,7 +76,7 @@ func main() {
 	// handlers
 	authHandler := authHandlers.NewAuthHandler(authService, verificationService)
 	userHandler := userHandlers.NewUserHandler(userService)
-	chatRoomHandler := chatHandlers.NewChatRoomHandler()
+	chatRoomHandler := chatHandlers.NewChatRoomHandler(chatRoomService)
 	chatGroupHandler := chatHandlers.NewChatGroupHandler(chatGroupService)
 	chatMessageHandler := chatHandlers.NewChatMessageHandler(chatMessageService)
 	wsHandler := websocket.NewWebSocketHandler(webSocketService)

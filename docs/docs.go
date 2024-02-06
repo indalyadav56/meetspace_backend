@@ -304,6 +304,43 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/v1/chat/messages": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get chat message",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat-Message"
+                ],
+                "summary": "get chat messages",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "get messages successfully"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
         "/v1/chat/messages/{chat_room_id}": {
             "get": {
                 "security": [
@@ -387,13 +424,11 @@ const docTemplate = `{
                 "summary": "GetChatRooms",
                 "parameters": [
                     {
-                        "description": "User login details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.LoginRequest"
-                        }
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {}

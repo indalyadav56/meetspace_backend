@@ -20,21 +20,19 @@ func NewChatRoomService(repo *repositories.ChatRoomRepository, userService *user
 }
 
 func (crs *ChatRoomService) CreateChatRoomRecord(roomName string, roomOwnerId string, roomUserIds []string) (models.ChatRoom, error) {
-	roomOnwer := crs.UserService.GetUserByID(roomOwnerId)
-	roomOnwerResp := roomOnwer.Data.(userModel.User)
+	roomOnwer, _ := crs.UserService.UserRepository.GetUserByID(roomOwnerId)
 	var roomUsers []*userModel.User
 	
 	for _, userId := range roomUserIds {
-		user := crs.UserService.GetUserByID(userId)
-		userResponse := user.Data.(userModel.User)
-		roomUsers = append(roomUsers, &userResponse)
+		user, _ := crs.UserService.UserRepository.GetUserByID(userId)
+		roomUsers = append(roomUsers, user)
 	}
 
-	roomUsers = append(roomUsers,&roomOnwerResp)
+	roomUsers = append(roomUsers, roomOnwer)
 
 	chatRoom := models.ChatRoom{
 		RoomName: roomName,
-		RoomOwner: &roomOnwerResp,
+		RoomOwner: roomOnwer,
 		RoomUsers: roomUsers,
 	}
 	return crs.ChatRoomRepository.CreateChatRoomRecord(chatRoom)

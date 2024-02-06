@@ -320,6 +320,29 @@ paths:
       summary: add-chat-group
       tags:
       - Chat-Group
+  /v1/chat/messages:
+    get:
+      description: Get chat message
+      parameters:
+      - description: User ID
+        in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: get messages successfully
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      security:
+      - Bearer: []
+      summary: get chat messages
+      tags:
+      - Chat-Message
   /v1/chat/messages/{chat_room_id}:
     get:
       description: Get chat messages by room id
@@ -382,12 +405,11 @@ paths:
     get:
       description: GetChatRooms
       parameters:
-      - description: User login details
-        in: body
-        name: user
+      - description: User ID
+        in: query
+        name: user_id
         required: true
-        schema:
-          $ref: '#/definitions/types.LoginRequest'
+        type: string
       produces:
       - application/json
       responses: {}
