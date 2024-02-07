@@ -53,17 +53,15 @@ func (ws *WebSocketService) HandleUserDisconnected(payload types.Payload, client
 }
 
 func (ws *WebSocketService) HandleChatMessageSent(payload types.Payload, client *Client) {
-
-	fmt.Println("current room id:->", client.GroupName)
-
+	fmt.Println("currentGroupName", client.GroupName)
 	currentRoom, err := ws.ChatRoomService.GetChatRoomByID(client.GroupName)
 	// if chat room not found then create a new chat room for sender and receiver user
 	if err != nil {
-		receiverUserData := payload.Data["receiver_user"].(map[string]interface{})
+		// receiverUserData := payload.Data["receiver_user"].(map[string]interface{})
 		var users []string
-		users = append(users, receiverUserData["id"].(string))
-		ws.ChatRoomService.CreateChatRoomRecord("NewChatRoom", client.User.ID.String(), users)
-		CheckMessageNotification(client, payload)
+		// users = append(users, receiverUserData["id"].(string))
+		ws.ChatRoomService.CreateChatRoom("NewChatRoom", client.User.ID.String(), users)
+		// CheckMessageNotification(client, payload)
 	}else{
 		// senderUserData := payload.Data["sender"].(map[string]interface{})
 		mapData, err := utils.StructToMap(payload.Data)
@@ -78,7 +76,6 @@ func (ws *WebSocketService) HandleChatMessageSent(payload types.Payload, client 
 func (ws *WebSocketService) HandleChatNotificationReceived(payload types.Payload, client *Client) {
 	// Implement logic for chat notification received event
 }
-
 
 func CheckMessageNotification(client *Client, payload types.Payload){
 	users, exists := joinedUsers[client.GroupName]

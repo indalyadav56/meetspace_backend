@@ -275,6 +275,23 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/chat/group/member/{room_id}": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat-Group"
+                ],
+                "summary": "get-chat-group-member",
+                "responses": {}
+            }
+        },
         "/v1/chat/groups": {
             "post": {
                 "security": [

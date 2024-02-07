@@ -5,9 +5,12 @@ import (
 	"meetspace_backend/chat/models"
 	"meetspace_backend/chat/repositories"
 	"meetspace_backend/chat/types"
+	"meetspace_backend/config"
 	userModel "meetspace_backend/user/models"
 	userService "meetspace_backend/user/services"
 	"meetspace_backend/utils"
+
+	"github.com/google/uuid"
 )
 
 
@@ -60,3 +63,31 @@ func (s *ChatGroupService) CreateChatGroup(user *userModel.User, reqData types.A
 
 }
 
+func (s *ChatGroupService) GetGroupMembers(roomId string) *utils.Response{
+	var chatRooms []models.ChatRoom
+
+	type GroupMemberResponse struct {
+		UserId uuid.UUID `json:"user_id"`
+		FirstName string `json:"first_name"`
+		LastName string `json:"last_name"`
+		Email string `json:"email"`
+	}
+	
+    
+    var members []GroupMemberResponse
+
+    config.DB.Preload("RoomUsers").Where("id = ?", roomId).Find(&chatRooms)
+
+    for _, group := range chatRooms{
+        
+        for _, user := range group.RoomUsers{
+            members = append(members, GroupMemberResponse{
+                UserId: user.ID,
+                FirstName: user.FirstName,
+                LastName: user.LastName,
+                Email: user.Email,
+            })
+        }
+    }
+    return utils.SuccessResponse("success", members)
+}

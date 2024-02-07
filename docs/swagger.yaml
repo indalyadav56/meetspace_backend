@@ -302,6 +302,16 @@ paths:
       summary: verify-email
       tags:
       - Auth
+  /v1/chat/group/member/{room_id}:
+    post:
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - Bearer: []
+      summary: get-chat-group-member
+      tags:
+      - Chat-Group
   /v1/chat/groups:
     post:
       description: Add Chat group

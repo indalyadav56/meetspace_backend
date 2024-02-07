@@ -17,13 +17,6 @@ func NewChatRoomRepository(db *gorm.DB) *ChatRoomRepository {
 	}
 }
 
-func (crr *ChatRoomRepository) CreateChatRoomRecord(chatRoom models.ChatRoom) (models.ChatRoom, error) {
-	err := crr.db.Create(&chatRoom).Error
-	if err != nil {
-	    return models.ChatRoom{}, err
-	}
-	return chatRoom, nil
-}
 
 func (crr *ChatRoomRepository) CreateRecord(chatRoom models.ChatRoom) (models.ChatRoom, error) {
 	err := crr.db.Create(&chatRoom).Error
@@ -33,9 +26,9 @@ func (crr *ChatRoomRepository) CreateRecord(chatRoom models.ChatRoom) (models.Ch
 	return chatRoom, nil
 }
 
-func (crr *ChatRoomRepository) GetChatRoomByID(roomID string) (models.ChatRoom, error) {
+func (r *ChatRoomRepository) GetChatRoomByID(roomID string) (models.ChatRoom, error) {
 	var chatRoom models.ChatRoom
-	err := crr.db.Where("id = ?", roomID).First(&chatRoom).Error
+	err := r.db.Where("id = ?", roomID).First(&chatRoom).Error
 	if err != nil {
 	    return models.ChatRoom{}, err
 	}

@@ -6,6 +6,7 @@ import (
 	"meetspace_backend/utils"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type ChatGroupHandler struct {
@@ -39,4 +40,23 @@ func (h *ChatGroupHandler) AddChatGroup(ctx *gin.Context){
     
 	ctx.JSON(resp.StatusCode, resp)
 	return
+}
+
+type GroupMemberResponse struct {
+    UserId uuid.UUID `json:"user_id"`
+    FirstName string `json:"first_name"`
+    LastName string `json:"last_name"`
+    Email string `json:"email"`
+}
+
+// GetGroupMembers godoc
+//	@Summary		get-chat-group-members
+//	@Tags			Chat-Group
+//	@Produce		json
+//	@Router			/v1/chat/group/members/{room_id} [post]
+//	@Security		Bearer
+func (h *ChatGroupHandler) GetGroupMembers (ctx *gin.Context){
+    roomId := ctx.Param("roomId")
+    resp := h.ChatGroupService.GetGroupMembers(roomId)
+    ctx.JSON(resp.StatusCode, resp)
 }

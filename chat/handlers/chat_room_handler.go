@@ -176,43 +176,9 @@ func (h *ChatRoomHandler) DeleteChatRoom (ctx *gin.Context){
 //	@Security		Bearer
 // @Param user_id query string true "User ID"
 func (h *ChatRoomHandler) GetChatRooms(ctx *gin.Context){
-    currentUser, exists := utils.GetUserFromContext(ctx)
-    if !exists{
-        return 
-    }
-    currentUserID := currentUser.ID
-
+    currentUser, _ := utils.GetUserFromContext(ctx)
     roomUserId := ctx.Query("user_id")
 
-    if roomUserId != ""{
-        
-        var result []struct {
-            ChatRoomID string `gorm:"column:chat_room_id" json:"chat_room_id"`
-        }
-        
-        config.DB.Table("room_users").
-            Select("chat_room_id").
-            Where("user_id IN (?,?)", currentUserID, roomUserId).
-            Group("chat_room_id").
-            Having("COUNT(DISTINCT user_id) = ?", 2).
-            Find(&result)
-
-		ctx.JSON(http.StatusOK, utils.SuccessResponse(
-			"success",
-            result,
-		))
-        return
-        
-    }else{
-        var rooms []models.ChatRoom
-
-        config.DB.Model(&models.ChatRoom{}).Preload("RoomUsers").Preload("RoomOwner").Where("id IN (?)", config.DB.Table("room_users").Select("chat_room_id").Where("user_id = ?", currentUserID)).Find(&rooms).Order("CreatedAt DESC")
-        
-        ctx.JSON(http.StatusOK, utils.SuccessResponse(
-			"aeraer",
-            rooms,
-		))
-        
-        return
-    }
+    resp := h.ChatRoomService.GetChatRooms(currentUser.ID.String(), roomUserId)
+    ctx.JSON(resp.StatusCode, resp)
 }
