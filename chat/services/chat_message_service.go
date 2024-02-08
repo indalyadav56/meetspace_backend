@@ -87,6 +87,7 @@ func (chatMessageService *ChatMessageService) GetChatMessageByRoomId(roomID, use
     var respData types.SingleChatMessageResponse
     
     for _, message := range messages {
+        respData.ID = message.ID.String()
         respData.Content = message.Content
         respData.ChatRoomId = message.ChatRoomID.String()
         respData.Sender = message.Sender

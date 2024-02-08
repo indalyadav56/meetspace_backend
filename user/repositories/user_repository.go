@@ -79,7 +79,7 @@ func (userRepo *UserRepository) GetUserByEmail(email string) (models.User, error
 }
 
 
-func (userRepo *UserRepository) GetAllUserRecord(email string) ([]models.User, error) {
+func (userRepo *UserRepository) GetAllUserRecord(currentUserEmail, email string) ([]models.User, error) {
     var users []models.User
    
     if email != "" {
@@ -90,7 +90,7 @@ func (userRepo *UserRepository) GetAllUserRecord(email string) ([]models.User, e
         return users, nil
     }
     
-    userRepo.db.Find(&users).Order("created_at DESC")
+    userRepo.db.Not("email = ?", currentUserEmail).Find(&users).Order("created_at DESC")
     return users, nil
 }
 

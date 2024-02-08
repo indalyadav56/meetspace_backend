@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"meetspace_backend/chat/models"
 	"meetspace_backend/chat/repositories"
 	"meetspace_backend/config"
@@ -47,6 +48,7 @@ func (crs *ChatRoomService) GetChatRoomByID(roomID string) (models.ChatRoom, err
 }
 
 func (r *ChatRoomService) GetChatRooms(currentUserID, roomUserId string) *utils.Response {
+	fmt.Println("hello therere")
 	if roomUserId != ""{
 		type ChatRoomData struct{
 			ChatRoomID string `gorm:"column:chat_room_id" json:"chat_room_id"`

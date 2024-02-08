@@ -68,8 +68,8 @@ func (us *UserService) GetUserByEmail(email string) (models.User, error) {
 	return user, err
 }
 
-func (us *UserService) GetAllUsers(email string) ([]models.User, error) {
-    users, err :=  us.UserRepository.GetAllUserRecord(email)
+func (us *UserService) GetAllUsers(currentUserEmail, email string) ([]models.User, error) {
+    users, err :=  us.UserRepository.GetAllUserRecord(currentUserEmail, email)
 	
 	if err != nil {
 		return nil, err

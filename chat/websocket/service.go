@@ -1,7 +1,6 @@
 package websocket
 
 import (
-	"fmt"
 	"meetspace_backend/chat/constants"
 	"meetspace_backend/chat/models"
 	"meetspace_backend/chat/services"
@@ -53,21 +52,17 @@ func (ws *WebSocketService) HandleUserDisconnected(payload types.Payload, client
 }
 
 func (ws *WebSocketService) HandleChatMessageSent(payload types.Payload, client *Client) {
-	fmt.Println("currentGroupName", client.GroupName)
+	mapData, _ := utils.StructToMap(payload.Data)
 	currentRoom, err := ws.ChatRoomService.GetChatRoomByID(client.GroupName)
 	// if chat room not found then create a new chat room for sender and receiver user
 	if err != nil {
-		// receiverUserData := payload.Data["receiver_user"].(map[string]interface{})
 		var users []string
-		// users = append(users, receiverUserData["id"].(string))
-		ws.ChatRoomService.CreateChatRoom("NewChatRoom", client.User.ID.String(), users)
+		receiverUser := mapData["receiver_user"].(map[string]interface{})
+		users = append(users, receiverUser["id"].(string))
+		room, _ := ws.ChatRoomService.CreateChatRoom("NewChatRoom", client.User.ID.String(), users)
+		ws.ChatMessageService.CreateChatMessage(mapData["content"].(string),  client.User.ID.String(), room.ID.String())
 		// CheckMessageNotification(client, payload)
 	}else{
-		// senderUserData := payload.Data["sender"].(map[string]interface{})
-		mapData, err := utils.StructToMap(payload.Data)
-		if err != nil{
-			fmt.Println("error while data conversion", err)
-		}
 		ws.ChatMessageService.CreateChatMessage(mapData["content"].(string),  client.User.ID.String(), currentRoom.ID.String())
 		// CheckMessageNotification(client, payload)
 	}

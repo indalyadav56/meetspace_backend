@@ -67,10 +67,10 @@ func (s *ChatGroupService) GetGroupMembers(roomId string) *utils.Response{
 	var chatRooms []models.ChatRoom
 
 	type GroupMemberResponse struct {
-		UserId uuid.UUID `json:"user_id"`
+		UserId uuid.UUID `json:"id"`
+		Email string `json:"email"`
 		FirstName string `json:"first_name"`
 		LastName string `json:"last_name"`
-		Email string `json:"email"`
 	}
 	
     

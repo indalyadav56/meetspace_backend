@@ -65,9 +65,10 @@ func (h *UserHandler) GetUserByID(c *gin.Context) {
 //	@Failure	400	"Bad request"
 //	@Failure	500	"Internal server error"
 func (h *UserHandler) GetAllUsers(c *gin.Context) {
+	currentUser, _ := utils.GetUserFromContext(c)
 	email := c.Query("email")
 
-	users, err := h.UserService.GetAllUsers(email)
+	users, err := h.UserService.GetAllUsers(currentUser.Email, email)
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
