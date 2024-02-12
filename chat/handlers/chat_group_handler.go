@@ -53,10 +53,22 @@ type GroupMemberResponse struct {
 //	@Summary		get-chat-group-members
 //	@Tags			Chat-Group
 //	@Produce		json
-//	@Router			/v1/chat/group/members/{room_id} [post]
+//	@Param		room_id	path	string	true	"Chat Room ID"
+//	@Router			/v1/chat/group/members/{room_id} [get]
 //	@Security		Bearer
 func (h *ChatGroupHandler) GetGroupMembers (ctx *gin.Context){
     roomId := ctx.Param("roomId")
     resp := h.ChatGroupService.GetGroupMembers(roomId)
+    ctx.JSON(resp.StatusCode, resp)
+}
+
+// AddGroupMembers godoc
+//	@Summary		add-chat-group-members
+//	@Tags			Chat-Group
+//	@Produce		json
+//	@Router			/v1/chat/group/members [post]
+//	@Security		Bearer
+func (h *ChatGroupHandler) AddGroupMembers (ctx *gin.Context){
+    resp := h.ChatGroupService.GetGroupMembers("roomId")
     ctx.JSON(resp.StatusCode, resp)
 }

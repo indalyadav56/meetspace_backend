@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"meetspace_backend/chat/models"
 	"meetspace_backend/chat/repositories"
 	"meetspace_backend/config"
@@ -47,8 +46,8 @@ func (crs *ChatRoomService) GetChatRoomByID(roomID string) (models.ChatRoom, err
 	return crs.ChatRoomRepository.GetChatRoomByID(roomID)
 }
 
-func (r *ChatRoomService) GetChatRooms(currentUserID, roomUserId string) *utils.Response {
-	fmt.Println("hello therere")
+func (r *ChatRoomService) GetChatRooms(currentUserID, roomUserId, roomId string) *utils.Response {
+	
 	if roomUserId != ""{
 		type ChatRoomData struct{
 			ChatRoomID string `gorm:"column:chat_room_id" json:"chat_room_id"`
@@ -69,10 +68,18 @@ func (r *ChatRoomService) GetChatRooms(currentUserID, roomUserId string) *utils.
 		
 		return utils.SuccessResponse("error", result)
         
+    }else if roomId != ""{
+        var room models.ChatRoom
+		config.DB.Preload("RoomUsers", "id != ?", currentUserID).Where("id = ?", roomId).First(&room)
+		mapData, _ := utils.StructToMap(room)
+		if room.IsGroup{
+			delete(mapData, "room_users")
+		}
+        return utils.SuccessResponse("success", mapData)
     }else{
         var rooms []models.ChatRoom
 
-        config.DB.Model(&models.ChatRoom{}).Preload("RoomUsers").Preload("RoomOwner").Where("id IN (?)", config.DB.Table("room_users").Select("chat_room_id").Where("user_id = ?", currentUserID)).Find(&rooms).Order("CreatedAt DESC")
+        config.DB.Model(&models.ChatRoom{}).Preload("RoomUsers").Preload("RoomOwner").Where("id IN (?)", config.DB.Table("room_users").Select("chat_room_id").Where("user_id = ? AND is_group = ?", currentUserID, false)).Find(&rooms).Order("CreatedAt DESC")
         
         return utils.SuccessResponse("success", rooms)
     }

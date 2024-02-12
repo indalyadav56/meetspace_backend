@@ -302,14 +302,30 @@ paths:
       summary: verify-email
       tags:
       - Auth
-  /v1/chat/group/member/{room_id}:
+  /v1/chat/group/members:
     post:
       produces:
       - application/json
       responses: {}
       security:
       - Bearer: []
-      summary: get-chat-group-member
+      summary: add-chat-group-members
+      tags:
+      - Chat-Group
+  /v1/chat/group/members/{room_id}:
+    get:
+      parameters:
+      - description: Chat Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - Bearer: []
+      summary: get-chat-group-members
       tags:
       - Chat-Group
   /v1/chat/groups:
@@ -418,7 +434,10 @@ paths:
       - description: User ID
         in: query
         name: user_id
-        required: true
+        type: string
+      - description: Chat Room ID
+        in: query
+        name: room_id
         type: string
       produces:
       - application/json

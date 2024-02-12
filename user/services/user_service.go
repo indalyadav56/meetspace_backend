@@ -12,6 +12,10 @@ import (
 	"github.com/google/uuid"
 )
 
+type UserInterface interface {
+	
+}
+
 type UserService struct {
     UserRepository *repositories.UserRepository
 }

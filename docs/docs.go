@@ -275,7 +275,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/chat/group/member/{room_id}": {
+        "/v1/chat/group/members": {
             "post": {
                 "security": [
                     {
@@ -288,7 +288,33 @@ const docTemplate = `{
                 "tags": [
                     "Chat-Group"
                 ],
-                "summary": "get-chat-group-member",
+                "summary": "add-chat-group-members",
+                "responses": {}
+            }
+        },
+        "/v1/chat/group/members/{room_id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat-Group"
+                ],
+                "summary": "get-chat-group-members",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Chat Room ID",
+                        "name": "room_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {}
             }
         },
@@ -444,8 +470,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "User ID",
                         "name": "user_id",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Chat Room ID",
+                        "name": "room_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {}

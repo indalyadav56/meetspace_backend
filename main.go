@@ -63,6 +63,7 @@ func main() {
 
 	// services
 	loggerService := commonServices.NewLoggerService()
+	loggerService.Infof("Hello There")
 	redisService := commonServices.NewRedisService(redisDB)
 	userService := userServices.NewUserService(userRepo)
 	tokenService := authServices.NewTokenService()
@@ -71,7 +72,7 @@ func main() {
 	chatRoomService := chatServices.NewChatRoomService(chatRoomRepo, userService)
 	chatGroupService := chatServices.NewChatGroupService(chatRoomRepo, userService)
 	chatMessageService := chatServices.NewChatMessageService(chatMessageRepo, userService, chatRoomService)
-	webSocketService := websocket.NewWebSocketService(chatRoomService, chatMessageService, userService)
+	webSocketService := websocket.NewWebSocketService(loggerService, chatRoomService, chatMessageService, userService)
 
 	// handlers
 	authHandler := authHandlers.NewAuthHandler(authService, verificationService)
@@ -87,7 +88,7 @@ func main() {
 	r.StaticFS("/uploads", http.Dir("./uploads"))
 	
 	// middlewares
-	r.Use(middlewares.LoggerMiddleware())
+	r.Use(middlewares.LoggerMiddleware(loggerService))
 	r.Use(middlewares.CorsMiddleware())
 	r.Use(middlewares.AuthMiddleware(loggerService, tokenService))
 	

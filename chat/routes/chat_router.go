@@ -30,6 +30,7 @@ func ChatRouter(e *gin.Engine, handler ChatHandlers){
 	// groups
 	chatGroups.POST("", handler.AddChatGroup)
 	chatGroup.GET("/members/:roomId", handler.GetGroupMembers)
+	chatGroup.POST("/members", handler.GetGroupMembers)
 
 	// messages
 	// chatGroup.POST("/messages", handlers.CreateChatMessageAPI)

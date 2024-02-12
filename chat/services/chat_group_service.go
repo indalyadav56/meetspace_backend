@@ -91,3 +91,9 @@ func (s *ChatGroupService) GetGroupMembers(roomId string) *utils.Response{
     }
     return utils.SuccessResponse("success", members)
 }
+
+func (s *ChatGroupService) AddGroupMembers(roomId string) *utils.Response{
+	// var chatRoom models.ChatRoom
+	// var members []GroupMember
+    return utils.SuccessResponse("success", nil)
+}

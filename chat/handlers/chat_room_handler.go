@@ -174,11 +174,13 @@ func (h *ChatRoomHandler) DeleteChatRoom (ctx *gin.Context){
 //	@Produce		json
 //	@Router			/v1/chat/rooms [get]
 //	@Security		Bearer
-// @Param user_id query string true "User ID"
+// @Param user_id query string false "User ID"
+// @Param room_id query string false "Chat Room ID"
 func (h *ChatRoomHandler) GetChatRooms(ctx *gin.Context){
     currentUser, _ := utils.GetUserFromContext(ctx)
     roomUserId := ctx.Query("user_id")
+    roomId := ctx.Query("room_id")
 
-    resp := h.ChatRoomService.GetChatRooms(currentUser.ID.String(), roomUserId)
+    resp := h.ChatRoomService.GetChatRooms(currentUser.ID.String(), roomUserId, roomId)
     ctx.JSON(resp.StatusCode, resp)
 }

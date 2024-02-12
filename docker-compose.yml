@@ -3,6 +3,7 @@ version: "3"
 services:
   meetspace_backend:
     build: .
+    restart: always
     container_name: backend
     ports:
       - "8080:8080"
@@ -29,7 +30,6 @@ services:
   redisinsight:
     image: redislabs/redisinsight:latest
     container_name: redisinsight
-    restart: always
     ports:
       - "8001:8001"
     environment:

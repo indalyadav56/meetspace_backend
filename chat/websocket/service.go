@@ -5,19 +5,22 @@ import (
 	"meetspace_backend/chat/models"
 	"meetspace_backend/chat/services"
 	"meetspace_backend/chat/types"
+	commonServices "meetspace_backend/common/services"
 	"meetspace_backend/config"
 	userServices "meetspace_backend/user/services"
 	"meetspace_backend/utils"
 )
 
 type WebSocketService struct {
+	LoggerService *commonServices.LoggerService
 	ChatRoomService *services.ChatRoomService
 	ChatMessageService *services.ChatMessageService
 	UserService *userServices.UserService
 }
 
-func NewWebSocketService(chatRoomSvc *services.ChatRoomService, chatMsgSvc *services.ChatMessageService, userSvc *userServices.UserService) *WebSocketService {
+func NewWebSocketService(loggerService *commonServices.LoggerService, chatRoomSvc *services.ChatRoomService, chatMsgSvc *services.ChatMessageService, userSvc *userServices.UserService) *WebSocketService {
 	return &WebSocketService{
+		LoggerService: loggerService,
 		ChatRoomService: chatRoomSvc,
 		ChatMessageService: chatMsgSvc,
 		UserService: userSvc,
@@ -61,11 +64,12 @@ func (ws *WebSocketService) HandleChatMessageSent(payload types.Payload, client 
 		users = append(users, receiverUser["id"].(string))
 		room, _ := ws.ChatRoomService.CreateChatRoom("NewChatRoom", client.User.ID.String(), users)
 		ws.ChatMessageService.CreateChatMessage(mapData["content"].(string),  client.User.ID.String(), room.ID.String())
-		// CheckMessageNotification(client, payload)
+		
 	}else{
 		ws.ChatMessageService.CreateChatMessage(mapData["content"].(string),  client.User.ID.String(), currentRoom.ID.String())
-		// CheckMessageNotification(client, payload)
 	}
+
+	CheckMessageNotification(client, payload)
 }
 
 func (ws *WebSocketService) HandleChatNotificationReceived(payload types.Payload, client *Client) {
@@ -92,18 +96,8 @@ func CheckMessageNotification(client *Client, payload types.Payload){
 		roomUserId := userObj.ID.String()
 		
 		if !joinedUsersMap[roomUserId] {
-			// send notification
-			notificationData:= map[string]interface{}{
-				"receiver_user": map[string]interface{}{
-					"id": roomUserId,
-				},
-				"sender_user": payload.Data["sender"],
-				"room_id": chatRoomObj.ID.String(),
-				"is_group": chatRoomObj.IsGroup,
-				"content": payload.Data["content"],
-				"room_name": chatRoomObj.RoomName,
-			}
-			stringData := SendChatMessageNotification(notificationData)
+			mapData, _ := utils.StructToMap(payload.Data)
+			stringData := SendChatMessageNotification(mapData)
 			SendMessageToClients(globalClients, stringData)
 
 		}
