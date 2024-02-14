@@ -33,6 +33,31 @@ This project utilizes the following technologies:
 - Nginx - Web server
 - Github Actions - Continuous integration & deployment
 
+## Features
+
+- Authentication and authorization
+
+  - Login with email / password credentials
+  - JWT token generation
+  - Restrict access to certain routes based on login state and permissions
+
+- User management
+  - New user signup
+  - Email verification process
+  - Profile updates
+  - Password reset workflow
+- Resource management
+
+  - CRUD (Create / Read / Update / Delete) API for resources
+  - Pagination and filtering when retrieving resources
+  - Image upload and storage
+
+- Real-time communication
+
+  - Chat messaging using websockets
+  - Live notifications on events
+  - Comment streams / feed for user content
+
 ## Changelog
 
 For a detailed list of changes made to this project, please refer to the [Changelog](CHANGELOG.md).
