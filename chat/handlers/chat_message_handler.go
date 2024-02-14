@@ -2,110 +2,61 @@ package handlers
 
 import (
 	"fmt"
-	"meetspace_backend/chat/models"
-	"meetspace_backend/chat/types"
-	"meetspace_backend/config"
+	"meetspace_backend/chat/services"
 	"meetspace_backend/utils"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type ChatMessageHandler struct {
-
+	ChatMessageService *services.ChatMessageService
 }
 
-func NewChatMessageHandler() *ChatMessageHandler {
+func NewChatMessageHandler(svc *services.ChatMessageService) *ChatMessageHandler {
     return &ChatMessageHandler{
-        
+        ChatMessageService: svc,
     }
 }
 
-
 // GetChatMessageAPI godoc
-//	@Summary		Register User account
-//	@Description	Register User account
+//	@Summary		get chat messages by room id
+//	@Description	Get chat messages by room id
 //	@Tags			Chat-Message
 //	@Produce		json
-// @Param user body types.GetChatMessageRequestBody true "User registration details"
-//	@Router			/v1/chat/messages [get]
-func GetChatMessageAPI(ctx *gin.Context){
+//	@Param			chat_room_id	path	string	true	"Chat Room ID"
+//	@Router			/v1/chat/messages/{chat_room_id} [get]
+//	@Security		Bearer
+//	@Success		201	"get messages successfully"
+//	@Failure		400	"Bad request"
+//	@Failure		500	"Internal server error"
+func (h *ChatMessageHandler) GetChatMessageByRoomID(ctx *gin.Context){
+    // get user from context
+	currentUser, _ := utils.GetUserFromContext(ctx)
     chatRoomID := ctx.Param("chatRoomId")
     
-    var reqBody types.GetChatMessageRequestBody
-
-    reqBody.ChatRoomId = chatRoomID
-   
-	msg, _ := GetChatMessageByRoomId(reqBody)
-    
+	msg, err := h.ChatMessageService.GetChatMessageByRoomId(chatRoomID, currentUser.ID.String())
+	fmt.Println("error getting", err)
     ctx.JSON(http.StatusOK, utils.SuccessResponse("success", msg))
     return
 }
 
-
-
-func formatDate(t time.Time) string {
-	now := time.Now()
-	diff := now.Sub(t)
-
-	// Within today
-	if diff.Hours() < 24 {
-		if diff.Hours() < 1 {
-			return "Today"
-		} else {
-			return "Yesterday"
-		}
-	}
-
-	// Within this week
-	if diff.Hours() < 168 {
-		dayNum := int(diff.Hours() / 24)
-		dayName := t.Weekday().String()[:3]
-		return fmt.Sprintf("%s (%s)", dayName, dayNum)
-	}
-
-	// Within this year
-	if now.Year() == t.Year() {
-		return fmt.Sprintf("%d-%s", t.Day(), t.Month().String()[:3])
-	}
-
-	// Default format
-	return fmt.Sprintf("%d-%s-%d", t.Day(), t.Month().String()[:3], t.Year())
-}
-
-
-// GetChatMessageByRoomId godoc
-//	@Summary		GetChatMessageByRoomId
-//	@Description	GetChatMessageByRoomId
+// GetChatMessages godoc
+//	@Summary		get chat messages
+//	@Description	Get chat message
 //	@Tags			Chat-Message
 //	@Produce		json
-// @Param user body types.GetChatMessageRequestBody true "User registration details"
-//	@Router			/v1/chat/messages/{room_id} [get]
-func GetChatMessageByRoomId(inputData types.GetChatMessageRequestBody) ([]types.ChatMessageResponse, error){
-    var messages []models.ChatMessage
-    config.DB.Preload("Sender").Preload("ChatRoom").
-    Where("chat_room_id=?", inputData.ChatRoomId).Order("created_at").
-    Find(&messages)
-
-    msgAsPerDay := make(map[string][]types.SingleChatMessageResponse)
-
-    var respData types.SingleChatMessageResponse
+// @Param user_id query string true "User ID"
+//	@Router			/v1/chat/messages [get]
+//	@Security		Bearer
+//	@Success		201	"get messages successfully"
+//	@Failure		400	"Bad request"
+//	@Failure		500	"Internal server error"
+func (h *ChatMessageHandler) GetChatMessages(ctx *gin.Context){
+	currentUser, _ := utils.GetUserFromContext(ctx)
+    userID := ctx.Query("user_id")
     
-    for _, message := range messages {
-        respData.Content = message.Content
-        respData.ChatRoomId = message.ChatRoomID.String()
-        respData.Sender = message.Sender
-        msgAsPerDay[formatDate(message.CreatedAt)] = append(msgAsPerDay[formatDate(message.CreatedAt)], respData)
-    }
-
-    var resp []types.ChatMessageResponse
-
-    for timestamp, msg := range msgAsPerDay {
-        resp = append(resp, types.ChatMessageResponse{
-            TimeStamp: timestamp,
-            ChatMessage: msg,
-        })
-    }
-    return resp, nil
+	resp := h.ChatMessageService.GetChatMessageByUserID(currentUser.ID.String(), userID)
+    ctx.JSON(resp.StatusCode, resp)
+    return
 }

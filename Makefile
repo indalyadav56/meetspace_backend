@@ -1,6 +1,9 @@
 run:
 	air
 
+build:
+	docker-compose up --build -d
+
 swagger:
 	swag init
 

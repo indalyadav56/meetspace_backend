@@ -24,10 +24,10 @@ func (repo *VerificationRepository) CreateRecord(v models.Verification) (*models
     return &v, nil
 }
 
-func (repo *VerificationRepository) GetRecordByEmail(email string) (models.Verification, error) {
+func (repo *VerificationRepository) GetRecordByEmailAndOtp(email, otp string,) (models.Verification, error) {
 	var model models.Verification
 	
-	result := repo.db.Where("email = ?", email).Order("updated_at DESC").First(&model)
+	result := repo.db.Where("email = ? AND otp = ?", email, otp).Order("updated_at DESC").First(&model)
 	
 	if result.Error != nil {
         return model, result.Error

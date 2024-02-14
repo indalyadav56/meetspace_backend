@@ -21,12 +21,13 @@ type Pool struct {
 	mu sync.Mutex
 }
 
-func NewPool() *Pool {
+func NewPool(svc *WebSocketService) *Pool {
 	return &Pool{
 		Register:    make(chan *Client),
 		Unregister:  make(chan *Client),
 		Clients:     make(map[*Client]bool),
 		Broadcast:   make(chan string),
+		Service: svc,
 	}
 }
 

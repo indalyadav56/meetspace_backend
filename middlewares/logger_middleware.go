@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	commonServices "meetspace_backend/common/services"
 	"os"
 	"time"
 
@@ -8,7 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func LoggerMiddleware() gin.HandlerFunc {
+func LoggerMiddleware(loggerService *commonServices.LoggerService) gin.HandlerFunc {
     log.SetFormatter(&log.JSONFormatter{}) // Use JSON format for logs
 
     return func(c *gin.Context) {

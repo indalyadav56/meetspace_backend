@@ -58,10 +58,13 @@ func (userRepo *UserRepository) CreateRecord(user models.User) (*models.User, er
 }
 
 
-func (userRepo *UserRepository) GetUserByID(userID string) (models.User, error) {
+func (userRepo *UserRepository) GetUserByID(userID string) (*models.User, error) {
     var user models.User
-    userRepo.db.Where("id = ?", userID).First(&user)
-    return user, nil
+    err := userRepo.db.Where("id = ?", userID).First(&user).Error
+    if err != nil {
+        return nil, err
+    }
+    return &user, nil
 }
 
 
@@ -75,7 +78,7 @@ func (userRepo *UserRepository) GetUserByEmail(email string) (models.User, error
 }
 
 
-func (userRepo *UserRepository) GetAllUserRecord(email string) ([]models.User, error) {
+func (userRepo *UserRepository) GetAllUserRecord(currentUserEmail, email string) ([]models.User, error) {
     var users []models.User
    
     if email != "" {
@@ -86,7 +89,7 @@ func (userRepo *UserRepository) GetAllUserRecord(email string) ([]models.User, e
         return users, nil
     }
     
-    userRepo.db.Find(&users).Order("created_at DESC")
+    userRepo.db.Not("email = ?", currentUserEmail).Find(&users).Order("created_at DESC")
     return users, nil
 }
 
@@ -98,12 +101,24 @@ func (userRepo *UserRepository) GetUsersByClientId(clientId string)([]models.Use
 }
 
 
-func (userRepo *UserRepository) UpdateUser(userId string, updateUser map[string]interface{}) (types.UserResponse, error) {
+func (userRepo *UserRepository) UpdateUserByID(userId string, updateUser map[string]interface{}) (types.UserResponse, error) {
     var resp types.UserResponse
     
     data, _ := utils.RemoveKeysNotInStruct(models.User{}, updateUser)
     
-    if err := userRepo.db.Model(&resp).Where("id=?", userId).Updates(data).First(&resp).Error; err != nil {
+    if err := userRepo.db.Model(&models.User{}).Where("id = ?", userId).Updates(data).First(&resp).Error; err != nil {
+        return resp, err
+    }
+    
+    return resp, nil
+}
+
+func (userRepo *UserRepository) UpdateUserByEmail(email string, updateUser map[string]interface{}) (types.UserResponse, error) {
+    var resp types.UserResponse
+    
+    data, _ := utils.RemoveKeysNotInStruct(models.User{}, updateUser)
+    
+    if err := userRepo.db.Model(&models.User{}).Where("email = ?", email).Updates(data).First(&resp).Error; err != nil {
         return resp, err
     }
     

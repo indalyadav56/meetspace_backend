@@ -9,7 +9,16 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.swagger.io/support",
+            "email": "support@swagger.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -17,17 +26,31 @@ const docTemplate = `{
     "paths": {
         "/v1/auth/forgot-password": {
             "post": {
-                "description": "ForgotPassword",
+                "description": "Forgot password",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Auth"
                 ],
-                "summary": "ForgotPassword",
+                "summary": "forgot-password",
+                "parameters": [
+                    {
+                        "description": "forgot password request body",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.ForgotPasswordRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Login user successfully"
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
                     },
                     "400": {
                         "description": "Bad request"
@@ -74,17 +97,72 @@ const docTemplate = `{
         },
         "/v1/auth/logout": {
             "post": {
-                "description": "UserLogout User account",
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "User logout User",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Auth"
                 ],
-                "summary": "UserLogout User account",
+                "summary": "user-logout",
+                "parameters": [
+                    {
+                        "description": "User login details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.LogoutRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/v1/auth/refresh-token": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "refresh jwt token",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "refresh token",
+                "parameters": [
+                    {
+                        "description": "refresh token request body",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.RefreshTokenRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Login user successfully"
+                        "description": "Success"
                     },
                     "400": {
                         "description": "Bad request"
@@ -117,7 +195,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "Register user successfully"
                     },
                     "400": {
@@ -138,9 +216,21 @@ const docTemplate = `{
                 "tags": [
                     "Auth"
                 ],
+                "summary": "send-email",
+                "parameters": [
+                    {
+                        "description": "send email request body",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.SendEmailRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Login user successfully"
+                        "description": "Success"
                     },
                     "400": {
                         "description": "Bad request"
@@ -160,9 +250,21 @@ const docTemplate = `{
                 "tags": [
                     "Auth"
                 ],
+                "summary": "verify-email",
+                "parameters": [
+                    {
+                        "description": "verify email request body",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.VerifyEmailRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Login user successfully"
+                        "description": "Success"
                     },
                     "400": {
                         "description": "Bad request"
@@ -173,86 +275,192 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/chat/messages": {
-            "get": {
-                "description": "Register User account",
+        "/v1/chat/group/members": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Chat-Message"
+                    "Chat-Group"
                 ],
-                "summary": "Register User account",
+                "summary": "add-chat-group-members",
+                "responses": {}
+            }
+        },
+        "/v1/chat/group/members/{room_id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat-Group"
+                ],
+                "summary": "get-chat-group-members",
                 "parameters": [
                     {
-                        "description": "User registration details",
+                        "type": "string",
+                        "description": "Chat Room ID",
+                        "name": "room_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/v1/chat/groups": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Add Chat group",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat-Group"
+                ],
+                "summary": "add-chat-group",
+                "parameters": [
+                    {
+                        "description": "Add chat group details",
                         "name": "user",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types.GetChatMessageRequestBody"
+                            "$ref": "#/definitions/types.AddChatGroup"
+                        }
+                    }
+                ],
+                "responses": {}
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update Chat group",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat-Group"
+                ],
+                "summary": "update-chat-group",
+                "parameters": [
+                    {
+                        "description": "update chat group details",
+                        "name": "UpdateChatGroup",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.UpdateChatGroup"
                         }
                     }
                 ],
                 "responses": {}
             }
         },
-        "/v1/chat/messages/{room_id}": {
+        "/v1/chat/messages": {
             "get": {
-                "description": "GetChatMessageByRoomId",
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get chat message",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Chat-Message"
                 ],
-                "summary": "GetChatMessageByRoomId",
+                "summary": "get chat messages",
                 "parameters": [
                     {
-                        "description": "User registration details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.GetChatMessageRequestBody"
-                        }
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "201": {
+                        "description": "get messages successfully"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/v1/chat/messages/{chat_room_id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get chat messages by room id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat-Message"
+                ],
+                "summary": "get chat messages by room id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Chat Room ID",
+                        "name": "chat_room_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "get messages successfully"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         },
         "/v1/chat/room/contact": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "UserLogin User account",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Chat-Room"
-                ],
-                "summary": "UserLogin User account",
-                "parameters": [
-                    {
-                        "description": "User login details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.LoginRequest"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/v1/chat/room/groups": {
-            "post": {
-                "description": "UserLogin User account",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Chat-Group"
                 ],
                 "summary": "UserLogin User account",
                 "parameters": [
@@ -271,6 +479,11 @@ const docTemplate = `{
         },
         "/v1/chat/rooms": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "GetChatRooms",
                 "produces": [
                     "application/json"
@@ -281,18 +494,26 @@ const docTemplate = `{
                 "summary": "GetChatRooms",
                 "parameters": [
                     {
-                        "description": "User login details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.LoginRequest"
-                        }
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Chat Room ID",
+                        "name": "room_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {}
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "CreateChatRoom",
                 "produces": [
                     "application/json"
@@ -315,6 +536,11 @@ const docTemplate = `{
                 "responses": {}
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "DeleteChatRoom",
                 "produces": [
                     "application/json"
@@ -332,115 +558,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/types.LoginRequest"
                         }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/v1/client/users": {
-            "get": {
-                "description": "GetClientUsers account",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Client-User"
-                ],
-                "summary": "GetClientUsers account",
-                "responses": {}
-            },
-            "post": {
-                "description": "ClientAddUser account",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Client-User"
-                ],
-                "summary": "ClientAddUser account",
-                "parameters": [
-                    {
-                        "description": "User registration details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.ClientAddUser"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/v1/clients": {
-            "get": {
-                "description": "GetAllClients User account",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Client"
-                ],
-                "summary": "GetAllClients User account",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Client's company name",
-                        "name": "company_name",
-                        "in": "query"
-                    },
-                    {
-                        "description": "GetAllClients login details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.ClientCreateData"
-                        }
-                    }
-                ],
-                "responses": {}
-            },
-            "post": {
-                "description": "UserLogin User account",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Client"
-                ],
-                "summary": "UserLogin User account",
-                "parameters": [
-                    {
-                        "description": "User login details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.ClientCreateData"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/v1/clients/{id}": {
-            "get": {
-                "description": "GetClientById User account",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Client"
-                ],
-                "summary": "GetClientById User account",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Client ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {}
@@ -466,39 +583,85 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/v1/user/profile": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "get user profile",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         },
         "/v1/users": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "User"
                 ],
-                "summary": "User create",
-                "parameters": [
-                    {
-                        "description": "User create details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.CreateUserData"
-                        }
+                "summary": "get all users",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
                     }
-                ],
-                "responses": {}
+                }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "User"
                 ],
-                "summary": "User create",
+                "summary": "user-update",
                 "parameters": [
                     {
                         "description": "User create details",
@@ -510,9 +673,24 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -536,95 +714,57 @@ const docTemplate = `{
         },
         "/v1/users/{id}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "User"
                 ],
-                "summary": "User create",
+                "summary": "get user by ID",
                 "parameters": [
                     {
-                        "description": "User create details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.CreateUserData"
-                        }
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         }
     },
     "definitions": {
-        "models.Client": {
+        "types.AddChatGroup": {
             "type": "object",
+            "required": [
+                "title",
+                "user_ids"
+            ],
             "properties": {
-                "client_user_id": {
+                "title": {
                     "type": "string"
                 },
-                "company_domain": {
-                    "type": "string"
-                },
-                "company_name": {
-                    "type": "string"
-                },
-                "company_size": {
-                    "type": "integer"
-                },
-                "country": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
-        "types.ClientAddUser": {
-            "type": "object",
-            "properties": {
-                "client_id": {
-                    "type": "string"
-                },
-                "created_by": {
-                    "$ref": "#/definitions/models.Client"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "first_name": {
-                    "type": "string"
-                },
-                "last_name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "updated_by": {
-                    "$ref": "#/definitions/models.Client"
-                }
-            }
-        },
-        "types.ClientCreateData": {
-            "type": "object",
-            "properties": {
-                "company_name": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "first_name": {
-                    "type": "string"
-                },
-                "last_name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
+                "user_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -633,9 +773,6 @@ const docTemplate = `{
             "properties": {
                 "client_id": {
                     "type": "string"
-                },
-                "created_by": {
-                    "$ref": "#/definitions/models.Client"
                 },
                 "email": {
                     "type": "string"
@@ -651,30 +788,58 @@ const docTemplate = `{
                 },
                 "role": {
                     "type": "string"
-                },
-                "updated_by": {
-                    "$ref": "#/definitions/models.Client"
                 }
             }
         },
-        "types.GetChatMessageRequestBody": {
+        "types.ForgotPasswordRequest": {
             "type": "object",
+            "required": [
+                "email",
+                "new_password"
+            ],
             "properties": {
-                "chat_room_id": {
+                "email": {
                     "type": "string"
                 },
-                "current_user_id": {
+                "new_password": {
                     "type": "string"
                 }
             }
         },
         "types.LoginRequest": {
             "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
             "properties": {
                 "email": {
                     "type": "string"
                 },
                 "password": {
+                    "type": "string",
+                    "minLength": 6
+                }
+            }
+        },
+        "types.LogoutRequest": {
+            "type": "object",
+            "required": [
+                "refresh_token"
+            ],
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.RefreshTokenRequest": {
+            "type": "object",
+            "required": [
+                "refresh_token"
+            ],
+            "properties": {
+                "refresh_token": {
                     "type": "string"
                 }
             }
@@ -702,32 +867,115 @@ const docTemplate = `{
                     "minLength": 6
                 }
             }
+        },
+        "types.SendEmailRequest": {
+            "type": "object",
+            "required": [
+                "email"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.UpdateChatGroup": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "user_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "types.VerifyEmailRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "otp"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "otp": {
+                    "type": "string"
+                }
+            }
+        },
+        "utils.Metadata": {
+            "type": "object",
+            "properties": {
+                "api_version": {
+                    "type": "string",
+                    "default": "v1"
+                },
+                "server_info": {
+                    "$ref": "#/definitions/utils.ServerInfo"
+                }
+            }
+        },
+        "utils.Response": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "error": {},
+                "message": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "$ref": "#/definitions/utils.Metadata"
+                },
+                "request_id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "status_code": {
+                    "type": "integer"
+                },
+                "time_stamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "utils.ServerInfo": {
+            "type": "object",
+            "properties": {
+                "hostname": {
+                    "type": "string"
+                }
+            }
         }
     },
     "securityDefinitions": {
-        "BasicAuth": {
-            "type": "basic"
-        },
-        "OAuth2Application": {
-            "type": "oauth2",
-            "flow": "application",
-            "tokenUrl": "https://example.com/oauth/token",
-            "scopes": {
-                "admin": " Grants read and write access to administrative information",
-                "write": " Grants write access"
-            }
+        "Bearer": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
+    },
+    "externalDocs": {
+        "description": "OpenAPI",
+        "url": "https://swagger.io/resources/open-api/"
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
+	Version:          "1.0",
+	Host:             "localhost:8080",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "MeetSpace API",
+	Description:      "MeetSpace API documentation.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

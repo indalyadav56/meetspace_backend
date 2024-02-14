@@ -3,16 +3,28 @@ package websocket
 import (
 	"meetspace_backend/chat/constants"
 	"meetspace_backend/chat/models"
+	"meetspace_backend/chat/services"
 	"meetspace_backend/chat/types"
+	commonServices "meetspace_backend/common/services"
 	"meetspace_backend/config"
+	userServices "meetspace_backend/user/services"
 	"meetspace_backend/utils"
-	// userService "meetspace_backend/internal/user/services"
 )
 
-type WebSocketService struct {}
+type WebSocketService struct {
+	LoggerService *commonServices.LoggerService
+	ChatRoomService *services.ChatRoomService
+	ChatMessageService *services.ChatMessageService
+	UserService *userServices.UserService
+}
 
-func NewWebSocketService() *WebSocketService {
-	return &WebSocketService{}
+func NewWebSocketService(loggerService *commonServices.LoggerService, chatRoomSvc *services.ChatRoomService, chatMsgSvc *services.ChatMessageService, userSvc *userServices.UserService) *WebSocketService {
+	return &WebSocketService{
+		LoggerService: loggerService,
+		ChatRoomService: chatRoomSvc,
+		ChatMessageService: chatMsgSvc,
+		UserService: userSvc,
+	}
 }
 
 func (ws *WebSocketService) HandleEvent(payload types.Payload, client *Client) {
@@ -43,18 +55,21 @@ func (ws *WebSocketService) HandleUserDisconnected(payload types.Payload, client
 }
 
 func (ws *WebSocketService) HandleChatMessageSent(payload types.Payload, client *Client) {
-	currentRoom, err := config.ChatRoomService.GetChatRoomByID(client.GroupName)
-	
+	mapData, _ := utils.StructToMap(payload.Data)
+	currentRoom, err := ws.ChatRoomService.GetChatRoomByID(client.GroupName)
 	// if chat room not found then create a new chat room for sender and receiver user
 	if err != nil {
-		receiverUserData := payload.Data["receiver_user"].(map[string]interface{})
 		var users []string
-		users = append(users, receiverUserData["id"].(string))
-		config.ChatRoomService.CreateChatRoomRecord("NewChatRoom", client.User.ID.String(), users)
-		CheckMessageNotification(client, payload)
+		receiverUser := mapData["receiver_user"].(map[string]interface{})
+		users = append(users, receiverUser["id"].(string))
+		room, _ := ws.ChatRoomService.CreateChatRoom("NewChatRoom", client.User.ID.String(), users)
+		ws.ChatMessageService.CreateChatMessage(mapData["content"].(string),  client.User.ID.String(), room.ID.String())
+		
 	}else{
-		senderUserData := payload.Data["sender"].(map[string]interface{})
-		config.ChatMessageService.CreateChatMessage("NewChatMessageContent", senderUserData["id"].(string), currentRoom.ID.String())
+		ws.ChatMessageService.CreateChatMessage(mapData["content"].(string),  client.User.ID.String(), currentRoom.ID.String())
+	}
+
+	if !client.IsGroup{
 		CheckMessageNotification(client, payload)
 	}
 }
@@ -62,7 +77,6 @@ func (ws *WebSocketService) HandleChatMessageSent(payload types.Payload, client 
 func (ws *WebSocketService) HandleChatNotificationReceived(payload types.Payload, client *Client) {
 	// Implement logic for chat notification received event
 }
-
 
 func CheckMessageNotification(client *Client, payload types.Payload){
 	users, exists := joinedUsers[client.GroupName]
@@ -84,18 +98,8 @@ func CheckMessageNotification(client *Client, payload types.Payload){
 		roomUserId := userObj.ID.String()
 		
 		if !joinedUsersMap[roomUserId] {
-			// send notification
-			notificationData:= map[string]interface{}{
-				"receiver_user": map[string]interface{}{
-					"id": roomUserId,
-				},
-				"sender_user": payload.Data["sender"],
-				"room_id": chatRoomObj.ID.String(),
-				"is_group": chatRoomObj.IsGroup,
-				"content": payload.Data["content"],
-				"room_name": chatRoomObj.RoomName,
-			}
-			stringData := SendChatMessageNotification(notificationData)
+			mapData, _ := utils.StructToMap(payload.Data)
+			stringData := SendChatMessageNotification(mapData)
 			SendMessageToClients(globalClients, stringData)
 
 		}

@@ -1,55 +1,20 @@
 definitions:
-  models.Client:
+  types.AddChatGroup:
     properties:
-      client_user_id:
+      title:
         type: string
-      company_domain:
-        type: string
-      company_name:
-        type: string
-      company_size:
-        type: integer
-      country:
-        type: string
-      id:
-        type: string
-    type: object
-  types.ClientAddUser:
-    properties:
-      client_id:
-        type: string
-      created_by:
-        $ref: '#/definitions/models.Client'
-      email:
-        type: string
-      first_name:
-        type: string
-      last_name:
-        type: string
-      password:
-        type: string
-      updated_by:
-        $ref: '#/definitions/models.Client'
-    type: object
-  types.ClientCreateData:
-    properties:
-      company_name:
-        type: string
-      email:
-        type: string
-      first_name:
-        type: string
-      last_name:
-        type: string
-      password:
-        type: string
+      user_ids:
+        items:
+          type: string
+        type: array
+    required:
+    - title
+    - user_ids
     type: object
   types.CreateUserData:
     properties:
       client_id:
         type: string
-      created_by:
-        $ref: '#/definitions/models.Client'
       email:
         type: string
       first_name:
@@ -60,22 +25,41 @@ definitions:
         type: string
       role:
         type: string
-      updated_by:
-        $ref: '#/definitions/models.Client'
     type: object
-  types.GetChatMessageRequestBody:
+  types.ForgotPasswordRequest:
     properties:
-      chat_room_id:
+      email:
         type: string
-      current_user_id:
+      new_password:
         type: string
+    required:
+    - email
+    - new_password
     type: object
   types.LoginRequest:
     properties:
       email:
         type: string
       password:
+        minLength: 6
         type: string
+    required:
+    - email
+    - password
+    type: object
+  types.LogoutRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  types.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
     type: object
   types.RegisterRequest:
     properties:
@@ -94,22 +78,101 @@ definitions:
     - last_name
     - password
     type: object
+  types.SendEmailRequest:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  types.UpdateChatGroup:
+    properties:
+      title:
+        type: string
+      user_ids:
+        items:
+          type: string
+        type: array
+    type: object
+  types.VerifyEmailRequest:
+    properties:
+      email:
+        type: string
+      otp:
+        type: string
+    required:
+    - email
+    - otp
+    type: object
+  utils.Metadata:
+    properties:
+      api_version:
+        default: v1
+        type: string
+      server_info:
+        $ref: '#/definitions/utils.ServerInfo'
+    type: object
+  utils.Response:
+    properties:
+      data: {}
+      error: {}
+      message:
+        type: string
+      metadata:
+        $ref: '#/definitions/utils.Metadata'
+      request_id:
+        type: string
+      status:
+        type: string
+      status_code:
+        type: integer
+      time_stamp:
+        type: string
+    type: object
+  utils.ServerInfo:
+    properties:
+      hostname:
+        type: string
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+host: localhost:8080
 info:
-  contact: {}
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: MeetSpace API documentation.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: MeetSpace API
+  version: "1.0"
 paths:
   /v1/auth/forgot-password:
     post:
-      description: ForgotPassword
+      description: Forgot password
+      parameters:
+      - description: forgot password request body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.ForgotPasswordRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: Login user successfully
+          description: Success
+          schema:
+            $ref: '#/definitions/utils.Response'
         "400":
           description: Bad request
         "500":
           description: Internal server error
-      summary: ForgotPassword
+      summary: forgot-password
       tags:
       - Auth
   /v1/auth/login:
@@ -136,17 +199,50 @@ paths:
       - Auth
   /v1/auth/logout:
     post:
-      description: UserLogout User account
+      description: User logout User
+      parameters:
+      - description: User login details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.LogoutRequest'
       produces:
       - application/json
       responses:
-        "200":
-          description: Login user successfully
+        "204":
+          description: success
         "400":
           description: Bad request
         "500":
           description: Internal server error
-      summary: UserLogout User account
+      security:
+      - Bearer: []
+      summary: user-logout
+      tags:
+      - Auth
+  /v1/auth/refresh-token:
+    post:
+      description: refresh jwt token
+      parameters:
+      - description: refresh token request body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      security:
+      - Bearer: []
+      summary: refresh token
       tags:
       - Auth
   /v1/auth/register:
@@ -162,7 +258,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: Register user successfully
         "400":
           description: Bad request
@@ -174,61 +270,152 @@ paths:
   /v1/auth/send-email:
     post:
       description: Send email to user
+      parameters:
+      - description: send email request body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.SendEmailRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: Login user successfully
+          description: Success
         "400":
           description: Bad request
         "500":
           description: Internal server error
+      summary: send-email
       tags:
       - Auth
   /v1/auth/verify-email:
     post:
       description: Verify email otp.
+      parameters:
+      - description: verify email request body
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.VerifyEmailRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: Login user successfully
+          description: Success
         "400":
           description: Bad request
         "500":
           description: Internal server error
+      summary: verify-email
       tags:
       - Auth
+  /v1/chat/group/members:
+    post:
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - Bearer: []
+      summary: add-chat-group-members
+      tags:
+      - Chat-Group
+  /v1/chat/group/members/{room_id}:
+    get:
+      parameters:
+      - description: Chat Room ID
+        in: path
+        name: room_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - Bearer: []
+      summary: get-chat-group-members
+      tags:
+      - Chat-Group
+  /v1/chat/groups:
+    patch:
+      description: Update Chat group
+      parameters:
+      - description: update chat group details
+        in: body
+        name: UpdateChatGroup
+        required: true
+        schema:
+          $ref: '#/definitions/types.UpdateChatGroup'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - Bearer: []
+      summary: update-chat-group
+      tags:
+      - Chat-Group
+    post:
+      description: Add Chat group
+      parameters:
+      - description: Add chat group details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.AddChatGroup'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - Bearer: []
+      summary: add-chat-group
+      tags:
+      - Chat-Group
   /v1/chat/messages:
     get:
-      description: Register User account
+      description: Get chat message
       parameters:
-      - description: User registration details
-        in: body
-        name: user
+      - description: User ID
+        in: query
+        name: user_id
         required: true
-        schema:
-          $ref: '#/definitions/types.GetChatMessageRequestBody'
+        type: string
       produces:
       - application/json
-      responses: {}
-      summary: Register User account
+      responses:
+        "201":
+          description: get messages successfully
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      security:
+      - Bearer: []
+      summary: get chat messages
       tags:
       - Chat-Message
-  /v1/chat/messages/{room_id}:
+  /v1/chat/messages/{chat_room_id}:
     get:
-      description: GetChatMessageByRoomId
+      description: Get chat messages by room id
       parameters:
-      - description: User registration details
-        in: body
-        name: user
+      - description: Chat Room ID
+        in: path
+        name: chat_room_id
         required: true
-        schema:
-          $ref: '#/definitions/types.GetChatMessageRequestBody'
+        type: string
       produces:
       - application/json
-      responses: {}
-      summary: GetChatMessageByRoomId
+      responses:
+        "201":
+          description: get messages successfully
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      security:
+      - Bearer: []
+      summary: get chat messages by room id
       tags:
       - Chat-Message
   /v1/chat/room/contact:
@@ -244,25 +431,11 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - Bearer: []
       summary: UserLogin User account
       tags:
       - Chat-Room
-  /v1/chat/room/groups:
-    post:
-      description: UserLogin User account
-      parameters:
-      - description: User login details
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/types.LoginRequest'
-      produces:
-      - application/json
-      responses: {}
-      summary: UserLogin User account
-      tags:
-      - Chat-Group
   /v1/chat/rooms:
     delete:
       description: DeleteChatRoom
@@ -276,21 +449,27 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - Bearer: []
       summary: DeleteChatRoom
       tags:
       - Chat-Room
     get:
       description: GetChatRooms
       parameters:
-      - description: User login details
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/types.LoginRequest'
+      - description: User ID
+        in: query
+        name: user_id
+        type: string
+      - description: Chat Room ID
+        in: query
+        name: room_id
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - Bearer: []
       summary: GetChatRooms
       tags:
       - Chat-Room
@@ -306,83 +485,11 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - Bearer: []
       summary: CreateChatRoom
       tags:
       - Chat-Room
-  /v1/client/users:
-    get:
-      description: GetClientUsers account
-      produces:
-      - application/json
-      responses: {}
-      summary: GetClientUsers account
-      tags:
-      - Client-User
-    post:
-      description: ClientAddUser account
-      parameters:
-      - description: User registration details
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/types.ClientAddUser'
-      produces:
-      - application/json
-      responses: {}
-      summary: ClientAddUser account
-      tags:
-      - Client-User
-  /v1/clients:
-    get:
-      description: GetAllClients User account
-      parameters:
-      - description: Client's company name
-        in: query
-        name: company_name
-        type: string
-      - description: GetAllClients login details
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/types.ClientCreateData'
-      produces:
-      - application/json
-      responses: {}
-      summary: GetAllClients User account
-      tags:
-      - Client
-    post:
-      description: UserLogin User account
-      parameters:
-      - description: User login details
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/types.ClientCreateData'
-      produces:
-      - application/json
-      responses: {}
-      summary: UserLogin User account
-      tags:
-      - Client
-  /v1/clients/{id}:
-    get:
-      description: GetClientById User account
-      parameters:
-      - description: Client ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses: {}
-      summary: GetClientById User account
-      tags:
-      - Client
   /v1/user/check-email:
     get:
       parameters:
@@ -394,23 +501,46 @@ paths:
           $ref: '#/definitions/types.CreateUserData'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
       summary: User create
+      tags:
+      - User
+  /v1/user/profile:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      security:
+      - Bearer: []
+      summary: get user profile
       tags:
       - User
   /v1/users:
     get:
-      parameters:
-      - description: User create details
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/types.CreateUserData'
       produces:
       - application/json
-      responses: {}
-      summary: User create
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      security:
+      - Bearer: []
+      summary: get all users
       tags:
       - User
     post:
@@ -424,6 +554,8 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - Bearer: []
       summary: User create
       tags:
       - User
@@ -437,33 +569,44 @@ paths:
           $ref: '#/definitions/types.CreateUserData'
       produces:
       - application/json
-      responses: {}
-      summary: User create
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      security:
+      - Bearer: []
+      summary: user-update
       tags:
       - User
   /v1/users/{id}:
     get:
       parameters:
-      - description: User create details
-        in: body
-        name: user
+      - description: User ID
+        in: path
+        name: id
         required: true
-        schema:
-          $ref: '#/definitions/types.CreateUserData'
+        type: string
       produces:
       - application/json
-      responses: {}
-      summary: User create
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      security:
+      - Bearer: []
+      summary: get user by ID
       tags:
       - User
 securityDefinitions:
-  BasicAuth:
-    type: basic
-  OAuth2Application:
-    flow: application
-    scopes:
-      admin: ' Grants read and write access to administrative information'
-      write: ' Grants write access'
-    tokenUrl: https://example.com/oauth/token
-    type: oauth2
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

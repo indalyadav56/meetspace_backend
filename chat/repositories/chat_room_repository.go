@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
+
 type ChatRoomRepository struct {
 	db *gorm.DB
 }
@@ -16,7 +17,7 @@ func NewChatRoomRepository(db *gorm.DB) *ChatRoomRepository {
 	}
 }
 
-func (crr *ChatRoomRepository) CreateChatRoomRecord(chatRoom models.ChatRoom) (models.ChatRoom, error) {
+func (crr *ChatRoomRepository) CreateRecord(chatRoom models.ChatRoom) (models.ChatRoom, error) {
 	err := crr.db.Create(&chatRoom).Error
 	if err != nil {
 	    return models.ChatRoom{}, err
@@ -24,9 +25,17 @@ func (crr *ChatRoomRepository) CreateChatRoomRecord(chatRoom models.ChatRoom) (m
 	return chatRoom, nil
 }
 
-func (crr *ChatRoomRepository) GetChatRoomByID(roomID string) (models.ChatRoom, error) {
+func (crr *ChatRoomRepository) UpdateRecord(chatRoom models.ChatRoom) (models.ChatRoom, error) {
+	err := crr.db.Model(&chatRoom).Where("id = ?", chatRoom.ID.String()).Updates(&chatRoom).Error
+	if err != nil {
+	    return models.ChatRoom{}, err
+	}
+	return chatRoom, nil
+}
+
+func (r *ChatRoomRepository) GetChatRoomByID(roomID string) (models.ChatRoom, error) {
 	var chatRoom models.ChatRoom
-	err := crr.db.Where("id = ?", roomID).First(&chatRoom).Error
+	err := r.db.Where("id = ?", roomID).First(&chatRoom).Error
 	if err != nil {
 	    return models.ChatRoom{}, err
 	}

@@ -7,7 +7,14 @@ import (
 	"meetspace_backend/user/types"
 	"meetspace_backend/utils"
 	"mime/multipart"
+	"strings"
+
+	"github.com/google/uuid"
 )
+
+type UserInterface interface {
+	
+}
 
 type UserService struct {
     UserRepository *repositories.UserRepository
@@ -42,15 +49,22 @@ func (us *UserService) CreateUser(userData types.CreateUserData) (*models.User, 
 }
 
 
-func (us *UserService) GetUserByID(userID string) utils.Response {
-    user, err :=  us.UserRepository.GetUserByID(userID)
-	
-	if err != nil {
-		errorData := []interface{}{}
-		return utils.ErrorResponse("error", errorData)
+func (us *UserService) GetUserByID(userID string) *utils.Response {
+	if strings.TrimSpace(userID) == "" {
+		return utils.ErrorResponse("user id cannot be blank!", nil)
 	}
 
-	return utils.SuccessResponse("success", user)
+	_, err := uuid.Parse(userID)
+	if err != nil {
+		return utils.ErrorResponse("user id is invalid", nil)
+	}
+
+    user, err :=  us.UserRepository.GetUserByID(userID)
+	if err != nil {
+		return utils.ErrorResponse(err.Error(), nil)
+	}
+
+	return utils.SuccessResponse("successfully get data!", user)
 }
 
 func (us *UserService) GetUserByEmail(email string) (models.User, error) {
@@ -58,8 +72,8 @@ func (us *UserService) GetUserByEmail(email string) (models.User, error) {
 	return user, err
 }
 
-func (us *UserService) GetAllUsers(email string) ([]models.User, error) {
-    users, err :=  us.UserRepository.GetAllUserRecord(email)
+func (us *UserService) GetAllUsers(currentUserEmail, email string) ([]models.User, error) {
+    users, err :=  us.UserRepository.GetAllUserRecord(currentUserEmail, email)
 	
 	if err != nil {
 		return nil, err
@@ -89,7 +103,7 @@ func (us *UserService) UpdateUser(userId string, updateData types.UpdateUserData
 		mapData["profile_pic"] = profilePicData
 	}
 	
-	userData, _:= us.UserRepository.UpdateUser(userId, mapData)
+	userData, _ := us.UserRepository.UpdateUserByID(userId, mapData)
 
 	userResponse := types.UserResponse{
 		ID: userData.ID,
@@ -102,7 +116,7 @@ func (us *UserService) UpdateUser(userId string, updateData types.UpdateUserData
 		UpdatedAt: userData.UpdatedAt,
 	}
 
-	return utils.SuccessResponse(
+	return *utils.SuccessResponse(
 		"User updated successfully", 
 		userResponse,
 	)

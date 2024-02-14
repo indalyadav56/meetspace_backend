@@ -16,18 +16,27 @@ type ChatHandlers struct {
 func ChatRouter(e *gin.Engine, handler ChatHandlers){
 	chatRouter := e.Group("/v1/chat")
 
+	chatRoom := chatRouter.Group("/rooms")
+	chatGroup := chatRouter.Group("/group")
+	chatGroups := chatRouter.Group("/groups")
+
 	// rooms
-	chatRouter.GET("/room/contact", handlers.GetChatRoomContact)
-	chatRouter.GET("/rooms", handlers.GetChatRooms)
-	chatRouter.POST("/rooms", handlers.CreateChatRoom)
-	chatRouter.DELETE("/rooms", handlers.DeleteChatRoom)
+	chatRouter.GET("/contact", handler.ChatRoomHandler.GetChatRoomContact)
+
+	chatRoom.GET("", handler.GetChatRooms)
+	chatRoom.POST("", handler.CreateChatRoom)
+	chatRoom.DELETE("", handler.DeleteChatRoom)
 
 	// groups
-	// chatGroup.POST("/groups", services.AddChatGroup)
-	// chatGroup.GET("/group/members/:roomId", services.GetGroupMembers)
+	chatGroups.POST("", handler.AddChatGroup)
+	chatGroups.PATCH("", handler.UpdateChatGroup)
+
+	chatGroup.GET("/members/:roomId", handler.GetGroupMembers)
+	chatGroup.POST("/members", handler.GetGroupMembers)
 
 	// messages
 	// chatGroup.POST("/messages", handlers.CreateChatMessageAPI)
 	// chatGroup.PATCH("/messages", handlers.UpdateChatMessage)
-	chatRouter.GET("/messages/:chatRoomId", handlers.GetChatMessageAPI)
+	chatRouter.GET("/messages", handler.GetChatMessages)
+	chatRouter.GET("/messages/:chatRoomId", handler.GetChatMessageByRoomID)
 }

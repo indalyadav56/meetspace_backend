@@ -1,11 +1,18 @@
 version: "3"
 
 services:
-  # nginx:
-  #   build: ./nginx
-  #   container_name: meetspace_nginx
-  #   ports:
-  #     - "8010:8010"
+  meetspace_backend:
+    build: .
+    restart: always
+    container_name: backend
+    ports:
+      - "8080:8080"
+    env_file: .env.prod
+    networks:
+      - mynet
+    depends_on:
+      - db
+      - redis
 
   redis:
     image: redis:latest
@@ -14,21 +21,31 @@ services:
     ports:
       - "6379:6379"
     command: /bin/sh -c "redis-server --requirepass $$REDIS_PASSWORD"
-    environment:
-      REDIS_PASSWORD: "redis123"
+    env_file: .env.prod
+    volumes:
+      - redis_data:/data
+    networks:
+      - mynet
 
-  postgres:
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    container_name: redisinsight
+    ports:
+      - "8001:8001"
+    environment:
+      - REDIS_URI=redis://meetspace_redis:6379
+
+  db:
     image: postgres:latest
     restart: always
     container_name: meetspace_postgres
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    # networks:
-    #   - my-network
+    env_file: .env.prod
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mynet
 
   # elasticsearch:
   #   image: elasticsearch:7.14.2
@@ -66,10 +83,16 @@ services:
   # depends_on:
   #   - zookeeper
 
-# networks:
-#   my-network:
-#     driver: bridge
+  # nginx:
+  #   build: ./nginx
+  #   container_name: meetspace_nginx
+  #   ports:
+  #     - "8010:8010"
+
+networks:
+  mynet:
+    driver: bridge
 
 volumes:
-  minio-data:
-    driver: local
+  postgres_data:
+  redis_data:

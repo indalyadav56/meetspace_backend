@@ -10,10 +10,8 @@ import (
 	chatRepo "meetspace_backend/chat/repositories"
 	chatRoutes "meetspace_backend/chat/routes"
 	chatServices "meetspace_backend/chat/services"
-	websocketRoute "meetspace_backend/chat/websocket"
-	clientRepo "meetspace_backend/client/repositories"
-	clientRoutes "meetspace_backend/client/routes"
-	clientServices "meetspace_backend/client/services"
+	websocket "meetspace_backend/chat/websocket"
+	commonServices "meetspace_backend/common/services"
 	"meetspace_backend/config"
 	"meetspace_backend/middlewares"
 	userHandlers "meetspace_backend/user/handlers"
@@ -29,53 +27,70 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// @securityDefinitions.basic BasicAuth
+// @title           MeetSpace API
+// @version         1.0
+// @description     MeetSpace API documentation.
+// @termsOfService  http://swagger.io/terms/
 
-// @securitydefinitions.oauth2.application OAuth2Application
-// @tokenUrl https://example.com/oauth/token
-// @scope.write Grants write access
-// @scope.admin Grants read and write access to administrative information
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8080
+
+// @externalDocs.description  OpenAPI
+// @externalDocs.url          https://swagger.io/resources/open-api/
+//	@securityDefinitions.apikey	Bearer
+//	@in							header
+//	@name						Authorization
+//	@description				Type "Bearer" followed by a space and JWT token.
 func main() {
 	// load environment
 	config.LoadEnv()
 	
 	// initialize database connection
 	db := config.InitDB()
+	redisDB := config.InitRedis()
 
 	// repositories
 	userRepo := userRepo.NewUserRepository(db)
 	verificationRepo := authRepo.NewVerificationRepository(db)
-	clientRepo := clientRepo.NewClientRepository(db)
 	chatMessageRepo := chatRepo.NewChatMessageRepository(db)
 	chatRoomRepo := chatRepo.NewChatRoomRepository(db)
 
 	// services
+	loggerService := commonServices.NewLoggerService()
+	loggerService.Infof("Hello There")
+	redisService := commonServices.NewRedisService(redisDB)
 	userService := userServices.NewUserService(userRepo)
-	authService := authServices.NewAuthService(userService)
+	tokenService := authServices.NewTokenService()
+	authService := authServices.NewAuthService(loggerService, redisService, tokenService, userService)
 	verificationService := authServices.NewVerificationService(verificationRepo)
-	clientServices.NewClientService(clientRepo, userService)
-	clientServices.NewClientUserService(clientRepo, userService)
 	chatRoomService := chatServices.NewChatRoomService(chatRoomRepo, userService)
-	chatServices.NewChatGroupService(chatRoomRepo, userService)
-	chatServices.NewChatMessageService(chatMessageRepo, userService, chatRoomService)
+	chatGroupService := chatServices.NewChatGroupService(chatRoomRepo, userService)
+	chatMessageService := chatServices.NewChatMessageService(chatMessageRepo, userService, chatRoomService)
+	webSocketService := websocket.NewWebSocketService(loggerService, chatRoomService, chatMessageService, userService)
 
 	// handlers
 	authHandler := authHandlers.NewAuthHandler(authService, verificationService)
 	userHandler := userHandlers.NewUserHandler(userService)
-	chatRoomHandler := chatHandlers.NewChatRoomHandler()
-	chatGroupHandler := chatHandlers.NewChatGroupHandler()
-	chatMessageHandler := chatHandlers.NewChatMessageHandler()
+	chatRoomHandler := chatHandlers.NewChatRoomHandler(chatRoomService)
+	chatGroupHandler := chatHandlers.NewChatGroupHandler(chatGroupService)
+	chatMessageHandler := chatHandlers.NewChatMessageHandler(chatMessageService)
+	wsHandler := websocket.NewWebSocketHandler(webSocketService)
 	
-
 	r := gin.Default()
 
 	// static
 	r.StaticFS("/uploads", http.Dir("./uploads"))
 	
 	// middlewares
-	r.Use(middlewares.LoggerMiddleware())
+	r.Use(middlewares.LoggerMiddleware(loggerService))
 	r.Use(middlewares.CorsMiddleware())
-	r.Use(middlewares.AuthMiddleware())
+	r.Use(middlewares.AuthMiddleware(loggerService, tokenService))
 	
 	// routes
 	authRoutes.AuthRouter(r, authHandler)
@@ -85,21 +100,18 @@ func main() {
 		ChatGroupHandler: chatGroupHandler, 
 		ChatMessageHandler: chatMessageHandler,
 	})
-	websocketRoute.WebSocketRouter(r)
-	clientRoutes.ClientRouter(r)
+	websocket.WebSocketRouter(r, wsHandler)
 
 	// swagger
+	r.GET("/", func(c *gin.Context) {
+		c.Redirect(302, "/docs/index.html") 
+	})
 	r.GET("/docs/*any", ginSwagger.WrapHandler(
 		swaggerFiles.Handler,
 		ginSwagger.DefaultModelsExpandDepth(-1)),
 	)
-	
-	docs.SwaggerInfo.Title = "MeetSpace API"
-	docs.SwaggerInfo.Description = "This is a sample server Petstore server."
-	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "localhost:8080"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
-	fmt.Println("server:->", "http://localhost:8080")
+	fmt.Println("server running at:- ", "http://localhost:8080")
 	r.Run()
 }

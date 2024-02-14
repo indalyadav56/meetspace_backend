@@ -6,8 +6,8 @@ import (
 
 var groupPools = make(map[string]*Pool)
 
-func WebSocketRouter(r *gin.Engine) {
+func WebSocketRouter(r *gin.Engine, handler *WebSocketHandler) {
 	socketRouter := r.Group("/v1/chat")
-	socketRouter.GET("", handleWebSocketConnection("new pool"))
-	socketRouter.GET("/:groupName", handleWebSocketConnectionFromParam())
+	socketRouter.GET("", handler.handleWebSocketConnection("new pool"))
+	socketRouter.GET("/:groupName", handler.handleWebSocketConnectionFromParam())
 }

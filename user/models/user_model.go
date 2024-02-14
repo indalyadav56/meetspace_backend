@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"meetspace_backend/client/models"
 	"time"
 
 	"github.com/google/uuid"
@@ -15,7 +14,7 @@ type User struct {
 	ID uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
 	FirstName string `json:"first_name"`
 	LastName string `json:"last_name"`
-	Email string `gorm:"uniqueIndex" json:"email"`
+	Email string `gorm:"uniqueIndex,index" json:"email"`
 	Password string `gorm:"not null" json:"-"`
 	ProfilePic json.RawMessage `gorm:"type:jsonb" json:"profile_pic"` 
 	IsActive bool `json:"is_active" gorm:"default:true"`
@@ -26,8 +25,6 @@ type User struct {
 	IsAdmin bool `gorm:"default:false" json:"is_admin"`
 	Role string `gorm:"default:user" json:"role"`
 	ClientID   uuid.UUID `gorm:"type:uuid;foreignKey:ClientID;references:ID;default:null;index" json:"-"`
-	CreatedBy *models.Client `gorm:"foreignKey:ClientID;references:ID;default:null" json:"-"`
-    UpdatedBy  *models.Client `gorm:"foreignKey:ClientID;references:ID;default:null" json:"-"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"meetspace_backend/chat/models"
+	"meetspace_backend/chat/services"
 	"meetspace_backend/chat/types"
 	"meetspace_backend/config"
 	userModel "meetspace_backend/user/models"
@@ -13,12 +14,13 @@ import (
 )
 
 type ChatRoomHandler struct {
+    ChatRoomService *services.ChatRoomService
 
 }
 
-func NewChatRoomHandler() *ChatRoomHandler {
+func NewChatRoomHandler(svc *services.ChatRoomService) *ChatRoomHandler {
     return &ChatRoomHandler{
-        
+        ChatRoomService: svc,
     }
 }
 
@@ -33,9 +35,10 @@ type CreateChatRoomBody struct {
 //	@Description	UserLogin User account
 //	@Tags			Chat-Room
 //	@Produce		json
-// @Param user body types.LoginRequest true "User login details"
+//	@Param			user	body	types.LoginRequest	true	"User login details"
 //	@Router			/v1/chat/room/contact [get]
-func GetChatRoomContact(ctx *gin.Context){
+//	@Security		Bearer
+func (h *ChatRoomHandler) GetChatRoomContact(ctx *gin.Context){
     currentUser, exists := utils.GetUserFromContext(ctx)
     if !exists{
         return 
@@ -88,15 +91,15 @@ func GetChatRoomContact(ctx *gin.Context){
 	return
 }
 
-
 // CreateChatRoom godoc
 //	@Summary		CreateChatRoom 
 //	@Description	CreateChatRoom
 //	@Tags			Chat-Room
 //	@Produce		json
-// @Param user body types.LoginRequest true "User login details"
+//	@Param			user	body	types.LoginRequest	true	"User login details"
 //	@Router			/v1/chat/rooms [post]
-func CreateChatRoom (ctx *gin.Context){
+//	@Security		Bearer
+func (h *ChatRoomHandler) CreateChatRoom (ctx *gin.Context){
     currentUserID := ctx.MustGet("userId")
 
     var reqBody CreateChatRoomBody
@@ -151,63 +154,33 @@ func CreateChatRoom (ctx *gin.Context){
     }
 
 }
+
 // DeleteChatRoom godoc
 //	@Summary		DeleteChatRoom 
 //	@Description	DeleteChatRoom
 //	@Tags			Chat-Room
 //	@Produce		json
-// @Param user body types.LoginRequest true "User login details"
+//	@Param			user	body	types.LoginRequest	true	"User login details"
 //	@Router			/v1/chat/rooms [delete]
-func DeleteChatRoom (ctx *gin.Context){
-
+//	@Security		Bearer
+func (h *ChatRoomHandler) DeleteChatRoom (ctx *gin.Context){
+    return
 }
-
 
 // GetChatRooms godoc
 //	@Summary		GetChatRooms
 //	@Description	GetChatRooms
 //	@Tags			Chat-Room
 //	@Produce		json
-// @Param user body types.LoginRequest true "User login details"
 //	@Router			/v1/chat/rooms [get]
-func GetChatRooms(ctx *gin.Context){
-    currentUser, exists := utils.GetUserFromContext(ctx)
-    if !exists{
-        return 
-    }
-    currentUserID := currentUser.ID
-
+//	@Security		Bearer
+// @Param user_id query string false "User ID"
+// @Param room_id query string false "Chat Room ID"
+func (h *ChatRoomHandler) GetChatRooms(ctx *gin.Context){
+    currentUser, _ := utils.GetUserFromContext(ctx)
     roomUserId := ctx.Query("user_id")
+    roomId := ctx.Query("room_id")
 
-    if roomUserId != ""{
-        
-        var result []struct {
-            ChatRoomID string `gorm:"column:chat_room_id" json:"chat_room_id"`
-        }
-        
-        config.DB.Table("room_users").
-            Select("chat_room_id").
-            Where("user_id IN (?,?)", currentUserID, roomUserId).
-            Group("chat_room_id").
-            Having("COUNT(DISTINCT user_id) = ?", 2).
-            Find(&result)
-
-		ctx.JSON(http.StatusOK, utils.SuccessResponse(
-			"success",
-            result,
-		))
-        return
-        
-    }else{
-        var rooms []models.ChatRoom
-
-        config.DB.Model(&models.ChatRoom{}).Preload("RoomUsers").Preload("RoomOwner").Where("id IN (?)", config.DB.Table("room_users").Select("chat_room_id").Where("user_id = ?", currentUserID)).Find(&rooms).Order("CreatedAt DESC")
-        
-        ctx.JSON(http.StatusOK, utils.SuccessResponse(
-			"aeraer",
-            rooms,
-		))
-        
-        return
-    }
+    resp := h.ChatRoomService.GetChatRooms(currentUser.ID.String(), roomUserId, roomId)
+    ctx.JSON(resp.StatusCode, resp)
 }
