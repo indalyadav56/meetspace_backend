@@ -17,9 +17,16 @@ func NewChatRoomRepository(db *gorm.DB) *ChatRoomRepository {
 	}
 }
 
-
 func (crr *ChatRoomRepository) CreateRecord(chatRoom models.ChatRoom) (models.ChatRoom, error) {
 	err := crr.db.Create(&chatRoom).Error
+	if err != nil {
+	    return models.ChatRoom{}, err
+	}
+	return chatRoom, nil
+}
+
+func (crr *ChatRoomRepository) UpdateRecord(chatRoom models.ChatRoom) (models.ChatRoom, error) {
+	err := crr.db.Model(&chatRoom).Where("id = ?", chatRoom.ID.String()).Updates(&chatRoom).Error
 	if err != nil {
 	    return models.ChatRoom{}, err
 	}

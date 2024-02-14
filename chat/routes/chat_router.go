@@ -29,6 +29,8 @@ func ChatRouter(e *gin.Engine, handler ChatHandlers){
 
 	// groups
 	chatGroups.POST("", handler.AddChatGroup)
+	chatGroups.PATCH("", handler.UpdateChatGroup)
+
 	chatGroup.GET("/members/:roomId", handler.GetGroupMembers)
 	chatGroup.POST("/members", handler.GetGroupMembers)
 

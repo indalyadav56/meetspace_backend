@@ -103,12 +103,15 @@ func main() {
 	websocket.WebSocketRouter(r, wsHandler)
 
 	// swagger
+	r.GET("/", func(c *gin.Context) {
+		c.Redirect(302, "/docs/index.html") 
+	})
 	r.GET("/docs/*any", ginSwagger.WrapHandler(
 		swaggerFiles.Handler,
 		ginSwagger.DefaultModelsExpandDepth(-1)),
 	)
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
-	fmt.Println("server runnning at:- ", "http://localhost:8080")
+	fmt.Println("server running at:- ", "http://localhost:8080")
 	r.Run()
 }

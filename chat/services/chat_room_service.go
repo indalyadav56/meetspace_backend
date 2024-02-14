@@ -70,7 +70,10 @@ func (r *ChatRoomService) GetChatRooms(currentUserID, roomUserId, roomId string)
         
     }else if roomId != ""{
         var room models.ChatRoom
-		config.DB.Preload("RoomUsers", "id != ?", currentUserID).Where("id = ?", roomId).First(&room)
+		err := config.DB.Preload("RoomUsers", "id != ?", currentUserID).Where("id = ?", roomId).First(&room).Error
+		if err != nil{
+			return utils.ErrorResponse("Error", nil)
+		}
 		mapData, _ := utils.StructToMap(room)
 		if room.IsGroup{
 			delete(mapData, "room_users")

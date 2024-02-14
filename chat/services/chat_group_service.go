@@ -63,6 +63,44 @@ func (s *ChatGroupService) CreateChatGroup(user *userModel.User, reqData types.A
 
 }
 
+func (s *ChatGroupService) UpdateChatGroup(user *userModel.User, reqData types.UpdateChatGroup) *utils.Response {
+	// validate request struct data
+	if err := utils.GetValidator().Struct(reqData); err != nil {
+		data := utils.ParseError(err, reqData)
+		return utils.ErrorResponse(constants.AUTH_REQUEST_VALIDATION_ERROR_MSG, data)
+    }
+
+	var chatRoom models.ChatRoom
+	var roomUsers []*userModel.User
+
+	chatRoom.IsGroup = true
+	chatRoom.RoomName = reqData.Title
+	chatRoom.RoomOwner = user
+
+	for _, userId := range reqData.UserIds {
+		user, err := s.UserService.UserRepository.GetUserByID(userId)
+		if err == nil {
+			roomUsers = append(roomUsers, user)
+		}
+	}
+
+	roomUsers = append(roomUsers, user)
+	chatRoom.RoomUsers = roomUsers
+
+	createdChatRoom, err := s.ChatRoomRepository.UpdateRecord(chatRoom)
+	if err != nil {
+		return utils.ErrorResponse(err.Error(), nil)
+	}
+
+	respData := map[string]interface{}{
+		"id": createdChatRoom.ID.String(),
+		"room_name": chatRoom.RoomName,
+	}
+	return utils.SuccessResponse("Successfully updated chat group!", respData)
+
+}
+
+
 func (s *ChatGroupService) GetGroupMembers(roomId string) *utils.Response{
 	var chatRooms []models.ChatRoom
 

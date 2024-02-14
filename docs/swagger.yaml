@@ -85,6 +85,15 @@ definitions:
     required:
     - email
     type: object
+  types.UpdateChatGroup:
+    properties:
+      title:
+        type: string
+      user_ids:
+        items:
+          type: string
+        type: array
+    type: object
   types.VerifyEmailRequest:
     properties:
       email:
@@ -329,6 +338,23 @@ paths:
       tags:
       - Chat-Group
   /v1/chat/groups:
+    patch:
+      description: Update Chat group
+      parameters:
+      - description: update chat group details
+        in: body
+        name: UpdateChatGroup
+        required: true
+        schema:
+          $ref: '#/definitions/types.UpdateChatGroup'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - Bearer: []
+      summary: update-chat-group
+      tags:
+      - Chat-Group
     post:
       description: Add Chat group
       parameters:

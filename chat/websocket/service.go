@@ -69,7 +69,9 @@ func (ws *WebSocketService) HandleChatMessageSent(payload types.Payload, client 
 		ws.ChatMessageService.CreateChatMessage(mapData["content"].(string),  client.User.ID.String(), currentRoom.ID.String())
 	}
 
-	CheckMessageNotification(client, payload)
+	if !client.IsGroup{
+		CheckMessageNotification(client, payload)
+	}
 }
 
 func (ws *WebSocketService) HandleChatNotificationReceived(payload types.Payload, client *Client) {

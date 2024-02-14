@@ -42,6 +42,29 @@ func (h *ChatGroupHandler) AddChatGroup(ctx *gin.Context){
 	return
 }
 
+// UpdateChatGroup godoc
+//	@Summary		update-chat-group
+//	@Description	Update Chat group
+//	@Tags			Chat-Group
+//	@Produce		json
+//	@Param			UpdateChatGroup	body	types.UpdateChatGroup	true	"update chat group details"
+//	@Router			/v1/chat/groups [patch]
+//	@Security		Bearer
+func (h *ChatGroupHandler) UpdateChatGroup(ctx *gin.Context){
+	currentUser, _ := utils.GetUserFromContext(ctx)
+  
+	var req types.UpdateChatGroup
+	if errResp := utils.BindJsonData(ctx, &req); errResp != nil {
+		ctx.JSON(errResp.StatusCode, errResp)
+        return
+    }
+	resp := h.ChatGroupService.UpdateChatGroup(currentUser, req)
+    
+	ctx.JSON(resp.StatusCode, resp)
+
+	return
+}
+
 type GroupMemberResponse struct {
     UserId uuid.UUID `json:"user_id"`
     FirstName string `json:"first_name"`

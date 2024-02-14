@@ -345,6 +345,33 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {}
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update Chat group",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat-Group"
+                ],
+                "summary": "update-chat-group",
+                "parameters": [
+                    {
+                        "description": "update chat group details",
+                        "name": "UpdateChatGroup",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.UpdateChatGroup"
+                        }
+                    }
+                ],
+                "responses": {}
             }
         },
         "/v1/chat/messages": {
@@ -849,6 +876,20 @@ const docTemplate = `{
             "properties": {
                 "email": {
                     "type": "string"
+                }
+            }
+        },
+        "types.UpdateChatGroup": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "user_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
