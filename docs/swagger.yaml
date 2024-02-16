@@ -11,6 +11,15 @@ definitions:
     - title
     - user_ids
     type: object
+  types.CreateChatRequestBody:
+    properties:
+      content:
+        type: string
+      receiver_user_id:
+        type: string
+      room_id:
+        type: string
+    type: object
   types.CreateUserData:
     properties:
       client_id:
@@ -87,12 +96,16 @@ definitions:
     type: object
   types.UpdateChatGroup:
     properties:
+      room_id:
+        type: string
       title:
         type: string
       user_ids:
         items:
           type: string
         type: array
+    required:
+    - room_id
     type: object
   types.VerifyEmailRequest:
     properties:
@@ -395,6 +408,29 @@ paths:
       summary: get chat messages
       tags:
       - Chat-Message
+    post:
+      description: add chat message
+      parameters:
+      - description: add chat message details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.CreateChatRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: add chat message successfully
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      security:
+      - Bearer: []
+      summary: add chat message
+      tags:
+      - Chat-Message
   /v1/chat/messages/{chat_room_id}:
     get:
       description: Get chat messages by room id
@@ -437,23 +473,6 @@ paths:
       tags:
       - Chat-Room
   /v1/chat/rooms:
-    delete:
-      description: DeleteChatRoom
-      parameters:
-      - description: User login details
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/types.LoginRequest'
-      produces:
-      - application/json
-      responses: {}
-      security:
-      - Bearer: []
-      summary: DeleteChatRoom
-      tags:
-      - Chat-Room
     get:
       description: GetChatRooms
       parameters:
@@ -488,6 +507,29 @@ paths:
       security:
       - Bearer: []
       summary: CreateChatRoom
+      tags:
+      - Chat-Room
+  /v1/chat/rooms/{id}:
+    delete:
+      description: DeleteChatRoom
+      parameters:
+      - description: User login details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.LoginRequest'
+      - description: Room ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - Bearer: []
+      summary: DeleteChatRoom
       tags:
       - Chat-Room
   /v1/user/check-email:
@@ -525,6 +567,22 @@ paths:
       security:
       - Bearer: []
       summary: get user profile
+      tags:
+      - User
+  /v1/user/search:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      security:
+      - Bearer: []
+      summary: search user
       tags:
       - User
   /v1/users:

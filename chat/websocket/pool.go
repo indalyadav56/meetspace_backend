@@ -17,17 +17,15 @@ type Pool struct {
 	Unregister chan *Client
 	Clients    map[*Client]bool
 	Broadcast  chan string
-	Service *WebSocketService
 	mu sync.Mutex
 }
 
-func NewPool(svc *WebSocketService) *Pool {
+func NewPool() *Pool {
 	return &Pool{
 		Register:    make(chan *Client),
 		Unregister:  make(chan *Client),
 		Clients:     make(map[*Client]bool),
 		Broadcast:   make(chan string),
-		Service: svc,
 	}
 }
 
@@ -71,7 +69,7 @@ func (pool *Pool) registerClient(client *Client) {
 func (pool *Pool) unregisterClient(client *Client) {
 	pool.mu.Lock()
 	defer pool.mu.Unlock()
-
+	fmt.Println("client unregister successfully")
 	delete(pool.Clients, client)
 
 	if client.IsGroup {
@@ -96,8 +94,6 @@ func (pool *Pool) broadcastToClients(payload string) {
 	for client := range pool.Clients {
 		var payloadData types.Payload
 		utils.StringToStruct(payload, &payloadData)
-		pool.Service.HandleEvent(payloadData, client)
-
 		client.Conn.WriteMessage(1, []byte(payload))
 	}
 }

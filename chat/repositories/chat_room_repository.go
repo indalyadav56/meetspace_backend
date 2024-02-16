@@ -42,13 +42,11 @@ func (r *ChatRoomRepository) GetChatRoomByID(roomID string) (models.ChatRoom, er
 	return chatRoom, nil
 }
 
-func (crr *ChatRoomRepository) DeleteChatRoomRecord() (models.ChatRoom, error) {
-	var chatRoom models.ChatRoom
-
-	err := crr.db.Where("id = ?", "roomID").First(&chatRoom).Error
+func (crr *ChatRoomRepository) DeleteChatRoomRecord(roomID string) (bool, error) {
+	err := crr.db.Model(&models.ChatRoom{}).Where("id = ?", roomID).Update("is_deleted", true).Error
 	
 	if err != nil {
-	    return models.ChatRoom{}, err
+	    return false, err
 	}
-	return chatRoom, nil
+	return true, nil
 }

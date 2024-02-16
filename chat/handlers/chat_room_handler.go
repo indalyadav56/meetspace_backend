@@ -48,10 +48,10 @@ func (h *ChatRoomHandler) GetChatRoomContact(ctx *gin.Context){
 	var rooms []models.ChatRoom
 
 	config.DB.Model(&models.ChatRoom{}).
-	Select("id", "room_name", "is_group", "CreatedAt", "UpdatedAt").
+	Select("id", "room_name", "is_group", "is_deleted", "CreatedAt", "UpdatedAt").
 	Preload("RoomUsers").
 	Where("id IN (?)", 
-	config.DB.Table("room_users").Select("chat_room_id").Where("user_id = ?", currentUserID)).
+	config.DB.Table("room_users").Select("chat_room_id").Where("user_id = ?", currentUserID)).Where("is_deleted = ?", false).
 	Order("chat_rooms.updated_at DESC").Find(&rooms)
 
 	var respData []types.ChatContactResponse
@@ -161,9 +161,13 @@ func (h *ChatRoomHandler) CreateChatRoom (ctx *gin.Context){
 //	@Tags			Chat-Room
 //	@Produce		json
 //	@Param			user	body	types.LoginRequest	true	"User login details"
-//	@Router			/v1/chat/rooms [delete]
+//	@Router			/v1/chat/rooms/{id} [delete]
+//	@Param		id	path	string	true	"Room ID"
 //	@Security		Bearer
 func (h *ChatRoomHandler) DeleteChatRoom (ctx *gin.Context){
+    charRoomID := ctx.Param("charRoomID")
+    resp := h.ChatRoomService.DeleteChatRoomRecord(charRoomID)
+    ctx.JSON(resp.StatusCode, resp)
     return
 }
 
