@@ -17,15 +17,17 @@ type Pool struct {
 	Unregister chan *Client
 	Clients    map[*Client]bool
 	Broadcast  chan string
+	Service *WebSocketService
 	mu sync.Mutex
 }
 
-func NewPool() *Pool {
+func NewPool(svc *WebSocketService) *Pool {
 	return &Pool{
 		Register:    make(chan *Client),
 		Unregister:  make(chan *Client),
 		Clients:     make(map[*Client]bool),
 		Broadcast:   make(chan string),
+		Service: svc,
 	}
 }
 
@@ -51,7 +53,6 @@ func (pool *Pool) registerClient(client *Client) {
 	pool.Clients[client] = true
 
 	if client.IsGroup {
-		fmt.Println("client.IsGroup: ", client.IsGroup)
 		if value, exists := joinedUsers[client.GroupName]; exists {
 			value = append(value, client.User.ID.String())
 			joinedUsers[client.GroupName] = value
@@ -60,8 +61,6 @@ func (pool *Pool) registerClient(client *Client) {
 		}
 	} else {
 		globalClients[client] = true
-		fmt.Println("globalClients:--->>", globalClients)
-		fmt.Println("client.IsGroup:--->>", client.IsGroup)
 	}
 
 }
@@ -95,5 +94,10 @@ func (pool *Pool) broadcastToClients(payload string) {
 		var payloadData types.Payload
 		utils.StringToStruct(payload, &payloadData)
 		client.Conn.WriteMessage(1, []byte(payload))
+		pool.Service.HandleEvent(payloadData, client)
 	}
+}
+
+func CheckNotification(currentUser, roomID, string, roomUsers []string){
+	// get the data of connected user in room from redis
 }

@@ -29,10 +29,12 @@ func Upgrade(reqWriter http.ResponseWriter, req *http.Request) (*websocket.Conn,
 }
 
 type WebSocketHandler struct {
+	Service *WebSocketService
 }
 
-func NewWebSocketHandler() *WebSocketHandler {
+func NewWebSocketHandler(svc *WebSocketService) *WebSocketHandler {
 	return &WebSocketHandler{
+		Service: svc,
 	}
 }
 
@@ -40,7 +42,7 @@ func NewWebSocketHandler() *WebSocketHandler {
 func (h *WebSocketHandler) getOrCreatePool(groupName string) *Pool {
 	pool, exists := groupPools[groupName]
 	if !exists {
-		pool = NewPool()
+		pool = NewPool(h.Service)
 		groupPools[groupName] = pool
 		go pool.Start()
 	}
