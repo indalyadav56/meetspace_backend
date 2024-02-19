@@ -55,23 +55,7 @@ func (ws *WebSocketService) HandleUserDisconnected(payload types.Payload, client
 }
 
 func (ws *WebSocketService) HandleChatMessageSent(payload types.Payload, client *Client) {
-	mapData, _ := utils.StructToMap(payload.Data)
-	currentRoom, err := ws.ChatRoomService.GetChatRoomByID(client.GroupName)
-	// if chat room not found then create a new chat room for sender and receiver user
-	if err != nil {
-		var users []string
-		receiverUser := mapData["receiver_user"].(map[string]interface{})
-		users = append(users, receiverUser["id"].(string))
-		room, _ := ws.ChatRoomService.CreateChatRoom("NewChatRoom", client.User.ID.String(), users)
-		ws.ChatMessageService.CreateChatMessage(mapData["content"].(string),  client.User.ID.String(), room.ID.String())
-		
-	}else{
-		ws.ChatMessageService.CreateChatMessage(mapData["content"].(string),  client.User.ID.String(), currentRoom.ID.String())
-	}
-
-	if !client.IsGroup{
-		CheckMessageNotification(client, payload)
-	}
+	CheckMessageNotification(client, payload)
 }
 
 func (ws *WebSocketService) HandleChatNotificationReceived(payload types.Payload, client *Client) {
@@ -84,7 +68,7 @@ func CheckMessageNotification(client *Client, payload types.Payload){
 	if !exists{
 		return
 	}
-	
+
 	var chatRoomObj models.ChatRoom
 
 	config.DB.Preload("RoomUsers").Where("id=?", client.GroupName).Find(&chatRoomObj)
@@ -96,7 +80,7 @@ func CheckMessageNotification(client *Client, payload types.Payload){
 
 	for _, userObj := range chatRoomObj.RoomUsers {
 		roomUserId := userObj.ID.String()
-		
+
 		if !joinedUsersMap[roomUserId] {
 			mapData, _ := utils.StructToMap(payload.Data)
 			stringData := SendChatMessageNotification(mapData)
@@ -104,10 +88,7 @@ func CheckMessageNotification(client *Client, payload types.Payload){
 
 		}
 	}
-
-	return
 }
-
 
 func SendChatMessageNotification(notificationData map[string]interface{}) string{
 	newEventData := types.Payload{
@@ -117,7 +98,6 @@ func SendChatMessageNotification(notificationData map[string]interface{}) string
 	data, _ := utils.StructToString(newEventData)
 	return data
 }
-
 
 // broadcastMessage to all the given clients
 func SendMessageToClients(clients map[*Client]bool, msgData string){

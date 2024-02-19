@@ -30,14 +30,31 @@ func NewChatMessageService(
 	}
 }
 
-func (chatMessageService *ChatMessageService) CreateChatMessage(content string, senderId string, chatRoomId string) (models.ChatMessage, error) {
-	senderUser, _ := chatMessageService.UserService.UserRepository.GetUserByID(senderId)
-	chatRoom, _ := chatMessageService.ChatRoomService.GetChatRoomByID(chatRoomId)
+func (chatMessageService *ChatMessageService) CreateChatMessage(currentUserID string, reqBody types.CreateChatRequestBody) (models.ChatMessage, error) {
+	senderUser, _ := chatMessageService.UserService.UserRepository.GetUserByID(currentUserID)
+	chatRoom, err := chatMessageService.ChatRoomService.GetChatRoomByID(reqBody.RoomID)
 
-	// userResponse := sender.Data.(userModel.User)
+	if err != nil{
+		fmt.Println("chat room give not found", reqBody)
+		createdChatRoom, _ := chatMessageService.ChatRoomService.CreateChatRoom(
+			reqBody.RoomID,
+			"NewChatRoom",
+			currentUserID,
+			[]string{reqBody.RecieverUserID},
+		)
+		chatMessage := models.ChatMessage{
+			Content: reqBody.Content,
+			Sender: senderUser,
+			ChatRoom: &createdChatRoom,
+		}
 	
+		return chatMessageService.ChatMessageRepository.CreateRecord(chatMessage)
+	}
+
+	fmt.Println("chat room found", reqBody)
+
 	chatMessage := models.ChatMessage{
-		Content: content,
+		Content: reqBody.Content,
 		Sender: senderUser,
 		ChatRoom: &chatRoom,
 	}
@@ -104,7 +121,6 @@ func (chatMessageService *ChatMessageService) GetChatMessageByRoomId(roomID, use
     }
     return resp, nil
 }
-
 
 func (s *ChatMessageService) GetChatMessageByUserID(currentUserID, otherUserID string) *utils.Response{
 	users :=  []string{currentUserID, otherUserID}

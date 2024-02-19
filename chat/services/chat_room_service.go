@@ -23,7 +23,7 @@ func NewChatRoomService(repo *repositories.ChatRoomRepository, userService *user
 	}
 }
 
-func (crs *ChatRoomService) CreateChatRoom(roomName string, roomOwnerId string, roomUserIds []string) (models.ChatRoom, error) {
+func (crs *ChatRoomService) CreateChatRoom(roomID, roomName string, roomOwnerId string, roomUserIds []string) (models.ChatRoom, error) {
 	roomOnwer, _ := crs.UserService.UserRepository.GetUserByID(roomOwnerId)
 	var roomUsers []*userModel.User
 	
@@ -39,6 +39,10 @@ func (crs *ChatRoomService) CreateChatRoom(roomName string, roomOwnerId string, 
 		RoomOwner: roomOnwer,
 		RoomUsers: roomUsers,
 	}
+	if roomID != ""{
+		parsedUUID, _ := uuid.Parse(roomID)
+		chatRoom.ID = parsedUUID
+	}
 	return crs.ChatRoomRepository.CreateRecord(chatRoom)
 }
 
@@ -53,9 +57,10 @@ func (r *ChatRoomService) GetChatRooms(currentUserID, roomUserId, roomId string)
 			ChatRoomID string `gorm:"column:chat_room_id" json:"chat_room_id"`
 		}
         var result []ChatRoomData
-        
-        config.DB.Table("room_users").
-            Select("chat_room_id").
+     
+		config.DB.Table("room_users").
+		Where("chat_room_id IN (?)", 
+			config.DB.Table("chat_rooms").Select("id").Where("is_deleted = ?", false)).Select("chat_room_id").
             Where("user_id IN (?,?)", currentUserID, roomUserId).
             Group("chat_room_id").
             Having("COUNT(DISTINCT user_id) = ?", 2).
@@ -88,6 +93,7 @@ func (r *ChatRoomService) GetChatRooms(currentUserID, roomUserId, roomId string)
     }
 }
 
-func (crs *ChatRoomService) DeleteChatRoomRecord() (models.ChatRoom, error) {
-	return crs.ChatRoomRepository.DeleteChatRoomRecord()
+func (crs *ChatRoomService) DeleteChatRoomRecord(chatRoomID string) *utils.Response {
+	crs.ChatRoomRepository.DeleteChatRoomRecord(chatRoomID)
+	return utils.SuccessResponse("success", nil)
 }

@@ -172,3 +172,19 @@ func (h *UserHandler) GetUserProfile(c *gin.Context) {
 	c.JSON(resp.StatusCode, resp)
 	return
 }
+
+// SearchUser godoc
+//	@Summary	search user
+//	@Tags		User
+//	@Produce	json
+//	@Router		/v1/user/search [get]
+//	@Security	Bearer
+//	@Success	200	"Success"
+//	@Failure	400	"Bad request"
+//	@Failure	500	"Internal server error"
+func (h *UserHandler) SearchUser(c *gin.Context) {
+	currentUser, _ := utils.GetUserFromContext(c)
+	resp := h.UserService.UserSearch(currentUser.Email)
+	c.JSON(resp.StatusCode, resp)
+	return
+}

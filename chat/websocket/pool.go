@@ -53,7 +53,6 @@ func (pool *Pool) registerClient(client *Client) {
 	pool.Clients[client] = true
 
 	if client.IsGroup {
-		fmt.Println("client.IsGroup: ", client.IsGroup)
 		if value, exists := joinedUsers[client.GroupName]; exists {
 			value = append(value, client.User.ID.String())
 			joinedUsers[client.GroupName] = value
@@ -62,8 +61,6 @@ func (pool *Pool) registerClient(client *Client) {
 		}
 	} else {
 		globalClients[client] = true
-		fmt.Println("globalClients:--->>", globalClients)
-		fmt.Println("client.IsGroup:--->>", client.IsGroup)
 	}
 
 }
@@ -71,7 +68,7 @@ func (pool *Pool) registerClient(client *Client) {
 func (pool *Pool) unregisterClient(client *Client) {
 	pool.mu.Lock()
 	defer pool.mu.Unlock()
-
+	fmt.Println("client unregister successfully")
 	delete(pool.Clients, client)
 
 	if client.IsGroup {
@@ -96,8 +93,11 @@ func (pool *Pool) broadcastToClients(payload string) {
 	for client := range pool.Clients {
 		var payloadData types.Payload
 		utils.StringToStruct(payload, &payloadData)
-		pool.Service.HandleEvent(payloadData, client)
-
 		client.Conn.WriteMessage(1, []byte(payload))
+		pool.Service.HandleEvent(payloadData, client)
 	}
+}
+
+func CheckNotification(currentUser, roomID, string, roomUsers []string){
+	// get the data of connected user in room from redis
 }

@@ -146,3 +146,11 @@ func (us *UserService) UploadUserProfilePic(file  *multipart.FileHeader, userId 
 
 	return string(jsonData)
 }
+
+func (us *UserService) UserSearch(currentUserEmail string) *utils.Response{
+	users, _ :=  us.UserRepository.GetAllUserRecord(currentUserEmail, "")
+	return utils.SuccessResponse(
+		"User updated successfully", 
+		users,
+	)
+}

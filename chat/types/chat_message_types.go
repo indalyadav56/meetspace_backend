@@ -4,9 +4,9 @@ import "meetspace_backend/user/models"
 
 
 type CreateChatRequestBody struct {
-    ChatRoomId string `json:"chat_room_id"`
     Content string `json:"content"`
-    CurrentUserId string `json:"currentUserId,omitempty"`
+    RoomID string `json:"room_id"`
+    RecieverUserID string `json:"receiver_user_id,ommitempty"`
 }
 
 type GetChatMessageRequestBody struct {
