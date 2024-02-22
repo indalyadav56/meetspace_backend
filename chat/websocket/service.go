@@ -2,13 +2,10 @@ package websocket
 
 import (
 	"meetspace_backend/chat/constants"
-	"meetspace_backend/chat/models"
 	"meetspace_backend/chat/services"
 	"meetspace_backend/chat/types"
 	commonServices "meetspace_backend/common/services"
-	"meetspace_backend/config"
 	userServices "meetspace_backend/user/services"
-	"meetspace_backend/utils"
 )
 
 type WebSocketService struct {
@@ -16,14 +13,16 @@ type WebSocketService struct {
 	ChatRoomService *services.ChatRoomService
 	ChatMessageService *services.ChatMessageService
 	UserService *userServices.UserService
+	RedisService *commonServices.RedisService
 }
 
-func NewWebSocketService(loggerService *commonServices.LoggerService, chatRoomSvc *services.ChatRoomService, chatMsgSvc *services.ChatMessageService, userSvc *userServices.UserService) *WebSocketService {
+func NewWebSocketService(loggerService *commonServices.LoggerService, chatRoomSvc *services.ChatRoomService, chatMsgSvc *services.ChatMessageService, userSvc *userServices.UserService, redisService *commonServices.RedisService) *WebSocketService {
 	return &WebSocketService{
 		LoggerService: loggerService,
 		ChatRoomService: chatRoomSvc,
 		ChatMessageService: chatMsgSvc,
 		UserService: userSvc,
+		RedisService: redisService,
 	}
 }
 
@@ -55,53 +54,9 @@ func (ws *WebSocketService) HandleUserDisconnected(payload types.Payload, client
 }
 
 func (ws *WebSocketService) HandleChatMessageSent(payload types.Payload, client *Client) {
-	CheckMessageNotification(client, payload)
+	// CheckMessageNotification(client, payload)
 }
 
 func (ws *WebSocketService) HandleChatNotificationReceived(payload types.Payload, client *Client) {
 	// Implement logic for chat notification received event
-}
-
-func CheckMessageNotification(client *Client, payload types.Payload){
-	users, exists := joinedUsers[client.GroupName]
-
-	if !exists{
-		return
-	}
-
-	var chatRoomObj models.ChatRoom
-
-	config.DB.Preload("RoomUsers").Where("id=?", client.GroupName).Find(&chatRoomObj)
-
-	joinedUsersMap := make(map[string]bool)
-	for _, userId := range users {
-		joinedUsersMap[userId] = true
-	}
-
-	for _, userObj := range chatRoomObj.RoomUsers {
-		roomUserId := userObj.ID.String()
-
-		if !joinedUsersMap[roomUserId] {
-			mapData, _ := utils.StructToMap(payload.Data)
-			stringData := SendChatMessageNotification(mapData)
-			SendMessageToClients(globalClients, stringData)
-
-		}
-	}
-}
-
-func SendChatMessageNotification(notificationData map[string]interface{}) string{
-	newEventData := types.Payload{
-		Event: constants.CHAT_NOTIFICATION_SENT,
-		Data: notificationData,
-	}
-	data, _ := utils.StructToString(newEventData)
-	return data
-}
-
-// broadcastMessage to all the given clients
-func SendMessageToClients(clients map[*Client]bool, msgData string){
-	for client := range clients{
-		client.Conn.WriteMessage(1, []byte(msgData))
-	}
 }

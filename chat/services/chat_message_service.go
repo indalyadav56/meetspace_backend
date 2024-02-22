@@ -2,13 +2,16 @@ package services
 
 import (
 	"fmt"
+	"meetspace_backend/chat/constants"
 	"meetspace_backend/chat/models"
 	"meetspace_backend/chat/repositories"
 	"meetspace_backend/chat/types"
 	"meetspace_backend/config"
+	userModels "meetspace_backend/user/models"
 	"meetspace_backend/utils"
 	"time"
 
+	commonServices "meetspace_backend/common/services"
 	userService "meetspace_backend/user/services"
 )
 
@@ -16,27 +19,29 @@ type ChatMessageService struct {
 	ChatMessageRepository *repositories.ChatMessageRepository
 	UserService  *userService.UserService
 	ChatRoomService  *ChatRoomService
+	RedisService *commonServices.RedisService
 }
 
 func NewChatMessageService(
 	repo *repositories.ChatMessageRepository,
 	newUserService *userService.UserService,
 	chatRoomService *ChatRoomService,
+	redisService *commonServices.RedisService,
 ) *ChatMessageService {
 	return &ChatMessageService{
 		ChatMessageRepository: repo,
 		UserService: newUserService,
 		ChatRoomService: chatRoomService,
+		RedisService: redisService,
 	}
 }
 
-func (chatMessageService *ChatMessageService) CreateChatMessage(currentUserID string, reqBody types.CreateChatRequestBody) (models.ChatMessage, error) {
-	senderUser, _ := chatMessageService.UserService.UserRepository.GetUserByID(currentUserID)
-	chatRoom, err := chatMessageService.ChatRoomService.GetChatRoomByID(reqBody.RoomID)
+func (c *ChatMessageService) CreateChatMessage(currentUserID string, reqBody types.CreateChatRequestBody) (models.ChatMessage, error) {
+	senderUser, _ := c.UserService.UserRepository.GetUserByID(currentUserID)
+	chatRoom, err := c.ChatRoomService.GetChatRoomByID(reqBody.RoomID)
 
 	if err != nil{
-		fmt.Println("chat room give not found", reqBody)
-		createdChatRoom, _ := chatMessageService.ChatRoomService.CreateChatRoom(
+		createdChatRoom, _ := c.ChatRoomService.CreateChatRoom(
 			reqBody.RoomID,
 			"NewChatRoom",
 			currentUserID,
@@ -48,10 +53,8 @@ func (chatMessageService *ChatMessageService) CreateChatMessage(currentUserID st
 			ChatRoom: &createdChatRoom,
 		}
 	
-		return chatMessageService.ChatMessageRepository.CreateRecord(chatMessage)
+		return c.ChatMessageRepository.CreateRecord(chatMessage)
 	}
-
-	fmt.Println("chat room found", reqBody)
 
 	chatMessage := models.ChatMessage{
 		Content: reqBody.Content,
@@ -59,7 +62,9 @@ func (chatMessageService *ChatMessageService) CreateChatMessage(currentUserID st
 		ChatRoom: &chatRoom,
 	}
 
-	return chatMessageService.ChatMessageRepository.CreateRecord(chatMessage)
+	c.CheckNotification(senderUser, reqBody.RoomID, reqBody.Content)
+	
+	return c.ChatMessageRepository.CreateRecord(chatMessage)
 }
 
 
@@ -153,3 +158,50 @@ func (s *ChatMessageService) GetChatMessageByUserID(currentUserID, otherUserID s
 	// fmt.Println("messages:->", messages)
     return utils.SuccessResponse("sucess", nil)
 }
+
+
+// call this func when adding msg in chat-room
+func (c *ChatMessageService) CheckNotification(senderUser *userModels.User,roomID, lastMessage string){
+	// Get group members from redis
+	currentGroup := fmt.Sprintf("client:group:%v", roomID)
+	members, err := c.RedisService.SMembers(currentGroup).Result()
+	if err != nil {
+		panic(err)
+	}
+
+	var chatRoomObj models.ChatRoom
+
+	config.DB.Preload("RoomUsers").Where("id=?", roomID).Find(&chatRoomObj)
+
+	for _, userObj := range chatRoomObj.RoomUsers {
+		roomUserId := userObj.ID.String()
+		fmt.Println("roomUserId", roomUserId)
+		exists := containsString(members, roomUserId)
+		if !exists {
+			payload := types.Payload{
+				Event: constants.CHAT_NOTIFICATION_SENT,
+				Data: map[string]interface{}{
+					"room_id" : roomID,
+					"receiver_user" : userObj,
+					"sender_user" : senderUser,
+					"content": lastMessage,
+					"is_group": chatRoomObj.IsGroup,
+					"room_name": chatRoomObj.RoomName,
+				},
+			}
+			strData, _ := utils.StructToString(payload)
+			c.RedisService.Publish("client", strData)
+		}
+	}
+
+
+}
+
+func containsString(list []string, target string) bool {
+	for _, item := range list {
+	  if item == target {
+		return true
+	  }
+	}
+	return false
+  }
