@@ -3,6 +3,7 @@ package websocket
 import (
 	"context"
 	"fmt"
+	"meetspace_backend/chat/constants"
 	"meetspace_backend/chat/types"
 	"meetspace_backend/utils"
 	"sync"
@@ -60,8 +61,20 @@ func (pool *Pool) registerClient(client *Client) {
 		handleRedisMessages(pubsub, pool)
 		
 	}else{
+		pool.Service.RedisService.SAdd("user:online", client.User.ID.String())
+
 		pubsub := pool.Service.RedisService.Subscribe("client")
 		handleRedisMessages(pubsub, pool)
+
+		// publish connected user to clients
+		payload := types.Payload{
+			Event: constants.USER_CONNECTED,
+			Data: map[string]interface{}{
+				"id": client.User.ID.String(),
+			},
+		}
+		strData, _ := utils.StructToString(payload)
+		pool.Service.RedisService.Publish("client", strData)
 	}
 }
 
@@ -74,6 +87,19 @@ func (pool *Pool) unregisterClient(client *Client) {
 		fmt.Println("groupname", currentGroup)
 		pool.Service.RedisService.SRem(currentGroup, client.User.ID.String())
 		fmt.Println("client:group deleted from redis sets")
+	}else{
+		// publish disconnect user to clients
+		payload := types.Payload{
+			Event: constants.USER_DISCONNECTED,
+			Data: map[string]interface{}{
+				"id": client.User.ID.String(),
+			},
+		}
+		strData, _ := utils.StructToString(payload)
+		pool.Service.RedisService.Publish("client", strData)
+
+		// remove disconnected user
+		pool.Service.RedisService.SRem("user:online", client.User.ID.String())
 	}
 	
 	fmt.Println("client unregister successfully")
