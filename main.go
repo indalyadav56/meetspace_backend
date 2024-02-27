@@ -71,8 +71,8 @@ func main() {
 	verificationService := authServices.NewVerificationService(verificationRepo)
 	chatRoomService := chatServices.NewChatRoomService(chatRoomRepo, userService)
 	chatGroupService := chatServices.NewChatGroupService(chatRoomRepo, userService)
-	chatMessageService := chatServices.NewChatMessageService(chatMessageRepo, userService, chatRoomService)
-	webSocketService := websocket.NewWebSocketService(loggerService, chatRoomService, chatMessageService, userService)
+	chatMessageService := chatServices.NewChatMessageService(chatMessageRepo, userService, chatRoomService, redisService)
+	webSocketService := websocket.NewWebSocketService(loggerService, chatRoomService, chatMessageService, userService, redisService)
 
 	// handlers
 	authHandler := authHandlers.NewAuthHandler(authService, verificationService)

@@ -23,3 +23,8 @@ type ChatMessage struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
+
+func (r *ChatMessage) AfterSave(tx *gorm.DB) error {
+	tx.Model(r).UpdateColumn("updated_at", time.Now())
+	return nil
+}

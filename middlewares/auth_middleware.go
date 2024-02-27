@@ -37,7 +37,27 @@ func containsPath(urls []string, path string) bool {
 func AuthMiddleware(loggerService *commonServices.LoggerService, tokenService *authServices.TokenService) gin.HandlerFunc  {
 	return func(c *gin.Context) {
 		// Allow WebSocket requests
-		upgradeWebSocketConnection(c, tokenService)
+        if upgrade := c.Request.Header.Get("Upgrade"); upgrade == "websocket" {
+			websocketToken := c.Request.URL.Query().Get("token")
+			if websocketToken != "" {
+				claims, err := tokenService.VerifyToken(websocketToken, "access")
+				userId := claims["user_id"]
+				if err != nil {
+					c.AbortWithStatus(401)
+					return
+				}
+		
+				var user models.User
+				config.DB.Where("id = ?", userId).Find(&user)
+				c.Set("user", user)
+				c.Next() 
+				return
+			}
+			c.AbortWithStatus(401)
+			c.Next()
+            return
+        }
+
 		exemptPathFromAuth(c)
 
 		requestPath := c.Request.URL.Path
@@ -95,6 +115,7 @@ func upgradeWebSocketConnection(c *gin.Context, tokenService *authServices.Token
 		c.Next()
 		return
 	}
+	c.Next()
 }
 
 func exemptPathFromAuth(c *gin.Context) {

@@ -19,13 +19,14 @@ func ChatRouter(e *gin.Engine, handler ChatHandlers){
 	chatRoom := chatRouter.Group("/rooms")
 	chatGroup := chatRouter.Group("/group")
 	chatGroups := chatRouter.Group("/groups")
+	chatMessages := chatRouter.Group("/messages")
 
 	// rooms
 	chatRouter.GET("/contact", handler.ChatRoomHandler.GetChatRoomContact)
 
 	chatRoom.GET("", handler.GetChatRooms)
 	chatRoom.POST("", handler.CreateChatRoom)
-	chatRoom.DELETE("", handler.DeleteChatRoom)
+	chatRoom.DELETE("/:charRoomID", handler.DeleteChatRoom)
 
 	// groups
 	chatGroups.POST("", handler.AddChatGroup)
@@ -35,8 +36,8 @@ func ChatRouter(e *gin.Engine, handler ChatHandlers){
 	chatGroup.POST("/members", handler.GetGroupMembers)
 
 	// messages
-	// chatGroup.POST("/messages", handlers.CreateChatMessageAPI)
-	// chatGroup.PATCH("/messages", handlers.UpdateChatMessage)
-	chatRouter.GET("/messages", handler.GetChatMessages)
-	chatRouter.GET("/messages/:chatRoomId", handler.GetChatMessageByRoomID)
+	chatMessages.POST("", handler.CreateChatMessage)
+	chatMessages.GET("", handler.GetChatMessages)
+	chatMessages.GET("/:chatRoomId", handler.GetChatMessageByRoomID)
+	// chatGroup.PATCH("/", handlers.UpdateChatMessage)
 }

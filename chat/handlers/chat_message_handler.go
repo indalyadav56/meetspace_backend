@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"meetspace_backend/chat/services"
+	"meetspace_backend/chat/types"
 	"meetspace_backend/utils"
 	"net/http"
 
@@ -17,6 +18,35 @@ func NewChatMessageHandler(svc *services.ChatMessageService) *ChatMessageHandler
     return &ChatMessageHandler{
         ChatMessageService: svc,
     }
+}
+
+// CreateChatMessage godoc
+//	@Summary		add chat message
+//	@Description	add chat message
+//	@Tags			Chat-Message
+//	@Produce		json
+//	@Router			/v1/chat/messages [post]
+//	@Security		Bearer
+//	@Param			user	body	types.CreateChatRequestBody	true	"add chat message details"
+//	@Success		201	"add chat message successfully"
+//	@Failure		400	"Bad request"
+//	@Failure		500	"Internal server error"
+func (h *ChatMessageHandler) CreateChatMessage(ctx *gin.Context){
+    // get user from context
+	currentUser, _ := utils.GetUserFromContext(ctx)
+    
+	var reqBody types.CreateChatRequestBody
+	
+	if err := utils.BindJsonData(ctx, &reqBody); err != nil {
+		resp:= utils.ErrorResponse("Invalid JSON", nil)
+		ctx.JSON(resp.StatusCode, resp)
+		return
+	}
+
+	msg, err := h.ChatMessageService.CreateChatMessage(currentUser.ID.String(), reqBody)
+	fmt.Println("error getting", err)
+    ctx.JSON(http.StatusOK, utils.SuccessResponse("success", msg))
+    return
 }
 
 // GetChatMessageAPI godoc
@@ -34,10 +64,8 @@ func (h *ChatMessageHandler) GetChatMessageByRoomID(ctx *gin.Context){
     // get user from context
 	currentUser, _ := utils.GetUserFromContext(ctx)
     chatRoomID := ctx.Param("chatRoomId")
-    
-	msg, err := h.ChatMessageService.GetChatMessageByRoomId(chatRoomID, currentUser.ID.String())
-	fmt.Println("error getting", err)
-    ctx.JSON(http.StatusOK, utils.SuccessResponse("success", msg))
+	data := h.ChatMessageService.GetChatMessageByRoomId(chatRoomID, currentUser.ID.String())
+    ctx.JSON(data.StatusCode, data)
     return
 }
 

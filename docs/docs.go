@@ -409,6 +409,43 @@ const docTemplate = `{
                         "description": "Internal server error"
                     }
                 }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "add chat message",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Chat-Message"
+                ],
+                "summary": "add chat message",
+                "parameters": [
+                    {
+                        "description": "add chat message details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.CreateChatRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "add chat message successfully"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
             }
         },
         "/v1/chat/messages/{chat_room_id}": {
@@ -534,7 +571,9 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {}
-            },
+            }
+        },
+        "/v1/chat/rooms/{id}": {
             "delete": {
                 "security": [
                     {
@@ -558,6 +597,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/types.LoginRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Room ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -610,6 +656,33 @@ const docTemplate = `{
                     "User"
                 ],
                 "summary": "get user profile",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/v1/user/search": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "search user",
                 "responses": {
                     "200": {
                         "description": "Success"
@@ -768,6 +841,20 @@ const docTemplate = `{
                 }
             }
         },
+        "types.CreateChatRequestBody": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "receiver_user_id": {
+                    "type": "string"
+                },
+                "room_id": {
+                    "type": "string"
+                }
+            }
+        },
         "types.CreateUserData": {
             "type": "object",
             "properties": {
@@ -881,7 +968,13 @@ const docTemplate = `{
         },
         "types.UpdateChatGroup": {
             "type": "object",
+            "required": [
+                "room_id"
+            ],
             "properties": {
+                "room_id": {
+                    "type": "string"
+                },
                 "title": {
                     "type": "string"
                 },

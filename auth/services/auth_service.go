@@ -51,7 +51,12 @@ func (as *AuthService) Login(reqData types.LoginRequest) *utils.Response {
 	
 	isValid := utils.ComparePassword(user.Password, reqData.Password)
 	if !isValid{
-		return utils.ErrorResponse("invalid password", nil)
+		var errData []utils.ErrorMsg
+		errData = append(errData, utils.ErrorMsg{
+				Field: "password",
+				Message: "invalid password",
+		})
+		return utils.ErrorResponse("invalid password", errData)
 	}
 
 	// generate new user tokens

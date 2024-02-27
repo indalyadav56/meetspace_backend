@@ -89,10 +89,7 @@ func (us *UserService) UpdateUser(userId string, updateData types.UpdateUserData
 	// 	return utils.ErrorResponse("error", []interface{}{})
 	// }
 
-	mapData := map[string]interface{}{
-		"first_name": updateData.FirstName,
-		"last_name": updateData.LastName,
-	}
+	mapData, _ := utils.StructToMap(updateData)
 
 	// if err != nil {
 	// 	return utils.ErrorResponse("error while updating user.", nil)
@@ -145,4 +142,12 @@ func (us *UserService) UploadUserProfilePic(file  *multipart.FileHeader, userId 
 	jsonData, _ := json.Marshal(profileData)
 
 	return string(jsonData)
+}
+
+func (us *UserService) UserSearch(currentUserEmail string) *utils.Response{
+	users, _ :=  us.UserRepository.GetAllUserRecord(currentUserEmail, "")
+	return utils.SuccessResponse(
+		"User updated successfully", 
+		users,
+	)
 }

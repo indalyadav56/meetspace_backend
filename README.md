@@ -33,6 +33,64 @@ This project utilizes the following technologies:
 - Nginx - Web server
 - Github Actions - Continuous integration & deployment
 
+## Features
+
+- **Authentication and authorization**
+
+  - Login with email / password credentials
+  - JWT token generation
+  - Restrict access to certain routes based on login state and permissions
+
+- **User management**
+
+  - New user signup
+  - Email verification process
+  - Profile updates
+  - Password reset workflow
+
+- **Real-time communication**
+
+  - Chat messaging using websockets
+  - Live notifications on events
+  - Comment streams / feed for user content
+
+- **Modular Design:**
+
+  - Code is structured logically for maintainability.
+
+- **Gin Web Framework:**
+
+  - Built with the fast, light, and productive Gin framework.
+
+- **RESTful APIs:**
+- Clean and well-documented REST APIs.
+- **Database Integrations:**
+  - Integrates with PostgreSQL, MySQL, SQLite, etc.
+- **Validation:**
+  - Request validation middleware for security.
+- **Caching:**
+  - Redis cache support for improving performance.
+- **Logging:**
+  - Configurable logging using Logrus.
+- **Configuration:**
+  - Environment-based configuration with Viper.
+- **Swagger Docs:**
+  - Auto-generated Swagger docs for API testing.
+- **Unit Testing:**
+  - Tests written using Go's standard library.
+- **Docker Support:**
+  - Dockerfile and docker-compose files included.
+- **CORS Support:**
+  - Cross-Origin Resource Sharing enabled.
+- **Pagination Support:**
+  - Pagination middleware for handling large datasets.
+- **Rate Limiting:**
+  - Throttles requests to protect against attacks.
+- **Structured Error Handling:**
+  - Common error struct with fields for error metadata.
+- **CI/CD Pipelines:**
+  - Industry standard GitHub workflows for Continuous Delivery.
+
 ## Changelog
 
 For a detailed list of changes made to this project, please refer to the [Changelog](CHANGELOG.md).
