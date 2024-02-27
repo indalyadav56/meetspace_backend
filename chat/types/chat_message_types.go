@@ -19,6 +19,7 @@ type SingleChatMessageResponse struct {
     Content string `json:"content"`
     ChatRoomId string `json:"chat_room_id"`
     Sender *models.User `json:"sender_user"`
+    CreatedAt string `json:"created_at"`
 }
 
 type ChatMessageResponse struct {

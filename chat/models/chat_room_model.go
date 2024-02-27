@@ -2,7 +2,6 @@ package models
 
 import (
 	"meetspace_backend/user/models"
-	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -19,9 +18,9 @@ type ChatRoom struct {
 	IsDeleted bool `json:"is_deleted" gorm:"default:false;"`
 }
 
-func (r *ChatRoom) AfterSave(tx *gorm.DB) error {
-	if tx.Statement.Changed("UpdatedAt") {
-		tx.Model(ChatMessage{}).Where("chat_room_id = ?", r.ID).UpdateColumn("updated_at", time.Now())   
-	}
-	return nil
- }
+// func (r *ChatRoom) AfterSave(tx *gorm.DB) error {
+// 	if tx.Statement.Changed("UpdatedAt") {
+// 		tx.Model(ChatMessage{}).Where("chat_room_id = ?", r.ID).UpdateColumn("updated_at", time.Now())   
+// 	}
+// 	return nil
+// }

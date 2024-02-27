@@ -72,6 +72,7 @@ func (h *ChatRoomHandler) GetChatRoomContact(ctx *gin.Context){
 						IsActive: user.IsActive,
 						LastMessage: chatMessage.Content,
 						MessageUnSeenCount: 0,
+                        UpdatedAt: chatMessage.UpdatedAt,
 					})
 				}
 			}
@@ -82,12 +83,13 @@ func (h *ChatRoomHandler) GetChatRoomContact(ctx *gin.Context){
 					RoomName: room.RoomName,
 					LastMessage: chatMessage.Content,
 					MessageUnSeenCount: 0,
+                    UpdatedAt: chatMessage.UpdatedAt,
 			})
 		}
 		
 	}
 	
-	ctx.JSON(http.StatusOK, utils.SuccessResponse("aeraeraewr", respData))
+	ctx.JSON(http.StatusOK, utils.SuccessResponse("success", respData))
 	return
 }
 
@@ -140,7 +142,7 @@ func (h *ChatRoomHandler) CreateChatRoom (ctx *gin.Context){
         }
         config.DB.Create(&chatRoomData)
     
-        ctx.JSON(http.StatusOK, utils.SuccessResponse("aeraer",chatRoomData))
+        ctx.JSON(http.StatusOK, utils.SuccessResponse("success",chatRoomData))
         
         return
     }else{

@@ -64,10 +64,8 @@ func (h *ChatMessageHandler) GetChatMessageByRoomID(ctx *gin.Context){
     // get user from context
 	currentUser, _ := utils.GetUserFromContext(ctx)
     chatRoomID := ctx.Param("chatRoomId")
-    
-	msg, err := h.ChatMessageService.GetChatMessageByRoomId(chatRoomID, currentUser.ID.String())
-	fmt.Println("error getting", err)
-    ctx.JSON(http.StatusOK, utils.SuccessResponse("success", msg))
+	data := h.ChatMessageService.GetChatMessageByRoomId(chatRoomID, currentUser.ID.String())
+    ctx.JSON(data.StatusCode, data)
     return
 }
 

@@ -20,7 +20,7 @@ type User struct {
 	IsActive bool `json:"is_active" gorm:"default:true"`
 	Language string `json:"language"`
 	TimeZone string `json:"time_zone"`
-	Theme string `json:"theme"`
+	Theme string `gorm:"default:light;" json:"theme"`
 	PhoneNumber string `json:"phone_number"`
 	IsAdmin bool `gorm:"default:false" json:"is_admin"`
 	Role string `gorm:"default:user" json:"role"`
