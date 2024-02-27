@@ -89,10 +89,7 @@ func (us *UserService) UpdateUser(userId string, updateData types.UpdateUserData
 	// 	return utils.ErrorResponse("error", []interface{}{})
 	// }
 
-	mapData := map[string]interface{}{
-		"first_name": updateData.FirstName,
-		"last_name": updateData.LastName,
-	}
+	mapData, _ := utils.StructToMap(updateData)
 
 	// if err != nil {
 	// 	return utils.ErrorResponse("error while updating user.", nil)

@@ -46,6 +46,7 @@ func (pool *Pool) Start() {
 }
 
 func (pool *Pool) registerClient(client *Client) {
+	fmt.Sprintf("client registerd successfully!")
 	pool.mu.Lock()
 	defer pool.mu.Unlock()
 
