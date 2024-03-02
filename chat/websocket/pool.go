@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"meetspace_backend/chat/constants"
 	"meetspace_backend/chat/types"
+	commonServices "meetspace_backend/common/services"
 	"meetspace_backend/utils"
 	"sync"
 
@@ -16,17 +17,17 @@ type Pool struct {
 	Unregister chan *Client
 	Clients    map[*Client]bool
 	Broadcast  chan string
-	Service *WebSocketService
 	mu sync.Mutex
+	RedisService  *commonServices.RedisService
 }
 
-func NewPool(svc *WebSocketService) *Pool {
+func NewPool(redisService *commonServices.RedisService) *Pool {
 	return &Pool{
 		Register:    make(chan *Client),
 		Unregister:  make(chan *Client),
 		Clients:     make(map[*Client]bool),
 		Broadcast:   make(chan string),
-		Service: svc,
+		RedisService: redisService,
 	}
 }
 
@@ -55,16 +56,16 @@ func (pool *Pool) registerClient(client *Client) {
 	if client.GroupName != ""{
 		currentGroup := fmt.Sprintf("client:group:%v", client.GroupName)
 	
-		pool.Service.RedisService.SAdd(currentGroup, client.User.ID.String())
+		pool.RedisService.SAdd(currentGroup, client.User.ID.String())
 		fmt.Println("this user added in client:group, redis sets")
 
-		pubsub := pool.Service.RedisService.Subscribe(currentGroup)
+		pubsub := pool.RedisService.Subscribe(currentGroup)
 		handleRedisMessages(pubsub, pool)
 		
 	}else{
-		pool.Service.RedisService.SAdd("user:online", client.User.ID.String())
+		pool.RedisService.SAdd("user:online", client.User.ID.String())
 
-		pubsub := pool.Service.RedisService.Subscribe("client")
+		pubsub := pool.RedisService.Subscribe("client")
 		handleRedisMessages(pubsub, pool)
 
 		// publish connected user to clients
@@ -75,7 +76,7 @@ func (pool *Pool) registerClient(client *Client) {
 			},
 		}
 		strData, _ := utils.StructToString(payload)
-		pool.Service.RedisService.Publish("client", strData)
+		pool.RedisService.Publish("client", strData)
 	}
 }
 
@@ -86,7 +87,7 @@ func (pool *Pool) unregisterClient(client *Client) {
 	if client.GroupName != ""{
 		currentGroup := fmt.Sprintf("client:group:%v", client.GroupName)
 		fmt.Println("groupname", currentGroup)
-		pool.Service.RedisService.SRem(currentGroup, client.User.ID.String())
+		pool.RedisService.SRem(currentGroup, client.User.ID.String())
 		fmt.Println("client:group deleted from redis sets")
 	}else{
 		// publish disconnect user to clients
@@ -97,10 +98,10 @@ func (pool *Pool) unregisterClient(client *Client) {
 			},
 		}
 		strData, _ := utils.StructToString(payload)
-		pool.Service.RedisService.Publish("client", strData)
+		pool.RedisService.Publish("client", strData)
 
 		// remove disconnected user
-		pool.Service.RedisService.SRem("user:online", client.User.ID.String())
+		pool.RedisService.SRem("user:online", client.User.ID.String())
 	}
 	
 	fmt.Println("client unregister successfully")
@@ -114,7 +115,6 @@ func (pool *Pool) broadcastToClients(payload string) {
 		var payloadData types.Payload
 		utils.StringToStruct(payload, &payloadData)
 		client.Conn.WriteMessage(1, []byte(payload))
-		// pool.Service.HandleEvent(payloadData, client)
 	}
 }
 

@@ -1,8 +1,11 @@
 package services
 
 import (
+	"meetspace_backend/chat/constants"
 	"meetspace_backend/chat/models"
 	"meetspace_backend/chat/repositories"
+	"meetspace_backend/chat/types"
+	commonServices "meetspace_backend/common/services"
 	"meetspace_backend/config"
 	userModel "meetspace_backend/user/models"
 	userService "meetspace_backend/user/services"
@@ -14,12 +17,15 @@ import (
 type ChatRoomService struct {
 	ChatRoomRepository *repositories.ChatRoomRepository
 	UserService  *userService.UserService
+	RedisService *commonServices.RedisService
 }
 
-func NewChatRoomService(repo *repositories.ChatRoomRepository, userService *userService.UserService) *ChatRoomService {
+func NewChatRoomService(repo *repositories.ChatRoomRepository, userService *userService.UserService,
+	redisService *commonServices.RedisService) *ChatRoomService {
 	return &ChatRoomService{
 		ChatRoomRepository: repo,
 		UserService: userService,
+		RedisService: redisService,
 	}
 }
 
@@ -95,5 +101,24 @@ func (r *ChatRoomService) GetChatRooms(currentUserID, roomUserId, roomId string)
 
 func (crs *ChatRoomService) DeleteChatRoomRecord(chatRoomID string) *utils.Response {
 	crs.ChatRoomRepository.DeleteChatRoomRecord(chatRoomID)
+	return utils.SuccessResponse("success", nil)
+}
+
+func (crs *ChatRoomService) HandleCall(chatRoomID string) *utils.Response {
+	var chatRoomObj models.ChatRoom
+
+	config.DB.Preload("RoomUsers").Where("id=?", chatRoomID).Find(&chatRoomObj)
+
+	for _, userObj := range chatRoomObj.RoomUsers {
+			payload := types.Payload{
+				Event: constants.CALL_RECEIVE,
+				Data: map[string]interface{}{
+					"room_id" : chatRoomID,
+					"user" : userObj,
+				},
+			}
+			strData, _ := utils.StructToString(payload)
+			crs.RedisService.Publish("client", strData)
+	}
 	return utils.SuccessResponse("success", nil)
 }

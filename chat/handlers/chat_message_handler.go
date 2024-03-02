@@ -88,3 +88,4 @@ func (h *ChatMessageHandler) GetChatMessages(ctx *gin.Context){
     ctx.JSON(resp.StatusCode, resp)
     return
 }
+
