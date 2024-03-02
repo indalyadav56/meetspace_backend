@@ -190,3 +190,20 @@ func (h *ChatRoomHandler) GetChatRooms(ctx *gin.Context){
     resp := h.ChatRoomService.GetChatRooms(currentUser.ID.String(), roomUserId, roomId)
     ctx.JSON(resp.StatusCode, resp)
 }
+
+// HandleAudioVideoCall godoc
+//	@Summary		get chat messages
+//	@Description	Get chat message
+//	@Tags			Chat-Message
+//	@Produce		json
+// @Param user_id query string true "User ID"
+//	@Router			/v1/chat/messages [get]
+//	@Security		Bearer
+//	@Success		201	"get messages successfully"
+//	@Failure		400	"Bad request"
+//	@Failure		500	"Internal server error"
+func (h *ChatRoomHandler) HandleAudioVideoCall(ctx *gin.Context){
+	resp := h.ChatRoomService.HandleCall("indal")
+    ctx.JSON(resp.StatusCode, resp)
+    return
+}

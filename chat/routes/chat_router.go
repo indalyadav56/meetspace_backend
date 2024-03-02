@@ -40,4 +40,7 @@ func ChatRouter(e *gin.Engine, handler ChatHandlers){
 	chatMessages.GET("", handler.GetChatMessages)
 	chatMessages.GET("/:chatRoomId", handler.GetChatMessageByRoomID)
 	// chatGroup.PATCH("/", handlers.UpdateChatMessage)
+
+	// call
+	chatRouter.POST("/call", handler.HandleAudioVideoCall)
 }
