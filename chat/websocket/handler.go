@@ -3,6 +3,7 @@ package websocket
 import (
 	"fmt"
 	"log"
+	commonServices "meetspace_backend/common/services"
 	"meetspace_backend/utils"
 	"net/http"
 
@@ -29,12 +30,12 @@ func Upgrade(reqWriter http.ResponseWriter, req *http.Request) (*websocket.Conn,
 }
 
 type WebSocketHandler struct {
-	Service *WebSocketService
+	RedisService *commonServices.RedisService
 }
 
-func NewWebSocketHandler(svc *WebSocketService) *WebSocketHandler {
+func NewWebSocketHandler(svc *commonServices.RedisService) *WebSocketHandler {
 	return &WebSocketHandler{
-		Service: svc,
+		RedisService: svc,
 	}
 }
 
@@ -42,7 +43,7 @@ func NewWebSocketHandler(svc *WebSocketService) *WebSocketHandler {
 func (h *WebSocketHandler) getOrCreatePool(groupName string) *Pool {
 	pool, exists := groupPools[groupName]
 	if !exists {
-		pool = NewPool(h.Service)
+		pool = NewPool(h.RedisService)
 		groupPools[groupName] = pool
 		go pool.Start()
 	}

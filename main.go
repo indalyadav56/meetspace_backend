@@ -69,10 +69,9 @@ func main() {
 	tokenService := authServices.NewTokenService()
 	authService := authServices.NewAuthService(loggerService, redisService, tokenService, userService)
 	verificationService := authServices.NewVerificationService(verificationRepo)
-	chatRoomService := chatServices.NewChatRoomService(chatRoomRepo, userService)
+	chatRoomService := chatServices.NewChatRoomService(chatRoomRepo, userService, redisService)
 	chatGroupService := chatServices.NewChatGroupService(chatRoomRepo, userService)
 	chatMessageService := chatServices.NewChatMessageService(chatMessageRepo, userService, chatRoomService, redisService)
-	webSocketService := websocket.NewWebSocketService(loggerService, chatRoomService, chatMessageService, userService, redisService)
 
 	// handlers
 	authHandler := authHandlers.NewAuthHandler(authService, verificationService)
@@ -80,7 +79,7 @@ func main() {
 	chatRoomHandler := chatHandlers.NewChatRoomHandler(chatRoomService)
 	chatGroupHandler := chatHandlers.NewChatGroupHandler(chatGroupService)
 	chatMessageHandler := chatHandlers.NewChatMessageHandler(chatMessageService)
-	wsHandler := websocket.NewWebSocketHandler(webSocketService)
+	wsHandler := websocket.NewWebSocketHandler(redisService)
 	
 	r := gin.Default()
 
