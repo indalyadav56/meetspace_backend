@@ -104,12 +104,13 @@ func (crs *ChatRoomService) DeleteChatRoomRecord(chatRoomID string) *utils.Respo
 	return utils.SuccessResponse("success", nil)
 }
 
-func (crs *ChatRoomService) HandleCall(chatRoomID string) *utils.Response {
+func (crs *ChatRoomService) HandleCall(chatRoomID, currentUserID string) *utils.Response {
 	var chatRoomObj models.ChatRoom
 
 	config.DB.Preload("RoomUsers").Where("id=?", chatRoomID).Find(&chatRoomObj)
 
 	for _, userObj := range chatRoomObj.RoomUsers {
+		if userObj.ID.String() != currentUserID{
 			payload := types.Payload{
 				Event: constants.CALL_RECEIVE,
 				Data: map[string]interface{}{
@@ -119,6 +120,7 @@ func (crs *ChatRoomService) HandleCall(chatRoomID string) *utils.Response {
 			}
 			strData, _ := utils.StructToString(payload)
 			crs.RedisService.Publish("client", strData)
+		}
 	}
 	return utils.SuccessResponse("success", nil)
 }

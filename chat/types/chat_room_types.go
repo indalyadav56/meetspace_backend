@@ -20,3 +20,7 @@ type ChatContactResponse struct {
     MessageUnSeenCount int `json:"message_unseen_count,omitempty"`
     Status string `json:"status,omitempty"`
 }
+
+type CallRequestBody struct {
+    RoomId string `json:"room_id"`
+}

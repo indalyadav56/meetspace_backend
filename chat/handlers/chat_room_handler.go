@@ -203,7 +203,14 @@ func (h *ChatRoomHandler) GetChatRooms(ctx *gin.Context){
 //	@Failure		400	"Bad request"
 //	@Failure		500	"Internal server error"
 func (h *ChatRoomHandler) HandleAudioVideoCall(ctx *gin.Context){
-	resp := h.ChatRoomService.HandleCall("indal")
+    currentUser, _ := utils.GetUserFromContext(ctx)
+    var reqBody types.CallRequestBody
+    
+    if err := ctx.ShouldBindJSON(&reqBody); err != nil {
+        ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+	resp := h.ChatRoomService.HandleCall(reqBody.RoomId, currentUser.ID.String())
     ctx.JSON(resp.StatusCode, resp)
     return
 }
