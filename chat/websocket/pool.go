@@ -69,14 +69,14 @@ func (pool *Pool) registerClient(client *Client) {
 		handleRedisMessages(pubsub, pool)
 
 		// publish connected user to clients
-		payload := types.Payload{
-			Event: constants.USER_CONNECTED,
-			Data: map[string]interface{}{
-				"id": client.User.ID.String(),
-			},
-		}
-		strData, _ := utils.StructToString(payload)
-		pool.RedisService.Publish("client", strData)
+		// payload := types.Payload{
+		// 	Event: constants.USER_CONNECTED,
+		// 	Data: map[string]interface{}{
+		// 		"id": client.User.ID.String(),
+		// 	},
+		// }
+		// strData, _ := utils.StructToString(payload)
+		// pool.RedisService.Publish("client", strData)
 	}
 }
 
