@@ -32,3 +32,6 @@ redis-remove:
 
 redis-cli:
 	docker exec -it meetspace_redis redis-cli -a $(REDIS_PASSWORD)
+
+# docker run --rm -it -v$PWD:/output livekit/generate
+# docker run --rm -v$PWD:/output livekit/generate --local
