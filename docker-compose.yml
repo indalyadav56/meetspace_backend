@@ -65,6 +65,24 @@ services:
       MINIO_ROOT_PASSWORD: password
     command: server /data --console-address ":9001"
 
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    command:
+      - "--prometheus.yml=/etc/prometheus.yml"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus.yml
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000"
+
   # elasticsearch:
   #   image: elasticsearch:7.14.2
   #   container_name: elasticsearch

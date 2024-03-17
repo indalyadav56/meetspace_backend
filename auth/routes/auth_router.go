@@ -17,4 +17,7 @@ func AuthRouter(e *gin.Engine, handler *handlers.AuthHandler){
 	authRouter.POST("/send-email", handler.SendEmailHandler)
 	authRouter.POST("/verify-email", handler.VerifyEmailHandler)
 	authRouter.POST("/refresh-token", handler.RefreshToken)
+	
+	authRouter.GET("/google", handler.GoogleLogin)
+	authRouter.GET("/google/callback", handler.HandleGoogleCallback)
 }

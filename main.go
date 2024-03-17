@@ -25,6 +25,8 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 // @title           MeetSpace API
@@ -110,6 +112,9 @@ func main() {
 		ginSwagger.DefaultModelsExpandDepth(-1)),
 	)
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
+
+	// Prometheus metrics
+	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	fmt.Println("server running at:- ", "http://localhost:8080")
 	r.Run()

@@ -197,7 +197,7 @@ func (h *ChatRoomHandler) GetChatRooms(ctx *gin.Context){
 //	@Tags			Chat-Message
 //	@Produce		json
 // @Param user_id query string true "User ID"
-//	@Router			/v1/chat/messages [get]
+//	@Router			/v1/chat/room/call [get]
 //	@Security		Bearer
 //	@Success		201	"get messages successfully"
 //	@Failure		400	"Bad request"

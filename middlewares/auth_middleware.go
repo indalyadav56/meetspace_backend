@@ -20,7 +20,12 @@ var (
 		"/v1/clients",
 		"/v1/auth/send-email",
 		"/v1/auth/verify-email",
+		"/v1/auth/google",
+		"/v1/auth/google/callback",
+		"/v1/auth/github",
+		"/v1/auth/github/callback",
 		"/v1/user/check-email",
+		"/metrics",
 	}
 )
 
