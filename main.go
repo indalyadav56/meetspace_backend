@@ -19,10 +19,14 @@ import (
 	userRoutes "meetspace_backend/user/routes"
 	userServices "meetspace_backend/user/services"
 	"net/http"
+	"os"
 
 	docs "meetspace_backend/docs"
 
 	"github.com/gin-gonic/gin"
+	"github.com/markbates/goth"
+	"github.com/markbates/goth/providers/github"
+	"github.com/markbates/goth/providers/google"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
@@ -53,6 +57,14 @@ func main() {
 	// load environment
 	config.LoadEnv()
 	
+	// sso providers
+	const BaseURL = "http://localhost:8080"
+
+	goth.UseProviders(
+		github.New(os.Getenv("GITHUB_KEY"), os.Getenv("GITHUB_SECRET"), BaseURL+"/v1/auth/github/callback"),
+		google.New(os.Getenv("GOOGLE_KEY"), os.Getenv("GOOGLE_SECRET"), BaseURL+"/v1/auth/google/callback"),
+	)
+
 	// initialize database connection
 	db := config.InitDB()
 	redisDB := config.InitRedis()
@@ -116,6 +128,6 @@ func main() {
 	// Prometheus metrics
 	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
-	fmt.Println("server running at:- ", "http://localhost:8080")
+	fmt.Println("server running at:- ", BaseURL)
 	r.Run()
 }

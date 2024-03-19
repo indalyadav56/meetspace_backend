@@ -6,6 +6,10 @@ Here is an example screenshot of the app:
 
 ![App Screenshot](./screenshots/swagger.png)
 
+#### Monitor
+
+![App Screenshot](./screenshots/grafana.png)
+
 # Tech Stack
 
 This project utilizes the following technologies:
@@ -52,7 +56,6 @@ This project utilizes the following technologies:
 
   - Chat messaging using websockets
   - Live notifications on events
-  - Comment streams / feed for user content
 
 - **Modular Design:**
 
@@ -62,18 +65,18 @@ This project utilizes the following technologies:
 
   - Built with the fast, light, and productive Gin framework.
 
+- **WebSoket APIs:**
+- Websocket APIs integration.
 - **RESTful APIs:**
 - Clean and well-documented REST APIs.
 - **Database Integrations:**
-  - Integrates with PostgreSQL, MySQL, SQLite, etc.
+  - Integrates with PostgreSQL.
 - **Validation:**
   - Request validation middleware for security.
 - **Caching:**
   - Redis cache support for improving performance.
 - **Logging:**
   - Configurable logging using Logrus.
-- **Configuration:**
-  - Environment-based configuration with Viper.
 - **Swagger Docs:**
   - Auto-generated Swagger docs for API testing.
 - **Unit Testing:**

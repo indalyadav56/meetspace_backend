@@ -1,18 +1,18 @@
 version: "3"
 
 services:
-  meetspace_backend:
-    build: .
-    restart: always
-    container_name: backend
-    ports:
-      - "8080:8080"
-    env_file: .env.prod
-    networks:
-      - mynet
-    depends_on:
-      - db
-      - redis
+  # meetspace_backend:
+  #   build: .
+  #   restart: always
+  #   container_name: backend
+  #   ports:
+  #     - "8080:8080"
+  #   env_file: .env.prod
+  #   networks:
+  #     - mynet
+  #   depends_on:
+  #     - db
+  #     - redis
 
   redis:
     image: redis:latest
@@ -39,31 +39,31 @@ services:
     networks:
       - mynet
 
-  livekit:
-    image: livekit/livekit-server
-    ports:
-      - 7880:7880
-      - 7881:7881
-      - 7882:7882/udp
-    volumes:
-      - ./livekit.yaml:/livekit.yaml
-    command:
-      - "--config"
-      - "/livekit.yaml"
-      - "--node-ip=127.0.0.1"
+  # livekit:
+  #   image: livekit/livekit-server
+  #   ports:
+  #     - 7880:7880
+  #     - 7881:7881
+  #     - 7882:7882/udp
+  #   volumes:
+  #     - ./livekit.yaml:/livekit.yaml
+  #   command:
+  #     - "--config"
+  #     - "/livekit.yaml"
+  #     - "--node-ip=127.0.0.1"
 
-  minio:
-    image: minio/minio
-    restart: unless-stopped
-    ports:
-      - 9000:9000
-      - 9001:9001
-    volumes:
-      - minio_data:/data
-    environment:
-      MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: password
-    command: server /data --console-address ":9001"
+  # minio:
+  #   image: minio/minio
+  #   restart: unless-stopped
+  #   ports:
+  #     - 9000:9000
+  #     - 9001:9001
+  #   volumes:
+  #     - minio_data:/data
+  #   environment:
+  #     MINIO_ROOT_USER: admin
+  #     MINIO_ROOT_PASSWORD: password
+  #   command: server /data --console-address ":9001"
 
   prometheus:
     image: prom/prometheus
@@ -71,10 +71,6 @@ services:
     restart: always
     ports:
       - "9090:9090"
-    command:
-      - "--prometheus.yml=/etc/prometheus.yml"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus.yml
 
   grafana:
     image: grafana/grafana

@@ -1,34 +1,15 @@
 package handlers
 
 import (
-	"context"
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"meetspace_backend/auth/services"
 	"meetspace_backend/auth/types"
 	"meetspace_backend/utils"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/markbates/goth/gothic"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
 )
 
-var (
-    googleOauthConfig = &oauth2.Config{
-        RedirectURL:  "http://localhost:8080/auth/google/callback",
-        ClientID:     os.Getenv("GOOGLE_KEY"),
-        ClientSecret: os.Getenv("GOOGLE_SECRET"),
-        Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
-        Endpoint:     google.Endpoint,
-    }
-
-    // Some random string, random for each request
-    oauthStateString = "random"
-)
 
 type AuthHandler struct{
 	AuthService *services.AuthService
@@ -206,69 +187,27 @@ func (handler *AuthHandler) VerifyEmailHandler(c *gin.Context) {
 }
 
 func (handler *AuthHandler) GoogleLogin(c *gin.Context) {
-	url := googleOauthConfig.AuthCodeURL(oauthStateString)
-	http.Redirect(c.Writer, c.Request, url, http.StatusTemporaryRedirect)
+	q := c.Request.URL.Query()
+	q.Add("provider", "google")
+	c.Request.URL.RawQuery = q.Encode()
+	gothic.BeginAuthHandler(c.Writer, c.Request)
 	return
 }
 
-func (handler *AuthHandler) HandleGoogleCallback(c *gin.Context) {
-    content, err := getUserInfo(c.Query("code"))
-    if err != nil {
-        fmt.Println(err.Error())
-        http.Redirect(c.Writer, c.Request, "/", http.StatusTemporaryRedirect)
-        return
-    }
-    fmt.Printf(string(content))
-}
-
-func getUserInfo(code string) ([]byte, error) {
-
-    token, err := googleOauthConfig.Exchange(context.TODO(), code)
-    if err != nil {
-        return nil, fmt.Errorf("code exchange failed: %s", err.Error())
-    }
-
-    response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
-    if err != nil {
-        return nil, fmt.Errorf("failed getting user info: %s", err.Error())
-    }
-
-    defer response.Body.Close()
-    contents, err := ioutil.ReadAll(response.Body)
-    if err != nil {
-        return nil, fmt.Errorf("failed reading response body: %s", err.Error())
-    }
-
-    return contents, nil
-}
-
-func (handler *AuthHandler) GithubLogin(c *gin.Context) {
-	// err := gothic.BeginAuth("google", c.Writer, c.Request)
-	// if err != nil {
-	// 	c.AbortWithError(http.StatusInternalServerError, err)
-	// 	return
-	// }
+func (handler *AuthHandler) GitHubLogin(c *gin.Context) {
 	q := c.Request.URL.Query()
 	q.Add("provider", "github")
 	c.Request.URL.RawQuery = q.Encode()
 	gothic.BeginAuthHandler(c.Writer, c.Request)
+	return
 }
 
-func (handler *AuthHandler) GithubCallback(c *gin.Context) {
-	q := c.Request.URL.Query()
-	q.Add("provider", "github")
-	c.Request.URL.RawQuery = q.Encode()
+func (handler *AuthHandler) SSOCallback(c *gin.Context) {
 	user, err := gothic.CompleteUserAuth(c.Writer, c.Request)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	res, err := json.Marshal(user)
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-	jsonString := string(res)
-	fmt.Println("jsonString;;;;=>", jsonString)
-	c.JSON(http.StatusOK, "test")
+	c.JSON(http.StatusOK, user)
+	return
 }

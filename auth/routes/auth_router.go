@@ -19,5 +19,8 @@ func AuthRouter(e *gin.Engine, handler *handlers.AuthHandler){
 	authRouter.POST("/refresh-token", handler.RefreshToken)
 	
 	authRouter.GET("/google", handler.GoogleLogin)
-	authRouter.GET("/google/callback", handler.HandleGoogleCallback)
+	authRouter.GET("/google/callback", handler.SSOCallback)	
+	
+	authRouter.GET("/github", handler.GitHubLogin)
+	authRouter.GET("/github/callback", handler.SSOCallback)
 }
