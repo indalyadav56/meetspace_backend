@@ -6,6 +6,9 @@ run:
 build:
 	docker-compose up --build -d
 
+build-prod:
+	docker-compose -f docker-compose-prod.yml up --build -d
+
 swagger:
 	swag init
 
