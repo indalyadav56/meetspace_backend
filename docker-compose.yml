@@ -1,18 +1,29 @@
 version: "3"
 
 services:
-  # meetspace_backend:
-  #   build: .
-  #   restart: always
-  #   container_name: backend
-  #   ports:
-  #     - "8080:8080"
-  #   env_file: .env.prod
-  #   networks:
-  #     - mynet
-  #   depends_on:
-  #     - db
-  #     - redis
+  backend:
+    build: .
+    restart: always
+    container_name: backend
+    ports:
+      - "8080:8080"
+    env_file: .env
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:latest
+    restart: always
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=example
+    volumes:
+      - meetspace_db_data:/var/lib/postgresql/data
 
   redis:
     image: redis:latest
@@ -21,111 +32,98 @@ services:
     ports:
       - "6379:6379"
     command: /bin/sh -c "redis-server --requirepass $$REDIS_PASSWORD"
-    env_file: .env.prod
+    environment:
+      REDIS_PASSWORD: "redis123"
     volumes:
-      - redis_data:/data
-    networks:
-      - mynet
+      - meetspace_redis_data:/data
 
-  db:
-    image: postgres:latest
-    restart: always
-    container_name: postgres
+  minio:
+    image: minio/minio
+    restart: unless-stopped
     ports:
-      - "5432:5432"
-    env_file: .env.prod
+      - 9000:9000
+      - 9001:9001
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - mynet
+      - meetspace_minio_data:/data
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password
+    command: server /data --console-address ":9001"
 
-  # livekit:
-  #   image: livekit/livekit-server
-  #   ports:
-  #     - 7880:7880
-  #     - 7881:7881
-  #     - 7882:7882/udp
-  #   volumes:
-  #     - ./livekit.yaml:/livekit.yaml
-  #   command:
-  #     - "--config"
-  #     - "/livekit.yaml"
-  #     - "--node-ip=127.0.0.1"
+# livekit:
+#   image: livekit/livekit-server
+#   ports:
+#     - 7880:7880
+#     - 7881:7881
+#     - 7882:7882/udp
+#   volumes:
+#     - ./livekit.yaml:/livekit.yaml
+#   command:
+#     - "--config"
+#     - "/livekit.yaml"
+#     - "--node-ip=127.0.0.1"
 
-  # minio:
-  #   image: minio/minio
-  #   restart: unless-stopped
-  #   ports:
-  #     - 9000:9000
-  #     - 9001:9001
-  #   volumes:
-  #     - minio_data:/data
-  #   environment:
-  #     MINIO_ROOT_USER: admin
-  #     MINIO_ROOT_PASSWORD: password
-  #   command: server /data --console-address ":9001"
+# prometheus:
+#   image: prom/prometheus
+#   container_name: prometheus
+#   restart: always
+#   ports:
+#     - "9090:9090"
 
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    restart: always
-    ports:
-      - "9090:9090"
+# grafana:
+#   image: grafana/grafana
+#   container_name: grafana
+#   restart: always
+#   ports:
+#     - "3000:3000"
 
-  grafana:
-    image: grafana/grafana
-    container_name: grafana
-    restart: always
-    ports:
-      - "3000:3000"
+# elasticsearch:
+#   image: elasticsearch:7.14.2
+#   container_name: elasticsearch
+#   ports:
+#     - "9200:9200"
+#   environment:
+#     - discovery.type=single-node
+#     - ELASTIC_USERNAME=elastic
+#     - ELASTIC_PASSWORD=elastic
+#     - xpack.security.enabled=true
 
-  # elasticsearch:
-  #   image: elasticsearch:7.14.2
-  #   container_name: elasticsearch
-  #   ports:
-  #     - "9200:9200"
-  #   environment:
-  #     - discovery.type=single-node
-  #     - ELASTIC_USERNAME=elastic
-  #     - ELASTIC_PASSWORD=elastic
-  #     - xpack.security.enabled=true
+# zookeeper:
+#   image: wurstmeister/zookeeper
+#   container_name: zookeeper
+#   restart: always
+#   ports:
+#     - "2181:2181"
 
-  # zookeeper:
-  #   image: wurstmeister/zookeeper
-  #   container_name: zookeeper
-  #   restart: always
-  #   ports:
-  #     - "2181:2181"
+# kafka:
+#   image: wurstmeister/kafka
+#   container_name: kafka
+#   restart: always
+#   ports:
+#     - "9092:9092"
+#   environment:
+#     KAFKA_ADVERTISED_HOST_NAME: kafka
+# KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+# # KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+# # KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+# # KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://kafka:29092
+# # KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+# volumes:
+#   - /var/run/docker.sock:/var/run/docker.sock
+# depends_on:
+#   - zookeeper
 
-  # kafka:
-  #   image: wurstmeister/kafka
-  #   container_name: kafka
-  #   restart: always
-  #   ports:
-  #     - "9092:9092"
-  #   environment:
-  #     KAFKA_ADVERTISED_HOST_NAME: kafka
-  # KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-  # # KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-  # # KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-  # # KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://kafka:29092
-  # # KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-  # volumes:
-  #   - /var/run/docker.sock:/var/run/docker.sock
-  # depends_on:
-  #   - zookeeper
+# nginx:
+#   build: ./nginx
+#   container_name: meetspace_nginx
+#   ports:
+#     - "8010:8010"
 
-  # nginx:
-  #   build: ./nginx
-  #   container_name: meetspace_nginx
-  #   ports:
-  #     - "8010:8010"
-
-networks:
-  mynet:
-    driver: bridge
+# networks:
+#   mynet:
+#     driver: bridge
 
 volumes:
-  postgres_data:
-  redis_data:
-  minio_data:
+  meetspace_db_data:
+  meetspace_redis_data:
+  meetspace_minio_data:
