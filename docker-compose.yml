@@ -42,7 +42,7 @@ services:
       - "6379:6379"
     command: /bin/sh -c "redis-server --requirepass $$REDIS_PASSWORD"
     environment:
-      REDIS_PASSWORD: "redis123"
+      - REDIS_PASSWORD=redis123
     volumes:
       - meetspace_redis_data:/data
 

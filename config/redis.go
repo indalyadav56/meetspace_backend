@@ -2,7 +2,6 @@ package config
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
 	"os"
 	"strconv"
@@ -26,9 +25,9 @@ func InitRedis() *redis.Client {
         Addr:     addr,
         Password: password,
         DB:      dbInt,
-        TLSConfig: &tls.Config{
-            InsecureSkipVerify: false, // Skip certificate verification (for testing purposes)
-        },
+        // TLSConfig: &tls.Config{
+        //     InsecureSkipVerify: false,
+        // },
     })
 
     // Ping the Redis server to check the connection
